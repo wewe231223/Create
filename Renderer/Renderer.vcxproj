@@ -123,6 +123,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -152,9 +153,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="core\Renderer.h" />
+    <ClInclude Include="core\Timer.h" />
     <ClInclude Include="core\Utility.h" />
     <ClInclude Include="core\window.h" />
     <ClInclude Include="directx\DxRenderer.h" />
+    <ClInclude Include="directx\FrameMemory.h" />
     <ClInclude Include="directx\RenderTarget.h" />
     <ClInclude Include="directx\SwapChain.h" />
     <ClInclude Include="pch.h" />
@@ -162,9 +165,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\Renderer.cpp" />
+    <ClCompile Include="core\Timer.cpp" />
     <ClCompile Include="core\Utility.cpp" />
     <ClCompile Include="core\window.cpp" />
     <ClCompile Include="directx\DxRenderer.cpp" />
+    <ClCompile Include="directx\FrameMemory.cpp" />
     <ClCompile Include="directx\RenderTarget.cpp" />
     <ClCompile Include="directx\SwapChain.cpp" />
     <ClCompile Include="pch.cpp">

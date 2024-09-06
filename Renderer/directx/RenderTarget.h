@@ -1,16 +1,35 @@
 #pragma once 
-class RenderTarget {
+
+
+// MRT 같은 여러개의 패스를 사용할 때를 고려해서 설계해보자 
+class RenderTargetGroup {
+	class RenderTarget {
+	public:
+
+	};
+
+	class DepthStencil {
+
+	};
 public:
-	RenderTarget();
-	~RenderTarget();
+	RenderTargetGroup(ComPtr<ID3D12Device> device,UINT bufferCount);
+	~RenderTargetGroup();
 
-	void Create(ID3D12Device* device);
-	void Reset(ID3D12Device* device, UINT width, UINT height);
-private:
-private:
-	ComPtr<ID3D12Resource> mPresentBuffer{ nullptr };
-	ComPtr<ID3D12Resource> mCanvasBuffer{ nullptr };
+	// 하나만
+	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList, UINT bufferIndex);
+	// 전부 
+	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList);
 
-	ComPtr<ID3D12DescriptorHeap> mRTVHeap{ nullptr };
-	UINT mRTVIncreasement{ 0 };
+	// 하나만 
+	void Clear(ComPtr<ID3D12GraphicsCommandList> commandList, UINT bufferIndex);
+	// 전부 
+	void Clear(ComPtr<ID3D12GraphicsCommandList> commandList);
+
+
+private:
+	ComPtr<ID3D12DescriptorHeap> mRtvHeap{ nullptr };
+	ComPtr<ID3D12DescriptorHeap> mDsvHeap{ nullptr };
+
+	
 };
+	

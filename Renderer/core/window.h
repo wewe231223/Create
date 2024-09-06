@@ -14,10 +14,10 @@ class Window {
 public:
 	Window(HWND windowHandle);
 	~Window();
-	Window(const Window&) = delete;
-	Window& operator=(const Window&) = delete;
-	Window(Window&& other) noexcept = delete;
-	Window& operator=(Window&& other) noexcept = delete;
+	Window(const Window&)						= delete;
+	Window& operator=(const Window&)			= delete;
+	Window(Window&& other) noexcept				= delete;
+	Window& operator=(Window&& other) noexcept	= delete;
 
 	HWND GetWindowHandle() const;
 	EWindowStyle GetWindowStyle() const;

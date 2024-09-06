@@ -1,4 +1,4 @@
-﻿// pch.h: 미리 컴파일된 헤더 파일입니다.
+// pch.h: 미리 컴파일된 헤더 파일입니다.
 // 아래 나열된 파일은 한 번만 컴파일되었으며, 향후 빌드에 대한 빌드 성능을 향상합니다.
 // 코드 컴파일 및 여러 코드 검색 기능을 포함하여 IntelliSense 성능에도 영향을 미칩니다.
 // 그러나 여기에 나열된 파일은 빌드 간 업데이트되는 경우 모두 다시 컴파일됩니다.
@@ -23,7 +23,8 @@
 #include "external/Include/DirectXTK12/d3dx12.h"
 #include "external/Include/DirectXTex/DirectXTex.h"
 #include "external/Include/DirectXTex/DirectXTex.inl"
-
+#include "external/Include/DirectXTK12/SimpleMath.h"
+#include "external/Include/DirectXTK12/SimpleMath.inl"
 // DirectX12 Library 
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -42,6 +43,22 @@
 #include <memory>
 #include <format>
 #include <source_location>
-
+#include <chrono>
+#include <vector>
+#include <functional>
+#include <iostream>
+#include <type_traits>
+#include <concepts>
+#include <thread>
+#include <array>
+#include <algorithm>
+#include <numeric>
+#include <set>
 using namespace Microsoft::WRL;
+using namespace std::chrono_literals;
+
+#include "core/Timer.h"
 #include "core/Utility.h"
+
+// 지금은 이렇게 두고 나중에 한곳에 묶자 
+extern GTime Time;

@@ -39,6 +39,12 @@
     <ClInclude Include="directx\SwapChain.h">
       <Filter>directx</Filter>
     </ClInclude>
+    <ClInclude Include="core\Timer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\FrameMemory.h">
+      <Filter>directx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -63,6 +69,12 @@
       <Filter>directx</Filter>
     </ClCompile>
     <ClCompile Include="directx\SwapChain.cpp">
+      <Filter>directx</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Timer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\FrameMemory.cpp">
       <Filter>directx</Filter>
     </ClCompile>
   </ItemGroup>
