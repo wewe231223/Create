@@ -19,6 +19,11 @@ public:
 	// Resize 등과 같은 행위에 대응하기 위한 Reset 은 전부 리셋하도록 하자 
 	void Reset();
 
+	// 하나만 
+	void SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist,UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
+	// 전부 
+	void SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
+
 	// 하나만
 	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index);
 	// 전부 

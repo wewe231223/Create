@@ -21,10 +21,19 @@ public:
 
 	HWND GetWindowHandle() const;
 	EWindowStyle GetWindowStyle() const;
+	
 	template<typename T>
-	T GetWindowWidth() const;
+	T GetWindowWidth() const 
+	{
+		return static_cast<T>(mWidth);
+	}
+
 	template<typename T>
-	T GetWindowHeight() const;
+	T GetWindowHeight() const
+	{
+		return static_cast<T>(mHeight);
+	}
+
 
 	void ChangeWindowStyle(EWindowStyle style, size_t width = gDefaultWidth, size_t height = gDefaultHeight);
 private:
@@ -36,3 +45,4 @@ private:
 	size_t mHeight{ 0 };
 
 };
+

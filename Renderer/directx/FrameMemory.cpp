@@ -7,6 +7,16 @@ FrameMemory::FrameMemory(ComPtr<ID3D12Device> device)
 	mCommandAllocator->Reset();
 }
 
+void FrameMemory::CheckCommandCompleted(ComPtr<ID3D12Fence> fence)
+{
+	if (mFenceValue != 0 && mFenceValue > fence->GetCompletedValue()){
+		HANDLE event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		CheckHR(fence->SetEventOnCompletion(mFenceValue, event));
+		::WaitForSingleObject(event, INFINITE);
+		::CloseHandle(event);
+	}
+}
+
 ComPtr<ID3D12CommandAllocator> FrameMemory::GetAllocator() const
 {
 	return mCommandAllocator;
@@ -15,4 +25,9 @@ ComPtr<ID3D12CommandAllocator> FrameMemory::GetAllocator() const
 void FrameMemory::Reset()
 {
 	mCommandAllocator->Reset();
+}
+
+void FrameMemory::SetFenceValue(UINT64 value)
+{
+	mFenceValue = value;
 }

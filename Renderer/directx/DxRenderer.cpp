@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "core/window.h"
 #include "directx/DxRenderer.h"
 #include "directx/FrameMemory.h"
 #include "directx/SwapChain.h"
@@ -6,14 +7,16 @@
 
 extern UINT gBackBufferCount;
 
-DxRenderer::DxRenderer(std::shared_ptr<class Window> window) 
+DxRenderer::DxRenderer(std::shared_ptr<Window> window) 
 	: mWindow(window)
 {
-
+	DxRenderer::Initialize();
 }
 
 DxRenderer::~DxRenderer()
 {
+	FlushCommandQueue();
+
 }
 
 ComPtr<ID3D12Device> DxRenderer::GetDevice() const
@@ -28,14 +31,69 @@ ComPtr<ID3D12GraphicsCommandList> DxRenderer::GetCommandList() const
 
 void DxRenderer::StartRender()
 {
+	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % gFrameCount;
+	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
+	
+	frameMemory->CheckCommandCompleted(mFence.Get());
+	
+	frameMemory->Reset();
+	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
+	auto backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+
+	mSwapChainRTGroup->SetRTState(mCommandList.Get(), backBufferIndex, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mSwapChainRTGroup->Clear(mCommandList.Get(), backBufferIndex);
+
+	D3D12_VIEWPORT vp{};
+	vp.Height = mWindow->GetWindowHeight<float>();
+	vp.Width = mWindow->GetWindowWidth<float>();
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+
+	D3D12_RECT scissorRect{};
+	scissorRect.left = 0;
+	scissorRect.top = 0;
+	scissorRect.right = mWindow->GetWindowWidth<long>();
+	scissorRect.bottom = mWindow->GetWindowHeight<long>();
+
+	mCommandList->RSSetViewports(1, &vp);
+	mCommandList->RSSetScissorRects(1, &scissorRect);
+
+}
+
+void DxRenderer::Render()
+{
+	mSwapChainRTGroup->Clear(mCommandList, mSwapChain->GetCurrentBackBufferIndex());
 }
 
 void DxRenderer::EndRender()
 {
+	mSwapChainRTGroup->SetRTState(mCommandList.Get(), mSwapChain->GetCurrentBackBufferIndex(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	CheckHR(mCommandList->Close());
+
+	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+
+	mSwapChain->Present();
+
+	mFrameMemories[mCurrentFrameMemoryIndex]->SetFenceValue(++mFenceValue);
+	mCommandQueue->Signal(mFence.Get(), mFenceValue);
 }
 
 void DxRenderer::Initialize()
 {
+	DxRenderer::InitDebugCtrl();
+	DxRenderer::InitFactory();
+	DxRenderer::InitDevice();
+	DxRenderer::InitCommandQueue();
+	DxRenderer::InitFence();
+	DxRenderer::InitSwapChain();
+	DxRenderer::InitRenderTargets();
+	DxRenderer::InitFrameMemories();
+	DxRenderer::InitCommandList();
+
+	FlushCommandQueue();
 }
 
 void DxRenderer::InitDebugCtrl()
@@ -83,12 +141,39 @@ void DxRenderer::InitSwapChain()
 
 void DxRenderer::InitRenderTargets()
 {
+	// SwapChain 에서 사용할 렌더 타겟 그룹 생성
 	{
 		std::vector<ComPtr<ID3D12Resource>> rts{ gBackBufferCount };
-		for (auto i = 0; i < gBackBufferCount; ++i){
+		for (UINT i = 0; i < gBackBufferCount; ++i) {
 			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&rts[i])));
 		}
 
+		ComPtr<ID3D12Resource> ds{ nullptr };
+		auto dsDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+			DXGI_FORMAT_D32_FLOAT, 
+			mWindow->GetWindowWidth<UINT>(), 
+			mWindow->GetWindowHeight<UINT>(), 
+			1, 
+			1, 
+			1, 
+			0, 
+			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+		);
+
+		CD3DX12_CLEAR_VALUE clearValue{ DXGI_FORMAT_D32_FLOAT, 1.0f, 0 };
+		auto heapproperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+		CheckHR(mDevice->CreateCommittedResource(
+			&heapproperties,
+			D3D12_HEAP_FLAG_NONE,
+			&dsDesc,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&clearValue,
+			IID_PPV_ARGS(ds.GetAddressOf()))
+		);
+
+		mSwapChainRTGroup = std::make_unique<RenderTargetGroup>();
+		mSwapChainRTGroup->Create(mDevice, rts, ds, DirectX::SimpleMath::Vector4{ 0.0f, 0.0f, 0.0f, 1.0f });
 	}
 
 }
@@ -97,7 +182,7 @@ void DxRenderer::InitFrameMemories()
 {
 	for (auto& frameMemory : mFrameMemories)
 	{
-		frameMemory = std::make_unique<FrameMemory>(mDevice);
+		frameMemory = std::make_shared<FrameMemory>(mDevice);
 	}
 }
 
@@ -111,4 +196,16 @@ void DxRenderer::InitCommandList()
 		IID_PPV_ARGS(&mCommandList))
 	);
 	mCommandList->Close();
+}
+
+void DxRenderer::FlushCommandQueue()
+{
+	mFenceValue++;
+	CheckHR(mCommandQueue->Signal(mFence.Get(), mFenceValue));
+	if (mFence->GetCompletedValue() < mFenceValue) {
+		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		mFence->SetEventOnCompletion(mFenceValue, eventHandle);
+		::WaitForSingleObject(eventHandle, INFINITE);
+		::CloseHandle(eventHandle);
+	}
 }

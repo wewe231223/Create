@@ -53,6 +53,21 @@ void RenderTargetGroup::Reset()
 	mDepthStencil->Release();
 }
 
+void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
+{
+	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[index].Get(), prev, next);
+	commandlist->ResourceBarrier(1, &barrier);
+}
+
+void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
+{
+	D3D12_RESOURCE_BARRIER barriers[8]{};
+	for (auto i = 0; i < mRenderTargets.size(); ++i) {
+		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[i].Get(), prev, next);
+	}
+	commandlist->ResourceBarrier(static_cast<UINT>(mRenderTargets.size()), barriers);
+}
+
 void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };

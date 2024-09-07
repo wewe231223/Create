@@ -22,19 +22,6 @@ EWindowStyle Window::GetWindowStyle() const
 	return mWindowStyle;
 }
 
-template<typename T>
-T Window::GetWindowWidth() const
-{
-	return static_cast<T>(mWidth);
-}
-
-template<typename T>
-T Window::GetWindowHeight() const
-{
-	return static_cast<T>(mHeight);
-}
-
-
 void Window::ChangeWindowStyle(EWindowStyle style, size_t width, size_t height)
 {
 	RECT adjWindowRect{ 0,0,static_cast<long>(width), static_cast<long>(height) };
