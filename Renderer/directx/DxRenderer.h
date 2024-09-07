@@ -19,9 +19,10 @@ private:
 	void InitDebugCtrl();
 	void InitFactory();
 	void InitDevice();
-	void InitSwapChain();
 	void InitCommandQueue();
 	void InitFence();
+	void InitSwapChain();
+	void InitRenderTargets();
 	void InitFrameMemories();
 	void InitCommandList();
 private:
@@ -34,12 +35,14 @@ private:
 
 	ComPtr<ID3D12CommandQueue> mCommandQueue{ nullptr };
 	ComPtr<ID3D12Fence>	mFence{ nullptr };
+	UINT64 mFenceValue{ 0 };
 
 	ComPtr<ID3D12GraphicsCommandList> mCommandList{ nullptr };
 	UINT mCurrentFrameMemoryIndex{ 0 };
 	std::array<std::unique_ptr<class FrameMemory>,gFrameCount> mFrameMemories{};
 
-	UINT64 mFenceValue{ 0 };
+	std::unique_ptr<class SwapChain> mSwapChain{ nullptr };
+	std::unique_ptr<class RenderTargetGroup> mSwapChainRTGroup{ nullptr };
 
 	std::shared_ptr<class Window> mWindow{ nullptr };
 };

@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "directx/DxRenderer.h"
 #include "directx/FrameMemory.h"
+#include "directx/SwapChain.h"
+#include "directx/RenderTarget.h"
+
+extern UINT gBackBufferCount;
 
 DxRenderer::DxRenderer(std::shared_ptr<class Window> window) 
 	: mWindow(window)
@@ -59,10 +63,6 @@ void DxRenderer::InitDevice()
 
 }
 
-void DxRenderer::InitSwapChain()
-{
-}
-
 void DxRenderer::InitCommandQueue()
 {
 	D3D12_COMMAND_QUEUE_DESC desc{};
@@ -74,6 +74,23 @@ void DxRenderer::InitCommandQueue()
 void DxRenderer::InitFence()
 {
 	CheckHR(mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
+}
+
+void DxRenderer::InitSwapChain()
+{
+	mSwapChain = std::make_unique<SwapChain>(mWindow, mDxgiFactory, mCommandQueue);
+}
+
+void DxRenderer::InitRenderTargets()
+{
+	{
+		std::vector<ComPtr<ID3D12Resource>> rts{ gBackBufferCount };
+		for (auto i = 0; i < gBackBufferCount; ++i){
+			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&rts[i])));
+		}
+
+	}
+
 }
 
 void DxRenderer::InitFrameMemories()
