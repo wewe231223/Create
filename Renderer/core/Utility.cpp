@@ -16,7 +16,7 @@ std::optional<std::wstring> CheckHR(const HRESULT& hr, const std::source_locatio
 	if (FAILED(hr))
 	{
 		_com_error err{ hr };
-		result = std::format(L"¿À·ù À§Ä¡ : {}\n{} \n\n Error : \n{}", to_wstring(location.file_name()), to_wstring(location.function_name()), err.ErrorMessage());
+		result = std::format(L"ì˜¤ë¥˜ ìœ„ì¹˜ : {}\n{} \n\n Error : \n{}", to_wstring(location.file_name()), to_wstring(location.function_name()), err.ErrorMessage());
 		::MessageBoxW(nullptr, result.value().c_str(), L"Error", MB_OK | MB_ICONERROR);
 		PostQuitMessage(0);
 	}

@@ -83,7 +83,7 @@ void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> comman
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle{ mDsvHeap->GetCPUDescriptorHandleForHeapStart() };
 
-	commandList->OMSetRenderTargets(static_cast<UINT>(mRenderTargets.size()), &rtvHandle, FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(static_cast<UINT>(mRenderTargets.size()), &rtvHandle, TRUE, &dsvHandle);
 }
 
 void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index)

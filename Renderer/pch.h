@@ -25,6 +25,10 @@
 #include "external/Include/DirectXTex/DirectXTex.inl"
 #include "external/Include/DirectXTK12/SimpleMath.h"
 #include "external/Include/DirectXTK12/SimpleMath.inl"
+#include "external/Include/ImGui/imgui.h"
+#include "external/Include/ImGui/imgui_impl_dx12.h"
+#include "external/Include/ImGui/imgui_impl_win32.h"
+#include "external/Include/ImGui/imgui_internal.h"
 // DirectX12 Library 
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -54,11 +58,18 @@
 #include <algorithm>
 #include <numeric>
 #include <set>
+#include <iterator>
+#include <fstream>
 using namespace Microsoft::WRL;
 using namespace std::chrono_literals;
 
 #include "core/Timer.h"
 #include "core/Utility.h"
+#include "ui/HexColors.h"
 
 // 지금은 이렇게 두고 나중에 한곳에 묶자 
 extern GTime Time;
+// 심볼 
+#define SWAPCHAIN_ALLOW_TEARING
+#define UI_RENDER
+#define UI_DARK_THEME

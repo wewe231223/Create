@@ -27,6 +27,13 @@ private:
 	void InitFrameMemories();
 	void InitCommandList();
 
+#ifdef UI_RENDER
+	void InitImGui();
+	void StartRenderImGui();
+	void RenderImGui();
+	void TerminateImGui();
+#endif 
+
 	void FlushCommandQueue();
 private:
 #ifdef _DEBUG
@@ -43,6 +50,10 @@ private:
 	ComPtr<ID3D12GraphicsCommandList> mCommandList{ nullptr };
 	UINT mCurrentFrameMemoryIndex{ 0 };
 	std::array<std::shared_ptr<class FrameMemory>,gFrameCount> mFrameMemories{};
+
+#ifdef UI_RENDER
+	ComPtr<ID3D12DescriptorHeap> mImGuiSrvHeap{ nullptr };
+#endif
 
 	std::unique_ptr<class SwapChain> mSwapChain{ nullptr };
 	std::unique_ptr<class RenderTargetGroup> mSwapChainRTGroup{ nullptr };

@@ -4,18 +4,31 @@
 #include "directx/FrameMemory.h"
 #include "directx/SwapChain.h"
 #include "directx/RenderTarget.h"
+#include "ui/Console.h"
 
 extern UINT gBackBufferCount;
+// 주석을 셋중 하나는 제거하고 사용할 것 
+// constexpr const char* KoreanFontPath = "C://Windows//Fonts//malgun.ttf";
+// constexpr const char* KoreanFontPath = "Resources/font/MaruBuri-Regular.ttf";
+ constexpr const char* KoreanFontPath = "Resources/font/NotoSansKR-Regular-Hestia.otf";
 
 DxRenderer::DxRenderer(std::shared_ptr<Window> window) 
 	: mWindow(window)
 {
 	DxRenderer::Initialize();
+
+	Time.AddEvent(1s, []() {
+		ImGuiIO& io = ImGui::GetIO();
+		Console.InfoLog("FrameRate : {:.2f}", io.Framerate);
+		return true;
+		});
+	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.123123abcabc");
 }
 
 DxRenderer::~DxRenderer()
 {
 	FlushCommandQueue();
+	DxRenderer::TerminateImGui();
 
 }
 
@@ -34,7 +47,7 @@ void DxRenderer::StartRender()
 	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % gFrameCount;
 	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
 	
-	frameMemory->CheckCommandCompleted(mFence.Get());
+	frameMemory->CheckCommandCompleted(mFence);
 	
 	frameMemory->Reset();
 	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
@@ -42,6 +55,7 @@ void DxRenderer::StartRender()
 
 	mSwapChainRTGroup->SetRTState(mCommandList.Get(), backBufferIndex, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	mSwapChainRTGroup->Clear(mCommandList.Get(), backBufferIndex);
+	mSwapChainRTGroup->SetRenderTarget(mCommandList.Get(), backBufferIndex);
 
 	D3D12_VIEWPORT vp{};
 	vp.Height = mWindow->GetWindowHeight<float>();
@@ -59,16 +73,21 @@ void DxRenderer::StartRender()
 
 	mCommandList->RSSetViewports(1, &vp);
 	mCommandList->RSSetScissorRects(1, &scissorRect);
+	DxRenderer::StartRenderImGui();
 
 }
 
+// StartRender 와 Render 사이에 UI 를 렌더링해야한다. 
+
 void DxRenderer::Render()
 {
-	mSwapChainRTGroup->Clear(mCommandList, mSwapChain->GetCurrentBackBufferIndex());
+	Console.Render();
+	ImGui::Render();
 }
 
 void DxRenderer::EndRender()
 {
+	DxRenderer::RenderImGui();
 	mSwapChainRTGroup->SetRTState(mCommandList.Get(), mSwapChain->GetCurrentBackBufferIndex(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	CheckHR(mCommandList->Close());
 
@@ -92,7 +111,9 @@ void DxRenderer::Initialize()
 	DxRenderer::InitRenderTargets();
 	DxRenderer::InitFrameMemories();
 	DxRenderer::InitCommandList();
-
+#ifdef UI_RENDER
+	DxRenderer::InitImGui();
+#endif 
 	FlushCommandQueue();
 }
 
@@ -145,7 +166,7 @@ void DxRenderer::InitRenderTargets()
 	{
 		std::vector<ComPtr<ID3D12Resource>> rts{ gBackBufferCount };
 		for (UINT i = 0; i < gBackBufferCount; ++i) {
-			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&rts[i])));
+			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(rts[i].GetAddressOf())));
 		}
 
 		ComPtr<ID3D12Resource> ds{ nullptr };
@@ -196,6 +217,88 @@ void DxRenderer::InitCommandList()
 		IID_PPV_ARGS(&mCommandList))
 	);
 	mCommandList->Close();
+}
+
+void DxRenderer::InitImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+#ifdef UI_DARK_THEME
+	ImGui::StyleColorsDark();
+#else 
+	ImGui::StyleColorsLight();
+#endif 
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	D3D12_DESCRIPTOR_HEAP_DESC desc{};
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	desc.NumDescriptors = 1;
+	desc.NodeMask = 0;
+	CheckHR(mDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(mImGuiSrvHeap.GetAddressOf())));
+
+	auto imwin32 = ImGui_ImplWin32_Init(mWindow->GetWindowHandle());
+	auto imdx12 = ImGui_ImplDX12_Init(
+		mDevice.Get(), 
+		gFrameCount, 
+		DXGI_FORMAT_R8G8B8A8_UNORM, 
+		mImGuiSrvHeap.Get(), 
+		mImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart(), 
+		mImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart()
+	);
+
+	if (!imdx12 || !imwin32) {
+		abort();
+	}
+
+
+	ImFontConfig fontConfig;
+	fontConfig.OversampleH = 3;
+	fontConfig.OversampleV = 1;
+	fontConfig.PixelSnapH = true;
+	fontConfig.MergeMode = false;
+	io.Fonts->AddFontFromFileTTF(KoreanFontPath, 18.f, &fontConfig, io.Fonts->GetGlyphRangesKorean());
+	io.Fonts->Build();
+}
+
+void DxRenderer::StartRenderImGui()
+{
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+}
+
+void DxRenderer::RenderImGui()
+{
+	mCommandList->SetDescriptorHeaps(1, mImGuiSrvHeap.GetAddressOf());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault(nullptr,reinterpret_cast<void*>(mCommandList.Get()));
+	}
+}
+
+void DxRenderer::TerminateImGui()
+{
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+	if (mImGuiSrvHeap) mImGuiSrvHeap.Reset();	
 }
 
 void DxRenderer::FlushCommandQueue()

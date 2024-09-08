@@ -13,6 +13,15 @@
     <Filter Include="resource">
       <UniqueIdentifier>{7d4af0d4-7afb-44fb-baa7-3303741f9576}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{7b3a930d-3d1f-45c3-ad06-24a527222c95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{f28712b9-b5d7-4325-ab00-7b90a499bf19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\imgui">
+      <UniqueIdentifier>{c011c5bf-176a-42d1-afb1-4339f0f10afb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -45,6 +54,36 @@
     <ClInclude Include="directx\FrameMemory.h">
       <Filter>directx</Filter>
     </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imconfig.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imgui.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imgui_impl_dx12.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imgui_impl_win32.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imgui_internal.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imstb_rectpack.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imstb_textedit.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\Include\ImGui\imstb_truetype.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\Console.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\HexColors.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -76,6 +115,33 @@
     </ClCompile>
     <ClCompile Include="directx\FrameMemory.cpp">
       <Filter>directx</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_demo.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_draw.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_impl_dx12.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_impl_win32.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_tables.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\imgui_widgets.cpp">
+      <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Console.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\HexColors.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

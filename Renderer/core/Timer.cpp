@@ -66,7 +66,7 @@ bool GTime::PopEvent()
 
 	if (ev.mInvokeTime < clock::now()) {
 		if (std::invoke(ev.mCallBack)) {
-			mEvents.emplace(ev.mInvokeTime + ev.mTimeout, std::move(ev.mTimeout), std::move(ev.mCallBack));
+			mEvents.emplace(clock::now() + ev.mTimeout, std::move(ev.mTimeout), std::move(ev.mCallBack));
 		}
 		mEvents.erase(mEvents.begin());
 

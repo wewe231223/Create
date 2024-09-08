@@ -7,6 +7,7 @@ enum class EWindowStyle {
 	None
 };
 
+
 constexpr size_t gDefaultWidth = 1920;
 constexpr size_t gDefaultHeight = 1080;
 
@@ -43,6 +44,5 @@ private:
 
 	size_t mWidth{ 0 };
 	size_t mHeight{ 0 };
-
 };
 

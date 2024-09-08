@@ -106,6 +106,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <AdditionalOptions>/utf-8,/Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -37,20 +37,19 @@ void Window::ChangeWindowStyle(EWindowStyle style, size_t width, size_t height)
 		ShowWindow(mWindowHandle, SW_SHOW);
 		mWindowStyle = style;
 
-		mWidth = static_cast<size_t>(adjWindowRect.right - adjWindowRect.left);
-		mHeight = static_cast<size_t>(adjWindowRect.left - adjWindowRect.top);
+		mWidth = width;
+		mHeight = height;
 		break;
 	case EWindowStyle::Borderless:
-		::AdjustWindowRectEx(&adjWindowRect, WS_OVERLAPPEDWINDOW, FALSE, 0);
+		::AdjustWindowRectEx(&adjWindowRect, WS_POPUP, FALSE, 0);
 		SetWindowLong(mWindowHandle, GWL_STYLE, WS_POPUP);
 		SetWindowLong(mWindowHandle, GWL_EXSTYLE, 0);
 		SetWindowPos(mWindowHandle, HWND_NOTOPMOST, windowRect.left, windowRect.top, adjWindowRect.right - adjWindowRect.left, adjWindowRect.bottom - adjWindowRect.top, NULL);
 		ShowWindow(mWindowHandle, SW_SHOW);
 		mWindowStyle = style;
 
-
 		mWidth = static_cast<size_t>(adjWindowRect.right - adjWindowRect.left);
-		mHeight = static_cast<size_t>(adjWindowRect.left - adjWindowRect.top);
+		mHeight = static_cast<size_t>(adjWindowRect.bottom - adjWindowRect.top);
 		break;
 	case EWindowStyle::Fullscreen:
 		SetWindowLong(mWindowHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
