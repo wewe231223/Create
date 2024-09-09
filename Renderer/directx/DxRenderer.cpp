@@ -22,7 +22,7 @@ DxRenderer::DxRenderer(std::shared_ptr<Window> window)
 		Console.InfoLog("FrameRate : {:.2f}", io.Framerate);
 		return true;
 		});
-	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.123123abcabc");
+	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.");
 }
 
 DxRenderer::~DxRenderer()
@@ -81,6 +81,30 @@ void DxRenderer::StartRender()
 
 void DxRenderer::Render()
 {
+	ImGui::Begin("그래프 예제");
+	const int data_count = 100;
+	float x[data_count], y[data_count];
+	static double counter = 0.0;
+	counter += Time.GetDeltaTime();
+
+	auto GenerateData = [](float* x, float* y, int count) {
+		for (int i = 0; i < count; ++i)
+		{
+			x[i] = i * 0.1f + counter;
+			y[i] = sin(x[i]);
+		}
+		};
+
+	GenerateData(x, y, data_count);
+	if (ImPlot::BeginPlot("Sine Wave"))
+	{
+		ImPlot::SetupAxisLimits(ImAxis_X1, Time.GetDeltaTime(), Time.GetDeltaTime() + data_count * 0.1f  , ImGuiCond_Always);
+
+		ImPlot::PlotLine("sin(x)", x, y, data_count);
+		ImPlot::EndPlot();
+	}
+
+	ImGui::End();
 	Console.Render();
 	ImGui::Render();
 }
@@ -259,12 +283,14 @@ void DxRenderer::InitImGui()
 		mImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart()
 	);
 
+	ImPlot::CreateContext();
+
 	if (!imdx12 || !imwin32) {
 		abort();
 	}
 
 
-	ImFontConfig fontConfig;
+	ImFontConfig fontConfig{};
 	fontConfig.OversampleH = 3;
 	fontConfig.OversampleV = 1;
 	fontConfig.PixelSnapH = true;

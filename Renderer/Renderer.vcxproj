@@ -167,6 +167,8 @@
     <ClInclude Include="external\Include\ImGui\imgui_impl_dx12.h" />
     <ClInclude Include="external\Include\ImGui\imgui_impl_win32.h" />
     <ClInclude Include="external\Include\ImGui\imgui_internal.h" />
+    <ClInclude Include="external\Include\ImGui\implot.h" />
+    <ClInclude Include="external\Include\ImGui\implot_internal.h" />
     <ClInclude Include="external\Include\ImGui\imstb_rectpack.h" />
     <ClInclude Include="external\Include\ImGui\imstb_textedit.h" />
     <ClInclude Include="external\Include\ImGui\imstb_truetype.h" />
@@ -203,6 +205,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\Include\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\implot.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\implot_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="external\Include\ImGui\implot_items.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">

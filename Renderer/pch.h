@@ -29,6 +29,8 @@
 #include "external/Include/ImGui/imgui_impl_dx12.h"
 #include "external/Include/ImGui/imgui_impl_win32.h"
 #include "external/Include/ImGui/imgui_internal.h"
+#include "external/Include/ImGui/implot.h"
+
 // DirectX12 Library 
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib, "d3dcompiler.lib")
