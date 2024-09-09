@@ -77,36 +77,13 @@ void DxRenderer::StartRender()
 
 }
 
-// StartRender 와 Render 사이에 UI 를 렌더링해야한다. 
 
 void DxRenderer::Render()
 {
-	ImGui::Begin("그래프 예제");
-	const int data_count = 100;
-	float x[data_count], y[data_count];
-	static double counter = 0.0;
-	counter += Time.GetDeltaTime();
-
-	auto GenerateData = [](float* x, float* y, int count) {
-		for (int i = 0; i < count; ++i)
-		{
-			x[i] = i * 0.1f + counter;
-			y[i] = sin(x[i]);
-		}
-		};
-
-	GenerateData(x, y, data_count);
-	if (ImPlot::BeginPlot("Sine Wave"))
-	{
-		ImPlot::SetupAxisLimits(ImAxis_X1, Time.GetDeltaTime(), Time.GetDeltaTime() + data_count * 0.1f  , ImGuiCond_Always);
-
-		ImPlot::PlotLine("sin(x)", x, y, data_count);
-		ImPlot::EndPlot();
-	}
-
-	ImGui::End();
+#ifdef UI_RENDER
+	Console.InfoLog("부하 테스트입니다.");
 	Console.Render();
-	ImGui::Render();
+#endif 
 }
 
 void DxRenderer::EndRender()
@@ -283,8 +260,6 @@ void DxRenderer::InitImGui()
 		mImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart()
 	);
 
-	ImPlot::CreateContext();
-
 	if (!imdx12 || !imwin32) {
 		abort();
 	}
@@ -295,7 +270,7 @@ void DxRenderer::InitImGui()
 	fontConfig.OversampleV = 1;
 	fontConfig.PixelSnapH = true;
 	fontConfig.MergeMode = false;
-	io.Fonts->AddFontFromFileTTF(KoreanFontPath, 18.f, &fontConfig, io.Fonts->GetGlyphRangesKorean());
+	io.Fonts->AddFontFromFileTTF(KoreanFontPath, 24.f, &fontConfig, io.Fonts->GetGlyphRangesKorean());
 	io.Fonts->Build();
 }
 
@@ -309,6 +284,7 @@ void DxRenderer::StartRenderImGui()
 
 void DxRenderer::RenderImGui()
 {
+	ImGui::Render();
 	mCommandList->SetDescriptorHeaps(1, mImGuiSrvHeap.GetAddressOf());
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 

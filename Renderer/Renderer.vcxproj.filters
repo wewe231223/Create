@@ -27,9 +27,6 @@
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="core\Renderer.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="core\Utility.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -84,19 +81,10 @@
     <ClInclude Include="ui\HexColors.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="external\Include\ImGui\implot.h">
-      <Filter>external\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="external\Include\ImGui\implot_internal.h">
-      <Filter>external\imgui</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
-    </ClCompile>
-    <ClCompile Include="core\Renderer.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="core\Utility.cpp">
       <Filter>Core</Filter>
@@ -148,15 +136,6 @@
     </ClCompile>
     <ClCompile Include="ui\HexColors.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot.cpp">
-      <Filter>external\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot_demo.cpp">
-      <Filter>external\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot_items.cpp">
-      <Filter>external\imgui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

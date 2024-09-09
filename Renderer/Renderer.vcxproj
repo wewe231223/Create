@@ -154,7 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="core\Timer.h" />
     <ClInclude Include="core\Utility.h" />
     <ClInclude Include="core\window.h" />
@@ -167,8 +166,6 @@
     <ClInclude Include="external\Include\ImGui\imgui_impl_dx12.h" />
     <ClInclude Include="external\Include\ImGui\imgui_impl_win32.h" />
     <ClInclude Include="external\Include\ImGui\imgui_internal.h" />
-    <ClInclude Include="external\Include\ImGui\implot.h" />
-    <ClInclude Include="external\Include\ImGui\implot_internal.h" />
     <ClInclude Include="external\Include\ImGui\imstb_rectpack.h" />
     <ClInclude Include="external\Include\ImGui\imstb_textedit.h" />
     <ClInclude Include="external\Include\ImGui\imstb_truetype.h" />
@@ -178,7 +175,6 @@
     <ClInclude Include="ui\HexColors.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="core\Timer.cpp" />
     <ClCompile Include="core\Utility.cpp" />
     <ClCompile Include="core\window.cpp" />
@@ -205,15 +201,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\Include\ImGui\imgui_widgets.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot_demo.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="external\Include\ImGui\implot_items.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">
