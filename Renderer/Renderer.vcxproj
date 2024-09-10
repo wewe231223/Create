@@ -170,6 +170,8 @@
     <ClInclude Include="external\Include\ImGui\imstb_textedit.h" />
     <ClInclude Include="external\Include\ImGui\imstb_truetype.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource\Material.h" />
+    <ClInclude Include="resource\Shader.h" />
     <ClInclude Include="resource\Texture.h" />
     <ClInclude Include="ui\Console.h" />
     <ClInclude Include="ui\HexColors.h" />
@@ -209,9 +211,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="resource\Material.cpp" />
+    <ClCompile Include="resource\Shader.cpp" />
     <ClCompile Include="resource\Texture.cpp" />
     <ClCompile Include="ui\Console.cpp" />
     <ClCompile Include="ui\HexColors.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

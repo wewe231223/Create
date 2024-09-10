@@ -61,8 +61,10 @@
 #include <set>
 #include <iterator>
 #include <fstream>
+#include <filesystem>
 using namespace Microsoft::WRL;
 using namespace std::chrono_literals;
+namespace fs = std::filesystem;
 
 #include "core/Timer.h"
 #include "core/Utility.h"

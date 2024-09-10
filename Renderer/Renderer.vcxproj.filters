@@ -22,6 +22,9 @@
     <Filter Include="external\imgui">
       <UniqueIdentifier>{c011c5bf-176a-42d1-afb1-4339f0f10afb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{8368ebbb-d502-4504-acce-29b11bde579e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -81,6 +84,12 @@
     <ClInclude Include="ui\HexColors.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="resource\Material.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Shader.h">
+      <Filter>resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -137,5 +146,16 @@
     <ClCompile Include="ui\HexColors.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="resource\Material.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Shader.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

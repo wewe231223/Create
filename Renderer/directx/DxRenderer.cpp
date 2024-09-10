@@ -5,6 +5,7 @@
 #include "directx/SwapChain.h"
 #include "directx/RenderTarget.h"
 #include "ui/Console.h"
+#include "resource/Shader.h"
 
 extern UINT gBackBufferCount;
 // 주석을 셋중 하나는 제거하고 사용할 것 
@@ -23,6 +24,9 @@ DxRenderer::DxRenderer(std::shared_ptr<Window> window)
 		return true;
 		});
 	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.");
+
+	Shader s{};
+	s.GetShader(Shader::EShaderType::VS, "Standard.hlsl", "ST_VS_main", "vs_5_0", nullptr);
 }
 
 DxRenderer::~DxRenderer()
@@ -81,7 +85,6 @@ void DxRenderer::StartRender()
 void DxRenderer::Render()
 {
 #ifdef UI_RENDER
-	Console.InfoLog("부하 테스트입니다.");
 	Console.Render();
 #endif 
 }
