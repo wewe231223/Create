@@ -24,7 +24,6 @@
 #include "external/Include/DirectXTex/DirectXTex.h"
 #include "external/Include/DirectXTex/DirectXTex.inl"
 #include "external/Include/DirectXTK12/SimpleMath.h"
-#include "external/Include/DirectXTK12/SimpleMath.inl"
 #include "external/Include/ImGui/imgui.h"
 #include "external/Include/ImGui/imgui_impl_dx12.h"
 #include "external/Include/ImGui/imgui_impl_win32.h"
@@ -58,6 +57,8 @@
 #include <array>
 #include <algorithm>
 #include <numeric>
+#undef max 
+#undef min 
 #include <set>
 #include <iterator>
 #include <fstream>
@@ -67,6 +68,7 @@ using namespace std::chrono_literals;
 namespace fs = std::filesystem;
 
 #include "core/Timer.h"
+#include "core/defines.h"
 #include "core/Utility.h"
 #include "ui/HexColors.h"
 

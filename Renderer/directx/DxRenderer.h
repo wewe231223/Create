@@ -1,7 +1,6 @@
 #pragma once
 
 class DxRenderer {
-	static constexpr UINT gFrameCount = 3;
 public:
 	DxRenderer(std::shared_ptr<class Window> window);
 	~DxRenderer();
@@ -10,6 +9,9 @@ public:
 	ComPtr<ID3D12Device> GetDevice()					const;
 	ComPtr<ID3D12GraphicsCommandList> GetCommandList()	const;
 
+	
+	void LoadScene(std::shared_ptr<class Scene> scene);
+	void UnloadScene();
 
 	void StartRender();
 	void Render();
@@ -33,7 +35,7 @@ private:
 	void RenderImGui();
 	void TerminateImGui();
 #endif 
-
+	void ExecuteCommandList();
 	void FlushCommandQueue();
 private:
 #ifdef _DEBUG
@@ -47,9 +49,10 @@ private:
 	ComPtr<ID3D12Fence>	mFence{ nullptr };
 	UINT64 mFenceValue{ 0 };
 
-	ComPtr<ID3D12GraphicsCommandList> mCommandList{ nullptr };
+	ComPtr<ID3D12CommandAllocator>		mLoadCommandAllocator{ nullptr };
+	ComPtr<ID3D12GraphicsCommandList>	mCommandList{ nullptr };
 	UINT mCurrentFrameMemoryIndex{ 0 };
-	std::array<std::shared_ptr<class FrameMemory>,gFrameCount> mFrameMemories{};
+	std::array<std::shared_ptr<class FrameMemory>,static_cast<size_t>(EGlobalConstants::GC_FrameCount)> mFrameMemories{};
 
 #ifdef UI_RENDER
 	ComPtr<ID3D12DescriptorHeap> mImGuiSrvHeap{ nullptr };
@@ -59,4 +62,6 @@ private:
 	std::unique_ptr<class RenderTargetGroup> mSwapChainRTGroup{ nullptr };
 
 	std::shared_ptr<class Window> mWindow{ nullptr };
+
+	std::shared_ptr<class Scene> mScene{ nullptr };
 };

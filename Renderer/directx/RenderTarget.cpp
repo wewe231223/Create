@@ -10,7 +10,7 @@ RenderTargetGroup::~RenderTargetGroup()
 {
 }
 
-void RenderTargetGroup::Create(ComPtr<ID3D12Device> device, std::vector<ComPtr<ID3D12Resource>>& rts, ComPtr<ID3D12Resource>& ds, const DirectX::SimpleMath::Vector4& clearColor)
+void RenderTargetGroup::Create(ComPtr<ID3D12Device>& device, std::vector<ComPtr<ID3D12Resource>>& rts, ComPtr<ID3D12Resource>& ds, const DirectX::SimpleMath::Vector4& clearColor)
 {
 	mRenderTargets = std::move(rts);
 	mDepthStencil = std::move(ds);
@@ -53,13 +53,13 @@ void RenderTargetGroup::Reset()
 	mDepthStencil->Release();
 }
 
-void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
+void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList>& commandlist, UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
 {
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[index].Get(), prev, next);
 	commandlist->ResourceBarrier(1, &barrier);
 }
 
-void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
+void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList>& commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next)
 {
 	D3D12_RESOURCE_BARRIER barriers[8]{};
 	for (auto i = 0; i < mRenderTargets.size(); ++i) {
@@ -68,7 +68,7 @@ void RenderTargetGroup::SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist
 	commandlist->ResourceBarrier(static_cast<UINT>(mRenderTargets.size()), barriers);
 }
 
-void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index)
+void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT index)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };
 	rtvHandle.ptr += mRTVDescriptorSize * index;
@@ -78,7 +78,7 @@ void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> comman
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 }
 
-void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList)
+void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle{ mDsvHeap->GetCPUDescriptorHandleForHeapStart() };
@@ -86,7 +86,7 @@ void RenderTargetGroup::SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> comman
 	commandList->OMSetRenderTargets(static_cast<UINT>(mRenderTargets.size()), &rtvHandle, TRUE, &dsvHandle);
 }
 
-void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index)
+void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT index)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };
 	handle.Offset(index, mRTVDescriptorSize);
@@ -96,7 +96,7 @@ void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList> commandList, UIN
 	commandList->ClearDepthStencilView(mDsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList> commandList)
+void RenderTargetGroup::Clear(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle{ mRtvHeap->GetCPUDescriptorHandleForHeapStart() };
 	float clearColor[] = { mRTVClearColor.x, mRTVClearColor.y, mRTVClearColor.z, mRTVClearColor.w };

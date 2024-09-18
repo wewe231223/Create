@@ -6,8 +6,8 @@
 #include "directx/RenderTarget.h"
 #include "ui/Console.h"
 #include "resource/Shader.h"
+#include "scene/Scene.h"
 
-extern UINT gBackBufferCount;
 // 주석을 셋중 하나는 제거하고 사용할 것 
 // constexpr const char* KoreanFontPath = "C://Windows//Fonts//malgun.ttf";
 // constexpr const char* KoreanFontPath = "Resources/font/MaruBuri-Regular.ttf";
@@ -25,8 +25,7 @@ DxRenderer::DxRenderer(std::shared_ptr<Window> window)
 		});
 	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.");
 
-	Shader s{};
-	s.GetShader(Shader::EShaderType::VS, "Standard.hlsl", "ST_VS_main", "vs_5_0", nullptr);
+	
 }
 
 DxRenderer::~DxRenderer()
@@ -46,9 +45,32 @@ ComPtr<ID3D12GraphicsCommandList> DxRenderer::GetCommandList() const
 	return mCommandList;
 }
 
+void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
+{
+	if (mScene) {
+		Console.WarningLog("이미 로드되어 있는 Scene : {} 이 있습니다.",scene->GetName());
+	}
+	else {
+		Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
+
+		CheckHR(mLoadCommandAllocator->Reset());
+		CheckHR(mCommandList->Reset(mLoadCommandAllocator.Get(), nullptr));
+		scene->Load(mDevice, mCommandList);
+		mScene = scene;
+		DxRenderer::ExecuteCommandList();
+		DxRenderer::FlushCommandQueue();
+	}
+}
+
+void DxRenderer::UnloadScene()
+{
+	Console.InfoLog("Scene : {} 을 언로드합니다.", mScene->GetName());
+	mScene.reset();
+}
+
 void DxRenderer::StartRender()
 {
-	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % gFrameCount;
+	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<size_t>(EGlobalConstants::GC_FrameCount);
 	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
 	
 	frameMemory->CheckCommandCompleted(mFence);
@@ -57,9 +79,9 @@ void DxRenderer::StartRender()
 	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
 	auto backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
-	mSwapChainRTGroup->SetRTState(mCommandList.Get(), backBufferIndex, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	mSwapChainRTGroup->Clear(mCommandList.Get(), backBufferIndex);
-	mSwapChainRTGroup->SetRenderTarget(mCommandList.Get(), backBufferIndex);
+	mSwapChainRTGroup->SetRTState(mCommandList, backBufferIndex, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mSwapChainRTGroup->Clear(mCommandList, backBufferIndex);
+	mSwapChainRTGroup->SetRenderTarget(mCommandList, backBufferIndex);
 
 	D3D12_VIEWPORT vp{};
 	vp.Height = mWindow->GetWindowHeight<float>();
@@ -86,22 +108,31 @@ void DxRenderer::Render()
 {
 #ifdef UI_RENDER
 	Console.Render();
+
 #endif 
+	if (mScene)
+		mScene->Render(mCommandList);
 }
 
 void DxRenderer::EndRender()
 {
 	DxRenderer::RenderImGui();
-	mSwapChainRTGroup->SetRTState(mCommandList.Get(), mSwapChain->GetCurrentBackBufferIndex(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	CheckHR(mCommandList->Close());
+	mSwapChainRTGroup->SetRTState(mCommandList, mSwapChain->GetCurrentBackBufferIndex(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	
+	DxRenderer::ExecuteCommandList();
 
-	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault(nullptr, reinterpret_cast<void*>(mCommandList.Get()));
+	}
 
 	mSwapChain->Present();
 
 	mFrameMemories[mCurrentFrameMemoryIndex]->SetFenceValue(++mFenceValue);
 	mCommandQueue->Signal(mFence.Get(), mFenceValue);
+
+	
 }
 
 void DxRenderer::Initialize()
@@ -118,7 +149,6 @@ void DxRenderer::Initialize()
 #ifdef UI_RENDER
 	DxRenderer::InitImGui();
 #endif 
-	FlushCommandQueue();
 }
 
 void DxRenderer::InitDebugCtrl()
@@ -168,8 +198,8 @@ void DxRenderer::InitRenderTargets()
 {
 	// SwapChain 에서 사용할 렌더 타겟 그룹 생성
 	{
-		std::vector<ComPtr<ID3D12Resource>> rts{ gBackBufferCount };
-		for (UINT i = 0; i < gBackBufferCount; ++i) {
+		std::vector<ComPtr<ID3D12Resource>> rts{ static_cast<size_t>(EGlobalConstants::GC_BackBufferCount) };
+		for (UINT i = 0; i < static_cast<size_t>(EGlobalConstants::GC_BackBufferCount); ++i) {
 			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(rts[i].GetAddressOf())));
 		}
 
@@ -213,6 +243,7 @@ void DxRenderer::InitFrameMemories()
 
 void DxRenderer::InitCommandList()
 {
+	CheckHR(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mLoadCommandAllocator.GetAddressOf())));
 	CheckHR(mDevice->CreateCommandList(
 		0, 
 		D3D12_COMMAND_LIST_TYPE_DIRECT, 
@@ -256,8 +287,8 @@ void DxRenderer::InitImGui()
 	auto imwin32 = ImGui_ImplWin32_Init(mWindow->GetWindowHandle());
 	auto imdx12 = ImGui_ImplDX12_Init(
 		mDevice.Get(), 
-		gFrameCount, 
-		DXGI_FORMAT_R8G8B8A8_UNORM, 
+		static_cast<int>(EGlobalConstants::GC_FrameCount),
+		static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat), 
 		mImGuiSrvHeap.Get(), 
 		mImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart(), 
 		mImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart()
@@ -291,11 +322,6 @@ void DxRenderer::RenderImGui()
 	mCommandList->SetDescriptorHeaps(1, mImGuiSrvHeap.GetAddressOf());
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault(nullptr,reinterpret_cast<void*>(mCommandList.Get()));
-	}
 }
 
 void DxRenderer::TerminateImGui()
@@ -304,6 +330,13 @@ void DxRenderer::TerminateImGui()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 	if (mImGuiSrvHeap) mImGuiSrvHeap.Reset();	
+}
+
+void DxRenderer::ExecuteCommandList()
+{
+	CheckHR(mCommandList->Close());
+	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 }
 
 void DxRenderer::FlushCommandQueue()

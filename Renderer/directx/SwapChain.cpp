@@ -2,10 +2,7 @@
 #include "SwapChain.h"
 #include "core/window.h"
 
-UINT				gBackBufferCount = 3;
-DXGI_FORMAT			gRTformat = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-SwapChain::SwapChain(std::shared_ptr<Window> window, ComPtr<IDXGIFactory6> factory, ComPtr<ID3D12CommandQueue> commandQueue)
+SwapChain::SwapChain(std::shared_ptr<Window> window, ComPtr<IDXGIFactory6>& factory, ComPtr<ID3D12CommandQueue>& commandQueue)
 {
 	SwapChain::Create(window, factory, commandQueue);
 }
@@ -19,15 +16,15 @@ ComPtr<IDXGISwapChain4> SwapChain::GetSwapChain()
 	return mSwapChain;
 }
 
-void SwapChain::Create(std::shared_ptr<class Window> window, ComPtr<IDXGIFactory6> factory, ComPtr<ID3D12CommandQueue> commandQueue)
+void SwapChain::Create(std::shared_ptr<class Window> window, ComPtr<IDXGIFactory6>& factory, ComPtr<ID3D12CommandQueue>& commandQueue)
 {
 	mSwapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC1 sd{};
-	sd.BufferCount = gBackBufferCount;
+	sd.BufferCount = static_cast<UINT>(EGlobalConstants::GC_BackBufferCount);
 	sd.Width = window->GetWindowWidth<UINT>();
 	sd.Height = window->GetWindowHeight<UINT>();
-	sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 버퍼 형식
+	sd.Format = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat); // 버퍼 형식
 	sd.Stereo = FALSE; // 스테레오 모드 비활성화
 	sd.SampleDesc.Count = 1; // 멀티샘플링 비활성화
 	sd.SampleDesc.Quality = 0;
@@ -69,7 +66,7 @@ void SwapChain::Present()
 #else 
 	CheckHR(mSwapChain->Present(0, 0));
 #endif 
-	mCurrentBackBufferIndex = (mCurrentBackBufferIndex + 1) % gBackBufferCount;
+	mCurrentBackBufferIndex = (mCurrentBackBufferIndex + 1) % static_cast<size_t>(EGlobalConstants::GC_BackBufferCount);
 }
 
 

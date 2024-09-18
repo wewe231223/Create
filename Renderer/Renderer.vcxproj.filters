@@ -4,9 +4,6 @@
     <Filter Include="pch">
       <UniqueIdentifier>{3345004b-bbc3-4876-8a70-46b736862132}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{839dcdc4-305d-48c4-af22-6fbe0a584821}</UniqueIdentifier>
-    </Filter>
     <Filter Include="directx">
       <UniqueIdentifier>{f259c790-e2cd-4120-bab0-d72ddfc488ff}</UniqueIdentifier>
     </Filter>
@@ -25,22 +22,28 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{8368ebbb-d502-4504-acce-29b11bde579e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="buffer">
+      <UniqueIdentifier>{ee15e1e2-32a4-43db-8e06-17f0fc66d718}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{b7a19a54-fa5c-49a2-95b8-22b52a11f866}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{839dcdc4-305d-48c4-af22-6fbe0a584821}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="core\Utility.h">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core\window.h">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="directx\DxRenderer.h">
       <Filter>directx</Filter>
-    </ClInclude>
-    <ClInclude Include="resource\Texture.h">
-      <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="directx\RenderTarget.h">
       <Filter>directx</Filter>
@@ -49,7 +52,7 @@
       <Filter>directx</Filter>
     </ClInclude>
     <ClInclude Include="core\Timer.h">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="directx\FrameMemory.h">
       <Filter>directx</Filter>
@@ -84,11 +87,32 @@
     <ClInclude Include="ui\HexColors.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="resource\Material.h">
-      <Filter>resource</Filter>
-    </ClInclude>
     <ClInclude Include="resource\Shader.h">
       <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Mesh.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Model.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer\DefaultBuffer.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer\UploadBuffer.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="core\defines.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\TerrainImage.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\Scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\ResourceManager.h">
+      <Filter>scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -96,16 +120,13 @@
       <Filter>pch</Filter>
     </ClCompile>
     <ClCompile Include="core\Utility.cpp">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\window.cpp">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="directx\DxRenderer.cpp">
       <Filter>directx</Filter>
-    </ClCompile>
-    <ClCompile Include="resource\Texture.cpp">
-      <Filter>resource</Filter>
     </ClCompile>
     <ClCompile Include="directx\RenderTarget.cpp">
       <Filter>directx</Filter>
@@ -114,7 +135,7 @@
       <Filter>directx</Filter>
     </ClCompile>
     <ClCompile Include="core\Timer.cpp">
-      <Filter>Core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="directx\FrameMemory.cpp">
       <Filter>directx</Filter>
@@ -146,15 +167,42 @@
     <ClCompile Include="ui\HexColors.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="resource\Material.cpp">
-      <Filter>resource</Filter>
-    </ClCompile>
     <ClCompile Include="resource\Shader.cpp">
       <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Mesh.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Model.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="buffer\DefaultBuffer.cpp">
+      <Filter>buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="buffer\UploadBuffer.cpp">
+      <Filter>buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="core\defines.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\TerrainImage.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\Scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\ResourceManager.cpp">
+      <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\Params.hlsli">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\Terrain.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -2,27 +2,87 @@
 #include "resource/Shader.h"
 #include "ui/Console.h"
 
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Shader Basis								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
 size_t id = 0;
 
-Shader::Shader()
+GraphicsShaderBase::GraphicsShaderBase(ComPtr<ID3D12Device>& device)
 {
 	mShaderID = id++;
+
+
+	mStaticSamplers[0] = { 0, D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP };
+	mStaticSamplers[1] = { 1, D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP };
+	mStaticSamplers[2] = { 2, D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP };
+	mStaticSamplers[3] = { 3, D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP };
+	mStaticSamplers[4] = { 4, D3D12_FILTER_ANISOTROPIC, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, 0.0f, 8 };
+	mStaticSamplers[5] = { 5, D3D12_FILTER_ANISOTROPIC, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, 0.0f, 8 };
+
+
 }
 
-Shader::Shader(EShaderType shaderType, const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines)
+GraphicsShaderBase::~GraphicsShaderBase()
 {
-	mShaderID = id++;
-	Shader::GetShader(shaderType, path, entryPoint, shaderModel, defines);
 }
 
-Shader::~Shader()
+size_t GraphicsShaderBase::GetShaderID() const noexcept
 {
+    return mShaderID;
 }
 
-void Shader::GetShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines)
+void GraphicsShaderBase::SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	assert( mPipelineState.Get() && mRootSignature.Get() );
+	commandList->SetGraphicsRootSignature(mRootSignature.Get());
+	commandList->SetPipelineState(mPipelineState.Get());
+
+}
+
+bool GraphicsShaderBase::CheckAttribute(VertexAttribute attribute)
+{
+    return mAttribute ^ attribute;
+}
+
+
+void GraphicsShaderBase::MakeShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines)
 {
     fs::path hlslPath{ "./Shaders/HLSLs/" + path };
-    fs::path binaryPath{ "./Shaders/Binarys/" + hlslPath.stem().string() + ".cso" };
+    fs::path binaryPath{ "./Shaders/Binarys/" + hlslPath.stem().string() };
+
+
+
+    switch (shaderType)
+    {
+    case GraphicsShaderBase::EShaderType::VS:
+		binaryPath += "_VS";
+        break;
+    case GraphicsShaderBase::EShaderType::PS:
+		binaryPath += "_PS";
+        break;
+    case GraphicsShaderBase::EShaderType::GS:
+		binaryPath += "_GS";
+        break;
+    case GraphicsShaderBase::EShaderType::HS:
+		binaryPath += "_HS";
+        break;
+    case GraphicsShaderBase::EShaderType::DS:
+		binaryPath += "_DS";
+        break;
+    case GraphicsShaderBase::EShaderType::END:
+        break;
+    default:
+        break;
+    }
+
+
+	binaryPath += ".cso";
+    
+
 
 	if (!fs::exists(hlslPath) && !fs::exists(binaryPath)) {
 		::CheckHR(D3D11_ERROR_FILE_NOT_FOUND);
@@ -44,12 +104,12 @@ void Shader::GetShader(EShaderType shaderType,const std::string& path, const std
         return StoreShader(shaderType, std::move(byteCode));
     }
 
-    HRESULT hr = D3DCompileFromFile(hlslPath.c_str(), defines, nullptr, entryPoint.c_str(), shaderModel.c_str(), compileFlags, 0, &byteCode, &errors);
+    HRESULT hr = D3DCompileFromFile(hlslPath.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), shaderModel.c_str(), compileFlags, 0, &byteCode, &errors);
 
     if (FAILED(hr)) {
         if (errors) {
             //::SetLastError(ERROR_INVALID_ACCESS); TBD 
-			::OutputDebugStringA((char*)errors->GetBufferPointer());
+            ::OutputDebugStringA((char*)errors->GetBufferPointer());
             ::CheckHR(hr);
         }
         return;
@@ -58,7 +118,13 @@ void Shader::GetShader(EShaderType shaderType,const std::string& path, const std
 	StoreShader(shaderType, std::move(byteCode));
 }
 
-bool Shader::GetFileModified(const fs::path& hlslPath, const fs::path& binPath)
+D3D12_SHADER_BYTECODE GraphicsShaderBase::GetShaderByteCode(EShaderType shaderType) const noexcept
+{
+	auto& shader = mShaderBlobs[static_cast<size_t>(shaderType)];
+	return shader ? D3D12_SHADER_BYTECODE{ shader->GetBufferPointer(), shader->GetBufferSize() } : D3D12_SHADER_BYTECODE(nullptr);
+}
+
+bool GraphicsShaderBase::GetFileModified(const fs::path& hlslPath, const fs::path& binPath)
 {
     if (!fs::exists(binPath)) {
         return true;
@@ -67,14 +133,220 @@ bool Shader::GetFileModified(const fs::path& hlslPath, const fs::path& binPath)
     return result;
 }
 
-void Shader::SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>& blob)
+void GraphicsShaderBase::SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>& blob)
 {
     std::ofstream ofs(path, std::ios::binary);
     ofs.write(reinterpret_cast<char*>(blob->GetBufferPointer()), blob->GetBufferSize());
 	Console.InfoLog("{} 파일에 셰이더를 저장하였습니다.", path.string());
 }
 
-void Shader::StoreShader(EShaderType shaderType,ComPtr<ID3D10Blob>&& blob)
+
+
+void GraphicsShaderBase::StoreShader(EShaderType shaderType,ComPtr<ID3D10Blob>&& blob)
 {
 	mShaderBlobs[static_cast<size_t>(shaderType)] = std::move(blob);
+}
+
+
+
+ComputeShaderBase::ComputeShaderBase()
+{
+}
+
+ComputeShaderBase::~ComputeShaderBase()
+{
+}
+
+void ComputeShaderBase::SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+    assert(not mPipelineState | not mRootSignature);
+	commandList->SetPipelineState(mPipelineState.Get());
+	commandList->SetComputeRootSignature(mRootSignature.Get());
+}
+
+void ComputeShaderBase::GetShader(const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines)
+{
+    fs::path hlslPath{ "./Shaders/HLSLs/" + path };
+    fs::path binaryPath{ "./Shaders/Binarys/" + hlslPath.stem().string() + ".cso" };
+
+    if (!fs::exists(hlslPath) && !fs::exists(binaryPath)) {
+        ::CheckHR(D3D11_ERROR_FILE_NOT_FOUND);
+    }
+
+    ComPtr<ID3DBlob> byteCode = nullptr;
+    ComPtr<ID3DBlob> errors;
+
+    UINT compileFlags = 0;
+
+#ifdef _DEBUG 
+    compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else 
+    compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
+#endif 
+    if (fs::exists(binaryPath) && !GetFileModified(hlslPath, binaryPath)) {
+        Console.InfoLog("{} 파일을 로드합니다.", binaryPath.string());
+        D3DReadFileToBlob(binaryPath.c_str(), &byteCode);
+        mShaderBlob = std::move(byteCode);
+    }
+
+    HRESULT hr = D3DCompileFromFile(hlslPath.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), shaderModel.c_str(), compileFlags, 0, &byteCode, &errors);
+
+    if (FAILED(hr)) {
+        if (errors) {
+            //::SetLastError(ERROR_INVALID_ACCESS); TBD 
+            ::OutputDebugStringA((char*)errors->GetBufferPointer());
+            ::CheckHR(hr);
+        }
+        return;
+    }
+    SaveBlobBinary(binaryPath, byteCode);
+    mShaderBlob = std::move(byteCode);
+}
+
+bool ComputeShaderBase::GetFileModified(const fs::path& hlslPath, const fs::path& binPath)
+{
+    if (!fs::exists(binPath)) {
+        return true;
+    }
+    bool result = fs::last_write_time(hlslPath) > fs::last_write_time(binPath);
+    return result;
+}
+
+void ComputeShaderBase::SaveBlobBinary(const fs::path& path, ComPtr<ID3D10Blob>& blob)
+{
+    std::ofstream ofs(path, std::ios::binary);
+    ofs.write(reinterpret_cast<char*>(blob->GetBufferPointer()), blob->GetBufferSize());
+    Console.InfoLog("{} 파일에 셰이더를 저장하였습니다.", path.string());
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Standard Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+
+StandardShader::StandardShader(ComPtr<ID3D12Device>& device) : GraphicsShaderBase(device)
+{
+
+}
+
+StandardShader::~StandardShader()
+{
+
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Terrain Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
+    : GraphicsShaderBase(device)
+{
+    mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
+    MakeShader(EShaderType::VS, "Terrain.hlsl", "TerrainVS", "vs_5_1", nullptr);
+	MakeShader(EShaderType::PS, "Terrain.hlsl", "TerrainPS", "ps_5_1", nullptr);
+
+
+    D3D12_INPUT_ELEMENT_DESC inputDescs[4]{};
+
+    inputDescs[0] = { "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+    inputDescs[1] = { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,1,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+    inputDescs[2] = { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,2,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+    inputDescs[3] = { "TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,3,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+
+    // 애는 하나만씀. 
+	D3D12_DESCRIPTOR_RANGE texRange{};
+    texRange.BaseShaderRegister = 2;
+	texRange.NumDescriptors = 1024;
+    texRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	texRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	texRange.RegisterSpace = 0;
+ 
+	D3D12_ROOT_PARAMETER rootParams[4]{};
+
+	rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParams[0].Descriptor.ShaderRegister = 0;
+	rootParams[0].Descriptor.RegisterSpace = 0;
+	rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParams[1].Descriptor.ShaderRegister = 0;
+	rootParams[1].Descriptor.RegisterSpace = 0;
+	rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParams[2].Descriptor.ShaderRegister = 1;
+	rootParams[2].Descriptor.RegisterSpace = 0;
+	rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParams[3].DescriptorTable.NumDescriptorRanges = 1;
+	rootParams[3].DescriptorTable.pDescriptorRanges = &texRange;
+	rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+
+    D3D12_ROOT_SIGNATURE_DESC rootDesc{};
+    rootDesc.NumParameters = _countof(rootParams);
+    rootDesc.pParameters = rootParams;
+    rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
+    rootDesc.pStaticSamplers = mStaticSamplers.data();
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> error;
+
+    auto hr = D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1, signature.GetAddressOf(), error.GetAddressOf());
+    if (FAILED(hr)) {
+        OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+    }
+
+    CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+
+
+
+
+    // 파이프라인 상태 객체(PSO) 생성
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
+    psoDesc.pRootSignature = mRootSignature.Get();
+    psoDesc.VS = GetShaderByteCode(EShaderType::VS);
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
+    psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat);
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+
+
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+
+    Console.InfoLog("Terrain Shader 가 성공적으로 로딩되었습니다.");
+
+}
+
+TerrainShader::~TerrainShader()
+{
 }

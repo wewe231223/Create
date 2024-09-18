@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "directx/FrameMemory.h"
 
-FrameMemory::FrameMemory(ComPtr<ID3D12Device> device)
+FrameMemory::FrameMemory(ComPtr<ID3D12Device>& device)
 {
 	CheckHR(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator)));
 	mCommandAllocator->Reset();
 }
 
-void FrameMemory::CheckCommandCompleted(ComPtr<ID3D12Fence> fence)
+void FrameMemory::CheckCommandCompleted(ComPtr<ID3D12Fence>& fence)
 {
 	if (mFenceValue != 0 && mFenceValue > fence->GetCompletedValue()){
 		HANDLE event = CreateEvent(nullptr, FALSE, FALSE, nullptr);

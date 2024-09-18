@@ -1,20 +1,9 @@
 // Client.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
-#include "framework.h"
+#include "pch.h"
 #include "Client.h"
-
-
-#ifdef _DEBUG
-#pragma comment(lib,"Out/debug/Renderer.lib")
-#else 
-#endif 
-
-#include "Renderer/pch.h"
-#include "Renderer/core/window.h"
-#include "Renderer/directx/DxRenderer.h"
-
-
+#include "Game/GameScenes.h"
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -52,10 +41,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 	std::shared_ptr<Window> window = std::make_shared<Window>(hWnd);
 	window->ChangeWindowStyle(EWindowStyle::Windowed);
-	DxRenderer dxrenderer(window);
+    DxRenderer dxrenderer{ window };
+
+	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
+
+	dxrenderer.LoadScene(gameScene);
+
+
+
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
-
     MSG msg{0};
     
     // 기본 메시지 루프입니다:

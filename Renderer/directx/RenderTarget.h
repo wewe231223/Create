@@ -14,25 +14,25 @@ public:
 	/// <param name="device"></param>
 	/// <param name="rts"></param>
 	/// <param name="ds"></param>
-	void Create(ComPtr<ID3D12Device> device, std::vector<ComPtr<ID3D12Resource>>& rts, ComPtr<ID3D12Resource>& ds, const DirectX::SimpleMath::Vector4& clearColor = DirectX::SimpleMath::Vector4{});
+	void Create(ComPtr<ID3D12Device>& device, std::vector<ComPtr<ID3D12Resource>>& rts, ComPtr<ID3D12Resource>& ds, const DirectX::SimpleMath::Vector4& clearColor = DirectX::SimpleMath::Vector4{});
 
 	// Resize 등과 같은 행위에 대응하기 위한 Reset 은 전부 리셋하도록 하자 
 	void Reset();
 
 	// 하나만 
-	void SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist,UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
+	void SetRTState(ComPtr<ID3D12GraphicsCommandList>& commandlist,UINT index, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
 	// 전부 
-	void SetRTState(ComPtr<ID3D12GraphicsCommandList> commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
+	void SetRTState(ComPtr<ID3D12GraphicsCommandList>& commandlist, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES next);
 
 	// 하나만
-	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index);
+	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT index);
 	// 전부 
-	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList> commandList);
+	void SetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	// 하나만 
-	void Clear(ComPtr<ID3D12GraphicsCommandList> commandList, UINT index);
+	void Clear(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT index);
 	// 전부 
-	void Clear(ComPtr<ID3D12GraphicsCommandList> commandList);
+	void Clear(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 
 private:

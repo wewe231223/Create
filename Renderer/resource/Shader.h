@@ -1,27 +1,36 @@
 #pragma once 
 
-// TODO : PSO, RootSignature 은 어떻게 할래? 
-class Shader {
-	// 셰이더 아이디 때문에 Material 클래스를 friend 로 선언함. 
-	// 이것을 getter 로 하지 않은 이유는 Material 이외 그 어느 부분에서도 셰이더의 ID 를 알아야 할 일이 없기 때문임. 즉 셰이더 아이디는 Batch Rendering 을 위해서 만든 것임. 
-	friend class Material;
-public:
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Shader Basis								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+// 셰이더의 기본 틀은 여기서 지원하고, 디테일한 셰이더 구현은 상속을 통해 처리한다. 
+class GraphicsShaderBase {
+protected:
 	// CS = 0, END = 6 은 별다른 의미가 있는건 아니고 그냥 보기 편하라고 적었음. 
 	enum class EShaderType : UINT{
-		CS = 0U,
-		VS,
-		PS,
-		GS,
-		HS,
-		DS,
-		END = 6U
+		VS = 0U,
+		PS = 1U,
+		GS = 2U,
+		HS = 3U,
+		DS = 4U,
+		END = 5U
 	};
 public:
-	Shader();
-	Shader(EShaderType shaderType, const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines = nullptr);
-	~Shader();
+	GraphicsShaderBase(ComPtr<ID3D12Device>& device);
+	~GraphicsShaderBase();
+
+	size_t GetShaderID() const noexcept;
+	void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	bool CheckAttribute(VertexAttribute attribute);
 protected:
-	void GetShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel,const D3D_SHADER_MACRO* defines = nullptr);
+	void MakeShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel,const D3D_SHADER_MACRO* defines = nullptr);
+	D3D12_SHADER_BYTECODE GetShaderByteCode(EShaderType shaderType) const noexcept;
 private:
 	bool GetFileModified(const fs::path& hlslPath,const fs::path& binPath);
 	void SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>& blob);
@@ -30,7 +39,64 @@ protected:
 	std::array<ComPtr<ID3DBlob>, static_cast<size_t>(EShaderType::END)> mShaderBlobs;
 	size_t mShaderID{};
 
+	ComPtr<ID3D12PipelineState> mPipelineState;
+	ComPtr<ID3D12RootSignature> mRootSignature;
 
-	ComPtr<ID3DBlob> mRootSignatureBlob{ nullptr };
-	ComPtr<ID3D12PipelineState> mPso{ nullptr };
+	std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> mStaticSamplers{};
+
+	VertexAttribute mAttribute{ 0b0000'0000'0000'0000 };
+};
+
+class ComputeShaderBase {
+public:
+	ComputeShaderBase();
+	~ComputeShaderBase();
+
+	void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList);
+protected:
+	void GetShader(const std::string& path, const std::string& entryPoint, const std::string& shaderModel, const D3D_SHADER_MACRO* defines = nullptr);
+private:
+	bool GetFileModified(const fs::path& hlslPath, const fs::path& binPath);
+	void SaveBlobBinary(const fs::path& path, ComPtr<ID3D10Blob>& blob);
+protected:
+	ComPtr<ID3DBlob> mShaderBlob;
+
+	ComPtr<ID3D12PipelineState> mPipelineState;
+	ComPtr<ID3D12RootSignature> mRootSignature;
+};
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Standard Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+class StandardShader : public GraphicsShaderBase {
+public:
+	StandardShader(ComPtr<ID3D12Device>& device);
+	~StandardShader();
+};
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Terrain Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+class TerrainShader : public GraphicsShaderBase {
+public:
+	TerrainShader(ComPtr<ID3D12Device>& device);
+	~TerrainShader();
 };

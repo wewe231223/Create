@@ -2,9 +2,9 @@
 
 class FrameMemory {
 public:
-	FrameMemory(ComPtr<ID3D12Device> device);
+	FrameMemory(ComPtr<ID3D12Device>& device);
 
-	void CheckCommandCompleted(ComPtr<ID3D12Fence> fence);
+	void CheckCommandCompleted(ComPtr<ID3D12Fence>& fence);
 
 	void Reset();
 

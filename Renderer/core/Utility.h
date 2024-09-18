@@ -2,6 +2,25 @@
 std::optional<std::wstring> CheckHR(const HRESULT& hr, const std::source_location& location = std::source_location::current() );
 
 
+/// <summary>
+///  a * (1 - t) + b * t
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="a"></param>
+/// <param name="b"></param>
+/// <param name="t"></param>
+/// <returns></returns>
+template<typename T>
+T Lerp(T& a, T& b, float t) {
+	return a * (1 - t) + b * t;
+}
+
+
+template<typename T> 
+constexpr size_t GetCBVSize() {
+	return (sizeof(T) + 255) & ~255;
+}
+
 template <typename T, std::size_t Capacity>
 class RingBuffer {
 public:
