@@ -28,6 +28,9 @@ struct ObjectCB
     matrix worldMatrix;
 };
 
+uint maxIndex = 2048;
+
+
 
 cbuffer CameraCB : register(b0)
 {
@@ -36,10 +39,10 @@ cbuffer CameraCB : register(b0)
     matrix viewProjectionMatrix;
 };
 
-cbuffer ModelCB : register(b1)
+cbuffer MeshCB : register(b1)
 {
     uint materialIndex;
-};
+}
 
 StructuredBuffer<ObjectCB>  gObjects        : register(t0);
 StructuredBuffer<Material>  gMaterials      : register(t1);

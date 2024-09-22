@@ -10,6 +10,7 @@ struct Terrain_VS_IN
 };
 
 
+
 struct Terrain_VS_OUT
 {
     float4 PosH     : SV_POSITION;

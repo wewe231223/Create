@@ -84,7 +84,7 @@ void GraphicsShaderBase::MakeShader(EShaderType shaderType,const std::string& pa
     
 
 
-	if (!fs::exists(hlslPath) && !fs::exists(binaryPath)) {
+	if (!fs::exists(hlslPath) and !fs::exists(binaryPath)) {
 		::CheckHR(D3D11_ERROR_FILE_NOT_FOUND);
 	}
 
@@ -98,12 +98,13 @@ void GraphicsShaderBase::MakeShader(EShaderType shaderType,const std::string& pa
 #else 
      compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif 
-    if (fs::exists(binaryPath) && !GetFileModified(hlslPath, binaryPath)) {
+
+    if (fs::exists(binaryPath) and not GetFileModified(hlslPath, binaryPath) and not CheckParams()) {
 		Console.InfoLog("{} 파일을 로드합니다.", binaryPath.string());
         D3DReadFileToBlob(binaryPath.c_str(), &byteCode);
         return StoreShader(shaderType, std::move(byteCode));
     }
-
+    Console.InfoLog("{} 파일을 컴파일합니다.", hlslPath.string());
     HRESULT hr = D3DCompileFromFile(hlslPath.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), shaderModel.c_str(), compileFlags, 0, &byteCode, &errors);
 
     if (FAILED(hr)) {
@@ -129,8 +130,8 @@ bool GraphicsShaderBase::GetFileModified(const fs::path& hlslPath, const fs::pat
     if (!fs::exists(binPath)) {
         return true;
     }
-    bool result = fs::last_write_time(hlslPath) > fs::last_write_time(binPath);
-    return result;
+    return fs::last_write_time(hlslPath) > fs::last_write_time(binPath);
+ 
 }
 
 void GraphicsShaderBase::SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>& blob)
@@ -145,6 +146,32 @@ void GraphicsShaderBase::SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>&
 void GraphicsShaderBase::StoreShader(EShaderType shaderType,ComPtr<ID3D10Blob>&& blob)
 {
 	mShaderBlobs[static_cast<size_t>(shaderType)] = std::move(blob);
+}
+
+void GraphicsShaderBase::DeleteAllBinarys()
+{
+	fs::remove_all("Shaders/Binarys");
+	fs::create_directories("Shaders/Binarys");
+}
+
+bool GraphicsShaderBase::CheckParams()
+{
+    if (!fs::exists("Shaders/Binarys/Params.cso")) {
+		std::ofstream out{ "Shaders/Binarys/Params.cso", std::ios::trunc };
+        out << 123;
+		out.close();
+        return true;
+    }
+
+	auto result = fs::last_write_time("Shaders/HLSLs/Params.hlsli") > fs::last_write_time("Shaders/Binarys/Params.cso");
+	if (result) {
+        Console.InfoLog("셰이더 Param 이 수정되었습니다. 모든 셰이더를 다시 컴파일합니다.");
+        GraphicsShaderBase::DeleteAllBinarys();
+        std::ofstream out{ "Shaders/Binarys/Params.cso" };
+        out.close();
+	}
+
+    return result;
 }
 
 
@@ -183,12 +210,12 @@ void ComputeShaderBase::GetShader(const std::string& path, const std::string& en
 #else 
     compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif 
-    if (fs::exists(binaryPath) && !GetFileModified(hlslPath, binaryPath)) {
+    if (fs::exists(binaryPath) and !GetFileModified(hlslPath, binaryPath)) {
         Console.InfoLog("{} 파일을 로드합니다.", binaryPath.string());
         D3DReadFileToBlob(binaryPath.c_str(), &byteCode);
         mShaderBlob = std::move(byteCode);
     }
-
+	Console.InfoLog("{} 파일을 컴파일합니다.", hlslPath.string());
     HRESULT hr = D3DCompileFromFile(hlslPath.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), shaderModel.c_str(), compileFlags, 0, &byteCode, &errors);
 
     if (FAILED(hr)) {
@@ -208,8 +235,7 @@ bool ComputeShaderBase::GetFileModified(const fs::path& hlslPath, const fs::path
     if (!fs::exists(binPath)) {
         return true;
     }
-    bool result = fs::last_write_time(hlslPath) > fs::last_write_time(binPath);
-    return result;
+    return fs::last_write_time(hlslPath) > fs::last_write_time(binPath);
 }
 
 void ComputeShaderBase::SaveBlobBinary(const fs::path& path, ComPtr<ID3D10Blob>& blob)

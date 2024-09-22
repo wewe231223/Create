@@ -35,6 +35,8 @@ private:
 	bool GetFileModified(const fs::path& hlslPath,const fs::path& binPath);
 	void SaveBlobBinary(const fs::path& path,ComPtr<ID3D10Blob>& blob);
 	void StoreShader(EShaderType shaderType,ComPtr<ID3D10Blob>&& blob);
+	void DeleteAllBinarys();
+	bool CheckParams();
 protected:
 	std::array<ComPtr<ID3DBlob>, static_cast<size_t>(EShaderType::END)> mShaderBlobs;
 	size_t mShaderID{};
