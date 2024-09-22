@@ -8,9 +8,24 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
+template<typename T> 
+class RootIndexChecker {
+	// 템플릿 메타프로그래밍을 이용한 enum 존재 여부 확인
+	template <typename U, typename = void>
+	struct has_my_enum : std::false_type {};  // 기본적으로 false
+
+	// 'MyEnum'이 정의되어 있는 경우 true
+	template <typename U>
+	struct has_my_enum<U, std::void_t<decltype(U::RootParamIndex)>> : std::true_type {};
+public:
+	RootIndexChecker() {
+		static_assert(has_my_enum<T>::value, "RootParamIndex 는 반드시 정의되어야 합니다.");
+	}
+};
 
 // 셰이더의 기본 틀은 여기서 지원하고, 디테일한 셰이더 구현은 상속을 통해 처리한다. 
 class GraphicsShaderBase {
+
 protected:
 	// CS = 0, END = 6 은 별다른 의미가 있는건 아니고 그냥 보기 편하라고 적었음. 
 	enum class EShaderType : UINT{
@@ -79,7 +94,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 
-class StandardShader : public GraphicsShaderBase {
+class StandardShader : public GraphicsShaderBase , public RootIndexChecker<StandardShader> {
 public:
 	StandardShader(ComPtr<ID3D12Device>& device);
 	~StandardShader();
@@ -98,6 +113,9 @@ public:
 
 
 class TerrainShader : public GraphicsShaderBase {
+	enum A {
+		asdf,asdfa
+	};
 public:
 	TerrainShader(ComPtr<ID3D12Device>& device);
 	~TerrainShader();

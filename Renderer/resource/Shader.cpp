@@ -13,7 +13,8 @@ size_t id = 0;
 
 GraphicsShaderBase::GraphicsShaderBase(ComPtr<ID3D12Device>& device)
 {
-	mShaderID = id++;
+
+    mShaderID = id++;
 
 
 	mStaticSamplers[0] = { 0, D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP };
