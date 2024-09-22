@@ -1,12 +1,12 @@
 #pragma once
 
 // Model 에서 지원하는 정점 속성과, Shader 에서 원하는 정점 속성을 다루는 비트 플래그 변수 자료형 
-using VertexAttribute = DWORD; 
+using VertexAttribute = WORD; 
 
 using TextureIndex	= UINT;
 using MaterialIndex = UINT;
 
-enum : DWORD{
+enum : WORD {
 	VertexAttrib_position			= 0b0000'0000'0000'0001,	// 1
 	VertexAttrib_normal				= 0b0000'0000'0000'0010,	// 2
 	VertexAttrib_texcoord1			= 0b0000'0000'0000'0100,	// 3
@@ -81,9 +81,9 @@ struct ModelContext {
 };
 
 
-enum EGlobalConstants : size_t {
+enum EGlobalConstants : UINT {
 	GC_FrameCount			= 3,
 	GC_BackBufferCount		= 3,
-	GC_RenderTargetFormat	= static_cast<size_t>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
+	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
 	GC_MaxTextureNumber		= 2048
 };

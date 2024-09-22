@@ -24,7 +24,6 @@ Model::~Model()
 }
 
 
-
 void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
 {
 	mShader->SetShader(commandList);

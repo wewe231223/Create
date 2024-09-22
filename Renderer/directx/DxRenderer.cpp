@@ -7,7 +7,7 @@
 #include "ui/Console.h"
 #include "resource/Shader.h"
 #include "scene/Scene.h"
-
+#include "buffer/DefaultBuffer.h"
 // 주석을 셋중 하나는 제거하고 사용할 것 
 // constexpr const char* KoreanFontPath = "C://Windows//Fonts//malgun.ttf";
 // constexpr const char* KoreanFontPath = "Resources/font/MaruBuri-Regular.ttf";
@@ -53,12 +53,10 @@ void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 	else {
 		Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
-		CheckHR(mLoadCommandAllocator->Reset());
-		CheckHR(mCommandList->Reset(mLoadCommandAllocator.Get(), nullptr));
 		scene->Load(mDevice, mCommandList);
 		mScene = scene;
-		DxRenderer::ExecuteCommandList();
-		DxRenderer::FlushCommandQueue();
+		
+		DefaultBuffer::Upload(mCommandQueue);
 	}
 }
 
@@ -70,7 +68,7 @@ void DxRenderer::UnloadScene()
 
 void DxRenderer::StartRender()
 {
-	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<size_t>(EGlobalConstants::GC_FrameCount);
+	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<UINT>(EGlobalConstants::GC_FrameCount);
 	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
 	
 	frameMemory->CheckCommandCompleted(mFence);
@@ -199,7 +197,7 @@ void DxRenderer::InitRenderTargets()
 	// SwapChain 에서 사용할 렌더 타겟 그룹 생성
 	{
 		std::vector<ComPtr<ID3D12Resource>> rts{ static_cast<size_t>(EGlobalConstants::GC_BackBufferCount) };
-		for (UINT i = 0; i < static_cast<size_t>(EGlobalConstants::GC_BackBufferCount); ++i) {
+		for (UINT i = 0; i < static_cast<UINT>(EGlobalConstants::GC_BackBufferCount); ++i) {
 			CheckHR(mSwapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(rts[i].GetAddressOf())));
 		}
 

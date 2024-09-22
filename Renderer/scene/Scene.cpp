@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "scene/Scene.h"
 #include "scene/ResourceManager.h"
+#include "buffer/DefaultBuffer.h"
 Scene::Scene()
 {
 }
@@ -23,5 +24,4 @@ const std::string& Scene::GetName() const
 {
 	return mName;
 }
-
 

@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "Client.h"
 #include "Game/GameScenes.h"
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -46,9 +47,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
 
 	dxrenderer.LoadScene(gameScene);
-
-
-
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};

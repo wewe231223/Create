@@ -1,5 +1,3 @@
-
-
 #include "pch.h"
 #include "scene/ResourceManager.h"
 #include "buffer/DefaultBuffer.h"
@@ -74,9 +72,20 @@ ResourceManager::~ResourceManager()
 {
 }
 
-void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const std::wstring& path)
+void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const fs::path& path)
 {
+	auto newTexture = mTextures.emplace_back(std::make_unique<DefaultBuffer>(device, commandList, path))->GetBuffer();
 
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = newTexture->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	// TODO : 밉레벨은? 
+	srvDesc.Texture2D.MipLevels = 1;
+
+	device->CreateShaderResourceView(newTexture.Get(), &srvDesc, mTexHeap->GetCPUDescriptorHandleForHeapStart());
+
+	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() - 1);
 }
 
 void ResourceManager::CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material)
@@ -96,6 +105,7 @@ void ResourceManager::UploadMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12
 	mMaterialBuffer = std::make_unique<DefaultBuffer>(device,commandList,mMaterials.data(),sizeof(Material) * mMaterials.size());
 
 }
+
 
 void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {

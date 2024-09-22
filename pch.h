@@ -17,5 +17,7 @@
 #include "Renderer/pch.h"
 #include "Renderer/core/window.h"
 #include "Renderer/directx/DxRenderer.h"
+#include "Renderer/buffer/DefaultBuffer.h"
 #include "Renderer/scene/ResourceManager.h"
 #include "Renderer/scene/Scene.h"
+

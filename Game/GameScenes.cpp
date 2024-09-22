@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "Game/GameScenes.h"
-
 #include "Renderer/resource/TerrainImage.h"
 #include "Renderer/resource/Model.h"
 #include "Renderer/resource/Mesh.h"
-
 #include "Renderer/resource/Shader.h"
 
 GameScene::GameScene()
@@ -25,9 +23,8 @@ GameScene::~GameScene()
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	mSceneResource = std::make_unique<ResourceManager>(device);
-
-
-
+	
+	mSceneResource->CreateTexture(device, commandList, "TerrainTexture", L"./Resources/terrain/Grass.dds");
 	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", {});
 	mSceneResource->CreateShader<TerrainShader>(device,"TerrainShader");
 	mSceneResource->CreateModel<TerrainModel>(
@@ -38,8 +35,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}, 
 		mSceneResource->GetMaterial("TerrainMaterial")
 	);
-
-
 
 	mSceneResource->UploadMaterial(device, commandList);
 }

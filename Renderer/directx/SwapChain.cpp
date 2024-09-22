@@ -66,7 +66,7 @@ void SwapChain::Present()
 #else 
 	CheckHR(mSwapChain->Present(0, 0));
 #endif 
-	mCurrentBackBufferIndex = (mCurrentBackBufferIndex + 1) % static_cast<size_t>(EGlobalConstants::GC_BackBufferCount);
+	mCurrentBackBufferIndex = (mCurrentBackBufferIndex + 1) % static_cast<UINT>(EGlobalConstants::GC_BackBufferCount);
 }
 
 

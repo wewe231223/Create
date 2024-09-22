@@ -12,6 +12,8 @@ public:
 	Model(std::shared_ptr<class GraphicsShaderBase> shader);
 	~Model();
 
+	void ReleaseUploadBuffer();
+
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
 	bool CompareShader(const std::shared_ptr<Model>& other) const noexcept;
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);

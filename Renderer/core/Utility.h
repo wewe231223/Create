@@ -33,78 +33,78 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         Iterator(std::array<T, Capacity>& buffer, std::size_t index, std::size_t head)
-            : buffer_(buffer), index_(index), head_(head) {}
+            : mBuffer(buffer), mIndex(index), mHead(head) {}
 
         reference operator*() {
-            return buffer_[(head_ + index_) % Capacity];
+            return mBuffer[(mHead + mIndex) % Capacity];
         }
 
         Iterator& operator++() {
-            ++index_;
+            ++mIndex;
             return *this;
         }
 
         bool operator!=(const Iterator& other) const {
-            return index_ != other.index_;
+            return mIndex != other.mIndex;
         }
 
     private:
-        std::array<T, Capacity>& buffer_;
-        std::size_t index_;
-        std::size_t head_;
+        std::array<T, Capacity>& mBuffer;
+        size_t mIndex;
+        size_t mHead;
     };
 public:
-    RingBuffer() : head_(0), tail_(0), size_(0) {}
+    RingBuffer() : mHead(0), mTail(0), mSize(0) {}
 
     void Push(const T& value) 
     {
-        buffer_[tail_] = value;
-        tail_ = (tail_ + 1) % Capacity;
-        if (size_ < Capacity) {
-            ++size_;
+        mBuffer[mTail] = value;
+        mTail = (mTail + 1) % Capacity;
+        if (mSize < Capacity) {
+            ++mSize;
         }
         else {
-            head_ = (head_ + 1) % Capacity;
+            mHead = (mHead + 1) % Capacity;
         }
     }
 
     template <typename... Args>
     void Emplace(Args&&... args) 
     {
-        buffer_[tail_] = T(std::forward<Args>(args)...);
-        tail_ = (tail_ + 1) % Capacity;
-        if (size_ < Capacity) {
-            ++size_;
+        mBuffer[mTail] = T(std::forward<Args>(args)...);
+        mTail = (mTail + 1) % Capacity;
+        if (mSize < Capacity) {
+            ++mSize;
         }
         else {
-            head_ = (head_ + 1) % Capacity;
+            mHead = (mHead + 1) % Capacity;
         }
     }
 
     bool Empty() const 
     {
-        return size_ == 0;
+        return mSize == 0;
     }
 
     std::size_t Size() const 
     {
-        return size_;
+        return mSize;
     }
     // 애들은 범
     Iterator begin() 
     {
-        return Iterator(buffer_, 0, head_);
+        return Iterator(mBuffer, 0, mHead);
     }
 
     Iterator end() 
     {
-        return Iterator(buffer_, size_, head_);
+        return Iterator(mBuffer, mSize, mHead);
     }
 
 private:
-    std::array<T, Capacity> buffer_{};
-    std::size_t head_{};
-    std::size_t tail_{};
-    std::size_t size_{};
+    std::array<T, Capacity> mBuffer{};
+    std::size_t mHead{};
+    std::size_t mTail{};
+    std::size_t mSize{};
 };
 

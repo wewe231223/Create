@@ -1,24 +1,22 @@
 #include "pch.h"
 #include "buffer/DefaultBuffer.h"
+#include "ui/Console.h"
 
+std::unique_ptr<DirectX::ResourceUploadBatch> DefaultBuffer::mUploader	= nullptr;
+bool DefaultBuffer::mUploaderClosed										= true;
 
 DefaultBuffer::DefaultBuffer(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList, void* data, size_t size) {
-	CD3DX12_HEAP_PROPERTIES heapProp{ D3D12_HEAP_TYPE_UPLOAD };
+	if (mUploader == nullptr) {
+		mUploader = std::make_unique<DirectX::ResourceUploadBatch>(device.Get());
+	}
+
+	if (mUploaderClosed) {
+		mUploader->Begin();
+		mUploaderClosed = false;
+	}
+
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES{ D3D12_HEAP_TYPE_DEFAULT };
 	CD3DX12_RESOURCE_DESC bufferDesc{ CD3DX12_RESOURCE_DESC::Buffer(static_cast<UINT64>(size)) };
-	CheckHR(
-		device->CreateCommittedResource(
-			std::addressof(heapProp),
-			D3D12_HEAP_FLAG_NONE,
-			std::addressof(bufferDesc),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(mUploadBuffer.GetAddressOf())
-		)
-	);
-
-	mUploadBuffer->SetName(L"DefaultBuffer - Upload");
-
-	heapProp = CD3DX12_HEAP_PROPERTIES{ D3D12_HEAP_TYPE_DEFAULT };
 
 	CheckHR(
 		device->CreateCommittedResource(
@@ -31,24 +29,45 @@ DefaultBuffer::DefaultBuffer(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsC
 		)
 	);
 
-	mDefaultBuffer->SetName(L"DefaultBuffer - Default");
+	mUploader->Transition(mDefaultBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+
 	D3D12_SUBRESOURCE_DATA subResourceData{};
 	subResourceData.pData = data;
 	subResourceData.RowPitch = size;
 	subResourceData.SlicePitch = subResourceData.RowPitch;
 
-	CD3DX12_RESOURCE_BARRIER barrier{ CD3DX12_RESOURCE_BARRIER::Transition(mDefaultBuffer.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_COPY_DEST) };
+	mUploader->Upload(mDefaultBuffer.Get(), 0, &subResourceData, 1);
+	mUploader->Transition(mDefaultBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COMMON);
+}
 
-	commandList->ResourceBarrier(1, std::addressof(barrier));
+DefaultBuffer::DefaultBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const fs::path& path)
+{
+	if (fs::exists(path) == false) {
+		Console.WarningLog("{} 파일을 찾을 수 없습니다. 기본 텍스쳐가 생성됩니다.",path.string());
+		DefaultBuffer::LoadDefaultTexture(device, commandList);
+	}
+	else {
+		if (mUploader == nullptr) {
+			mUploader = std::make_unique<DirectX::ResourceUploadBatch>(device.Get());
+		}
 
-	UpdateSubresources(commandList.Get(), mDefaultBuffer.Get(), mUploadBuffer.Get(), 0, 0, 1, std::addressof(subResourceData));
+		if (mUploaderClosed) {
+			mUploader->Begin();
+			mUploaderClosed = false;
+		}
 
+		const std::wstring& ext = path.extension();
+		auto& UploaderRef = *mUploader.get();
+		bool Loaded = false;
 
-	barrier = { CD3DX12_RESOURCE_BARRIER::Transition(mDefaultBuffer.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_GENERIC_READ) };
-
-	commandList->ResourceBarrier(1, std::addressof(barrier));
-
-
+		if (ext == L".dds" or ext == L".DDS") {
+			CheckHR(DirectX::CreateDDSTextureFromFile(device.Get(), UploaderRef, path.c_str(), mDefaultBuffer.GetAddressOf()));
+			
+		}
+		else {
+			CheckHR(DirectX::CreateWICTextureFromFile(device.Get(), UploaderRef, path.c_str(), mDefaultBuffer.GetAddressOf()));
+		}
+	}
 }
 
 DefaultBuffer::~DefaultBuffer() {
@@ -57,19 +76,13 @@ DefaultBuffer::~DefaultBuffer() {
 
 DefaultBuffer::DefaultBuffer(DefaultBuffer&& other) noexcept {
 	mDefaultBuffer = std::move(other.mDefaultBuffer);
-	mUploadBuffer = std::move(other.mUploadBuffer);
-
 	other.mDefaultBuffer.Reset();
-	other.mUploadBuffer.Reset();
 }
 
 DefaultBuffer& DefaultBuffer::operator=(DefaultBuffer&& other) noexcept {
 	if (this != std::addressof(other)) {
 		mDefaultBuffer = std::move(other.mDefaultBuffer);
-		mUploadBuffer = std::move(other.mUploadBuffer);
-
 		other.mDefaultBuffer.Reset();
-		other.mUploadBuffer.Reset();
 	}
 	return *this;
 }
@@ -77,5 +90,34 @@ DefaultBuffer& DefaultBuffer::operator=(DefaultBuffer&& other) noexcept {
 ComPtr<ID3D12Resource> DefaultBuffer::GetBuffer() const
 {
 	return mDefaultBuffer;
+}
+
+void DefaultBuffer::Upload(ComPtr<ID3D12CommandQueue>& commandQueue)
+{
+	if (!mUploaderClosed) {
+		mUploaderClosed = true;
+		auto handle = mUploader->End(commandQueue.Get());
+		handle.wait();
+	}
+}
+
+void DefaultBuffer::Release()
+{
+	mUploader.reset();
+}
+
+void DefaultBuffer::LoadDefaultTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	if (mUploader == nullptr) {
+		mUploader = std::make_unique<DirectX::ResourceUploadBatch>(device.Get());
+	}
+
+	if (mUploaderClosed) {
+		mUploader->Begin();
+		mUploaderClosed = false;
+	}
+
+	const std::wstring& path = L"Resources/textures/DefaultTexture.png";
+	 CheckHR(DirectX::CreateWICTextureFromFile(device.Get(), *mUploader.get(), path.c_str(), mDefaultBuffer.GetAddressOf()));
 }
 

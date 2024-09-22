@@ -20,14 +20,17 @@
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
 
+
+
 #include "external/Include/DirectXTK12/d3dx12.h"
-#include "external/Include/DirectXTex/DirectXTex.h"
-#include "external/Include/DirectXTex/DirectXTex.inl"
 #include "external/Include/DirectXTK12/SimpleMath.h"
 #include "external/Include/ImGui/imgui.h"
 #include "external/Include/ImGui/imgui_impl_dx12.h"
 #include "external/Include/ImGui/imgui_impl_win32.h"
 #include "external/Include/ImGui/imgui_internal.h"
+#include "external/Include/DirectXTK12/DDSTextureLoader.h"
+#include "external/Include/DirectXTK12/WICTextureLoader.h"
+#include "external/Include/DirectXTK12/ResourceUploadBatch.h"
 
 // DirectX12 Library 
 #pragma comment(lib,"winmm.lib")
@@ -36,11 +39,11 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #ifdef _DEBUG 
-#pragma comment(lib,"Renderer/external/lib/debug/DirectXTK12.lib")
-#pragma comment(lib,"Renderer/external/lib/debug/DirectXTex.lib")
+#pragma comment(lib,"external/lib/debug/DirectXTK12.lib")
+#pragma comment(lib,"external/lib/debug/DirectXTex.lib")
 #else
-#pragma comment(lib,"Renderer/external/lib/release/DirectXTK12.lib")
-#pragma comment(lib,"Renderer/external/lib/release/DirectXTex.lib")
+#pragma comment(lib,"external/lib/release/DirectXTK12.lib")
+#pragma comment(lib,"external/lib/release/DirectXTex.lib")
 #endif
 #include <optional>
 #include <string>

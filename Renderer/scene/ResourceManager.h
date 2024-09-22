@@ -2,7 +2,7 @@
 #include <string>
 
 struct Texture {
-	DirectX::ScratchImage mImage{};
+	ComPtr<ID3D12Resource> mUpload{ nullptr };
 	ComPtr<ID3D12Resource> mRes{ nullptr };
 };
 
@@ -27,13 +27,14 @@ public:
 	template<typename T>
 	void CreateShader(ComPtr<ID3D12Device>& device, const std::string& name);
 
-	void CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const std::wstring& path);
+	void CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const fs::path& path);
 	void CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material);
 	
 	template<typename T,typename... Args> 
 	void CreateModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,Args&&... args);
 
 	void UploadMaterial(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
+
 	
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
@@ -47,7 +48,7 @@ private:
 
 	std::unique_ptr<class DefaultBuffer>				mMaterialBuffer{ nullptr };
 
-	std::vector<Texture>								mTextures{};
+	std::vector<std::unique_ptr<class DefaultBuffer>>	mTextures{};
 	std::vector<Material>								mMaterials{};
 	
 	std::unordered_map<std::string, std::shared_ptr<class GraphicsShaderBase>>	mShaderMap{};
