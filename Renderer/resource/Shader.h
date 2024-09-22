@@ -8,6 +8,8 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
+
+// 모든 세부화 셰이더는 반드시 RootParamIndex를 상속해야 한다. 
 template<typename T> 
 class RootIndexChecker {
 	// 템플릿 메타프로그래밍을 이용한 enum 존재 여부 확인
@@ -94,7 +96,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 
-class StandardShader : public GraphicsShaderBase , public RootIndexChecker<StandardShader> {
+class StandardShader : public GraphicsShaderBase, public RootIndexChecker<StandardShader> {
 public:
 	StandardShader(ComPtr<ID3D12Device>& device);
 	~StandardShader();
