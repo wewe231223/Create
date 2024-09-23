@@ -9,22 +9,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-// 모든 세부화 셰이더는 반드시 RootParamIndex를 상속해야 한다. 
-template<typename T> 
-class RootIndexChecker {
-	// 템플릿 메타프로그래밍을 이용한 enum 존재 여부 확인
-	template <typename U, typename = void>
-	struct RootParamDefined : std::false_type {};  // 기본적으로 false
-
-	// RootParam 이 정의되어 있는 경우 true
-	template <typename U>
-	struct RootParamDefined<U, std::void_t<decltype(U::RootParamIndex)>> : std::true_type {};
-public:
-	RootIndexChecker() {
-		static_assert(RootParamDefined<T>::value, "RootParamIndex 는 반드시 정의되어야 합니다.");
-	}
-};
-
 // 셰이더의 기본 틀은 여기서 지원하고, 디테일한 셰이더 구현은 상속을 통해 처리한다. 
 class GraphicsShaderBase {
 
@@ -96,7 +80,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 
-class StandardShader : public GraphicsShaderBase, public RootIndexChecker<StandardShader> {
+class StandardShader : public GraphicsShaderBase {
 public:
 	StandardShader(ComPtr<ID3D12Device>& device);
 	~StandardShader();
@@ -115,9 +99,6 @@ public:
 
 
 class TerrainShader : public GraphicsShaderBase {
-	enum A {
-		asdf,asdfa
-	};
 public:
 	TerrainShader(ComPtr<ID3D12Device>& device);
 	~TerrainShader();
