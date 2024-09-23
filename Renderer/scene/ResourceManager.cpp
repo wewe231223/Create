@@ -83,7 +83,9 @@ void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12G
 	// TODO : 밉레벨은? 
 	srvDesc.Texture2D.MipLevels = 1;
 
-	device->CreateShaderResourceView(newTexture.Get(), &srvDesc, mTexHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE texheapHandle{ mTexHeap->GetCPUDescriptorHandleForHeapStart() };
+	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	device->CreateShaderResourceView(newTexture.Get(), &srvDesc, texheapHandle);
 
 	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() - 1);
 }
@@ -110,9 +112,9 @@ void ResourceManager::UploadMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12
 void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
-	commandList->SetGraphicsRootDescriptorTable(3, mTexHeap->GetGPUDescriptorHandleForHeapStart());
+	commandList->SetGraphicsRootShaderResourceView(GRP_MaterialSRV, mMaterialBuffer->GetBuffer()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
 
-	commandList->SetGraphicsRootShaderResourceView(2, mMaterialBuffer->GetBuffer()->GetGPUVirtualAddress());
 }
 
 std::shared_ptr<GraphicsShaderBase> ResourceManager::GetShader(const std::string& name)

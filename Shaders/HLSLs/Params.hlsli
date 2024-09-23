@@ -32,21 +32,28 @@ uint maxIndex = 2048;
 
 
 
-cbuffer CameraCB : register(b0)
+// b0 : Root Constants 
+cbuffer MeshCB : register(b0)
+{
+    uint materialIndex;
+}
+   
+// b1 : Root Descriptor CBV 
+cbuffer CameraCB : register(b1)
 {
     matrix viewMatrix;
     matrix projectionMatrix;
     matrix viewProjectionMatrix;
 };
 
-cbuffer MeshCB : register(b1)
-{
-    uint materialIndex;
-}
-
+// t0 : Root Descriptor Dynamic SRV ( CB ) 
 StructuredBuffer<ObjectCB>  gObjects        : register(t0);
+// t1 : Root Descriptor Static SRV ( CB )
 StructuredBuffer<Material>  gMaterials      : register(t1);
-Texture2D                   gTextures[]     : register(t2);
+// t2 : Textures
+Texture2D                   gTextures[1024]            : register(t2,space0);
+Texture2DArray              gTextureArray[512]         : register(t2,space1);   
+TextureCube                 gTextureCube[512]          : register(t2,space2);
 
 
 SamplerState pointWrapSampler : register(s0);

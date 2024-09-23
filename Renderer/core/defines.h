@@ -87,3 +87,13 @@ enum EGlobalConstants : UINT {
 	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
 	GC_MaxTextureNumber		= 2048
 };
+
+
+enum EGraphicRootParamIndex : UINT {
+	GRP_MeshConstants = 0,
+	GRP_CameraConstants = 1,
+	GRP_ObjectConstants = 2,
+	GRP_MaterialSRV = 3,
+	GRP_Texture = 4,
+	GRP_END = 5
+};
