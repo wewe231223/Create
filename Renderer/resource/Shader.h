@@ -14,14 +14,14 @@ template<typename T>
 class RootIndexChecker {
 	// 템플릿 메타프로그래밍을 이용한 enum 존재 여부 확인
 	template <typename U, typename = void>
-	struct has_my_enum : std::false_type {};  // 기본적으로 false
+	struct RootParamDefined : std::false_type {};  // 기본적으로 false
 
-	// 'MyEnum'이 정의되어 있는 경우 true
+	// RootParam 이 정의되어 있는 경우 true
 	template <typename U>
-	struct has_my_enum<U, std::void_t<decltype(U::RootParamIndex)>> : std::true_type {};
+	struct RootParamDefined<U, std::void_t<decltype(U::RootParamIndex)>> : std::true_type {};
 public:
 	RootIndexChecker() {
-		static_assert(has_my_enum<T>::value, "RootParamIndex 는 반드시 정의되어야 합니다.");
+		static_assert(RootParamDefined<T>::value, "RootParamIndex 는 반드시 정의되어야 합니다.");
 	}
 };
 
