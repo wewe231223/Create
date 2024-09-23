@@ -13,6 +13,7 @@ Mesh::~Mesh()
 
 void Mesh::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT instance) const
 {
+	commandList->SetGraphicsRoot32BitConstant(GRP_MeshConstants, mMaterialIndex, 0);
 	commandList->IASetPrimitiveTopology(mTopology);
 	commandList->DrawIndexedInstanced(mIndexCount, instance, mIndexBegin, 0, 0);
 }

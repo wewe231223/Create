@@ -1,5 +1,10 @@
 #pragma once 
 
+
+
+
+
+
 class FrameMemory {
 public:
 	FrameMemory(ComPtr<ID3D12Device>& device);
