@@ -28,10 +28,6 @@ struct ObjectCB
     matrix worldMatrix;
 };
 
-uint maxIndex = 2048;
-
-
-
 // b0 : Root Constants 
 cbuffer MeshCB : register(b0)
 {

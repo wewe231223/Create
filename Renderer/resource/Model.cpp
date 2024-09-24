@@ -34,14 +34,14 @@ bool Model::CompareShader(const std::shared_ptr<Model>& other) const noexcept
 	return mShader->GetShaderID() < other->mShader->GetShaderID();
 }
 
-void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList,UINT memIndex)
 {
 	commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
 	commandList->IASetIndexBuffer(&mIndexBufferView);
 
 	// refcount 세야함. 
 	for (auto& mesh : mMeshes) {
-		mesh->Render(commandList,1);
+		mesh->Render(commandList, 1);
 	}
 
 }

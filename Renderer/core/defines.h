@@ -75,9 +75,15 @@ struct Material {
 	float SubsurfaceScattering					{ 0.f };
 };
 
+struct CameraContext {
+	DirectX::SimpleMath::Matrix View{ DirectX::SimpleMath::Matrix::Identity };
+	DirectX::SimpleMath::Matrix Projection{ DirectX::SimpleMath::Matrix::Identity };
+	DirectX::SimpleMath::Matrix ViewProjection{ DirectX::SimpleMath::Matrix::Identity };
+};
+
 struct ModelContext {
-	DirectX::SimpleMath::Matrix mWorld{ DirectX::SimpleMath::Matrix::Identity };
-	bool mVisible{ true };
+	DirectX::SimpleMath::Matrix World{ DirectX::SimpleMath::Matrix::Identity };
+	bool Visible{ true };
 };
 
 
@@ -96,10 +102,4 @@ enum EGraphicRootParamIndex : UINT {
 	GRP_MaterialSRV = 3,
 	GRP_Texture = 4,
 	GRP_END = 5
-};
-
-
-enum EFrameMemoryDest : short {
-	FMD_Object = 0,
-	FMD_Camera = 1
 };

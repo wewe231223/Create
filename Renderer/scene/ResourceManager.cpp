@@ -131,14 +131,14 @@ TextureIndex ResourceManager::GetTexture(const std::string& name)
 	return mTextureMap[name];
 }
 
-void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList,UINT memIndex)
 {
 	std::shared_ptr<Model>& prev = *mModelContainer->begin();
 	prev->SetShader(commandList);
 	ResourceManager::SetGlobals(commandList);
 
 	for (auto& model : *mModelContainer) {
-		model->Render(commandList);
+		model->Render(commandList,memIndex);
 		if (prev->CompareShader(model)) {
 			model->SetShader(commandList);
 			ResourceManager::SetGlobals(commandList);

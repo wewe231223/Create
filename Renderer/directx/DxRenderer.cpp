@@ -64,6 +64,8 @@ void DxRenderer::UnloadScene()
 {
 	Console.InfoLog("Scene : {} 을 언로드합니다.", mScene->GetName());
 	mScene.reset();
+
+	
 }
 
 void DxRenderer::StartRender()
@@ -109,7 +111,7 @@ void DxRenderer::Render()
 
 #endif 
 	if (mScene)
-		mScene->Render(mCommandList,mFrameMemories[mCurrentFrameMemoryIndex].get() );
+		mScene->Render(mCommandList,mCurrentFrameMemoryIndex);
 }
 
 void DxRenderer::EndRender()
