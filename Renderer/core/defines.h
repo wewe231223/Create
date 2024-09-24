@@ -97,3 +97,9 @@ enum EGraphicRootParamIndex : UINT {
 	GRP_Texture = 4,
 	GRP_END = 5
 };
+
+
+enum EFrameMemoryDest : short {
+	FMD_Object = 0,
+	FMD_Camera = 1
+};

@@ -114,6 +114,9 @@
     <ClInclude Include="scene\ResourceManager.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="core\Interface.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="scene\ResourceManager.cpp">
       <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Interface.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

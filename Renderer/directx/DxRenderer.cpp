@@ -109,7 +109,7 @@ void DxRenderer::Render()
 
 #endif 
 	if (mScene)
-		mScene->Render(mCommandList);
+		mScene->Render(mCommandList,mFrameMemories[mCurrentFrameMemoryIndex].get() );
 }
 
 void DxRenderer::EndRender()
@@ -129,8 +129,6 @@ void DxRenderer::EndRender()
 
 	mFrameMemories[mCurrentFrameMemoryIndex]->SetFenceValue(++mFenceValue);
 	mCommandQueue->Signal(mFence.Get(), mFenceValue);
-
-	
 }
 
 void DxRenderer::Initialize()

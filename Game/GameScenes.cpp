@@ -39,7 +39,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 	mSceneResource->UploadMaterial(device, commandList);
 }
 
-void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList,IFrameMemory* frameMemory)
 {
 	mSceneResource->Render(commandList);
 }

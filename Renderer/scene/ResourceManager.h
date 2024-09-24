@@ -1,12 +1,4 @@
 #pragma once 
-#include <string>
-
-struct Texture {
-	ComPtr<ID3D12Resource> mUpload{ nullptr };
-	ComPtr<ID3D12Resource> mRes{ nullptr };
-};
-
-
 // 씬에서 사용할 모든 리소스 저장. ( 모델, 텍스쳐 등등 )  
 class ResourceManager {
 	class ModelContainer {

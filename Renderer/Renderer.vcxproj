@@ -157,6 +157,7 @@
     <ClInclude Include="buffer\DefaultBuffer.h" />
     <ClInclude Include="buffer\UploadBuffer.h" />
     <ClInclude Include="core\defines.h" />
+    <ClInclude Include="core\Interface.h" />
     <ClInclude Include="core\Timer.h" />
     <ClInclude Include="core\Utility.h" />
     <ClInclude Include="core\window.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="buffer\DefaultBuffer.cpp" />
     <ClCompile Include="buffer\UploadBuffer.cpp" />
     <ClCompile Include="core\defines.cpp" />
+    <ClCompile Include="core\Interface.cpp" />
     <ClCompile Include="core\Timer.cpp" />
     <ClCompile Include="core\Utility.cpp" />
     <ClCompile Include="core\window.cpp" />

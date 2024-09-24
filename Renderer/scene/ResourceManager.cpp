@@ -114,7 +114,6 @@ void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	commandList->SetGraphicsRootShaderResourceView(GRP_MaterialSRV, mMaterialBuffer->GetBuffer()->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
-
 }
 
 std::shared_ptr<GraphicsShaderBase> ResourceManager::GetShader(const std::string& name)

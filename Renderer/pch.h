@@ -73,6 +73,7 @@ namespace fs = std::filesystem;
 #include "core/Timer.h"
 #include "core/defines.h"
 #include "core/Utility.h"
+#include "core/Interface.h"
 #include "ui/HexColors.h"
 
 // 지금은 이렇게 두고 나중에 한곳에 묶자 
