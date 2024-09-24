@@ -14,13 +14,49 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-Model::Model(std::shared_ptr<GraphicsShaderBase> shader)
+Model::Model(ComPtr<ID3D12Device>& device,std::shared_ptr<GraphicsShaderBase> shader)
 	: mShader(shader)
 {
+	D3D12_RESOURCE_DESC desc{};
+
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	desc.Alignment = 0;
+	desc.Width = sizeof(ModelContext) * static_cast<UINT64>(GC_MaxRefPerModel);
+	desc.Height = 1;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_UPLOAD);
+
+	for (auto& ContextBuffer : mModelContexts) {
+		CheckHR(device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(ContextBuffer.mBuffer.GetAddressOf())
+			)
+		);
+
+		ContextBuffer.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(ContextBuffer.mBufferPtr)));
+	}
+
 }
 
 Model::~Model()
 {
+}
+
+void Model::WriteContext(void* data)
+{
+	memcpy(mModelContexts[mMemoryIndex].mBufferPtr + mInstanceCount, data, sizeof(ModelContext));
+	mInstanceCount++;
 }
 
 
@@ -34,16 +70,24 @@ bool Model::CompareShader(const std::shared_ptr<Model>& other) const noexcept
 	return mShader->GetShaderID() < other->mShader->GetShaderID();
 }
 
-void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList,UINT memIndex)
+void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	if (mInstanceCount == 0) {
+		return;
+	}
+
 	commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
 	commandList->IASetIndexBuffer(&mIndexBufferView);
+	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
+
 
 	// refcount 세야함. 
 	for (auto& mesh : mMeshes) {
-		mesh->Render(commandList, 1);
+		mesh->Render(commandList,mInstanceCount);
 	}
-
+	
+	mInstanceCount = 0;
+	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
 }
 
 
@@ -57,7 +101,7 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList,UINT memIndex)
 #include "resource/TerrainImage.h"
 
 TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<GraphicsShaderBase> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale, MaterialIndex matidx)
-	: Model(terrainShader), mTerrainImage(terrainImage), mScale(scale)
+	: Model(device,terrainShader), mTerrainImage(terrainImage), mScale(scale)
 {
 	mMaterialIndex = matidx;
 	mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;

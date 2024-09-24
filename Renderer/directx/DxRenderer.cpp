@@ -111,7 +111,7 @@ void DxRenderer::Render()
 
 #endif 
 	if (mScene)
-		mScene->Render(mCommandList,mCurrentFrameMemoryIndex);
+		mScene->Render(mCommandList);
 }
 
 void DxRenderer::EndRender()

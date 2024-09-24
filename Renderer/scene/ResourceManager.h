@@ -34,7 +34,7 @@ public:
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
 
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT memIndex);
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	ComPtr<ID3D12DescriptorHeap> mTexHeap{ nullptr };
 

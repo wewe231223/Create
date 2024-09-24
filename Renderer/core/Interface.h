@@ -6,3 +6,11 @@
 //																		//
 //																		//
 //////////////////////////////////////////////////////////////////////////
+
+__interface IModel {
+	void WriteContext(void* data) PURE;
+};
+
+__interface IGameObject {
+	void Reload(void* dst) PURE;
+};
