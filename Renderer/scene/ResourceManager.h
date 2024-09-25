@@ -10,7 +10,8 @@ class ResourceManager {
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
 		std::vector<std::shared_ptr<class Model>>::iterator end();
 	private:
-		std::vector<std::shared_ptr<class Model>> mModels{};
+		std::vector<std::shared_ptr<class Model>>						mModels{};
+		std::unordered_map<std::string, std::shared_ptr<class Model>>	mModelMap{};
 	};
 public:
 	ResourceManager(ComPtr<ID3D12Device>& device);
@@ -23,7 +24,7 @@ public:
 	void CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material);
 	
 	template<typename T,typename... Args> 
-	void CreateModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,Args&&... args);
+	void CreateModel(const std::string&,ComPtr<ID3D12Device>&,ComPtr<ID3D12GraphicsCommandList>&,Args&&...);
 
 	void UploadMaterial(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
 
@@ -58,7 +59,7 @@ inline void ResourceManager::CreateShader(ComPtr<ID3D12Device>& device,const std
 }
 
 template<typename T, typename ...Args>
-inline void ResourceManager::CreateModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, Args && ...args)
+inline void ResourceManager::CreateModel(const std::string& name,ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, Args && ...args)
 {
 	auto newModel = std::make_shared<T>(device,commandList,std::forward<Args>(args)...);
 	mModelContainer->Insert(std::move(newModel));
