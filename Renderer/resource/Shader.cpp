@@ -326,9 +326,12 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
 	rootParams[GRP_MeshConstants].Constants.RegisterSpace = 0;
 	rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-    rootParams[GRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
-	rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	rootParams[GRP_CameraConstants].Constants.Num32BitValues = 16;
+	rootParams[GRP_CameraConstants].Constants.ShaderRegister = 1;
+	rootParams[GRP_CameraConstants].Constants.RegisterSpace = 0;
+ //	rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
+//	rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
 	rootParams[GRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;

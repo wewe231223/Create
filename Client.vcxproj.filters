@@ -19,6 +19,9 @@
     <Filter Include="pch">
       <UniqueIdentifier>{a977c1fa-3665-4bc6-8f7e-1b717629c3c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Component">
+      <UniqueIdentifier>{18df210e-8179-4af8-8b33-50a1feb472af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -36,6 +39,12 @@
     <ClInclude Include="Game\GameScenes.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Game\GameObject.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Components\Transform.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -46,6 +55,12 @@
     </ClCompile>
     <ClCompile Include="Game\GameScenes.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameObject.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Components\Transform.cpp">
+      <Filter>Game\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

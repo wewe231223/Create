@@ -6,7 +6,8 @@ class ResourceManager {
 		ModelContainer();
 		~ModelContainer();
 
-		void Insert(std::shared_ptr<class Model>&& newModel);
+		void Insert(const std::string& name,std::shared_ptr<class Model>&& newModel);
+		std::shared_ptr<IRendererEntity> GetModel(const std::string& name);
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
 		std::vector<std::shared_ptr<class Model>>::iterator end();
 	private:
@@ -25,7 +26,6 @@ public:
 	
 	template<typename T,typename... Args> 
 	void CreateModel(const std::string&,ComPtr<ID3D12Device>&,ComPtr<ID3D12GraphicsCommandList>&,Args&&...);
-
 	void UploadMaterial(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	
@@ -34,7 +34,9 @@ public:
 	std::shared_ptr<class GraphicsShaderBase>	GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
+	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name);
 
+	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	ComPtr<ID3D12DescriptorHeap> mTexHeap{ nullptr };
@@ -62,5 +64,5 @@ template<typename T, typename ...Args>
 inline void ResourceManager::CreateModel(const std::string& name,ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, Args && ...args)
 {
 	auto newModel = std::make_shared<T>(device,commandList,std::forward<Args>(args)...);
-	mModelContainer->Insert(std::move(newModel));
+	mModelContainer->Insert(name,std::move(newModel));
 }

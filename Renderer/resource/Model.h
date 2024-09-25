@@ -7,7 +7,7 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-class Model : public IModel {
+class Model : public IRendererEntity {
 	struct ModelContextBuffer {
 		ComPtr<ID3D12Resource> mBuffer{ nullptr };
 		ModelContext* mBufferPtr{ nullptr };
@@ -17,6 +17,8 @@ public:
 	~Model();
 
 	virtual void WriteContext(void* data) override;
+
+	void AddRef() noexcept;
 
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
 	bool CompareShader(const std::shared_ptr<Model>& other) const noexcept;
@@ -38,6 +40,8 @@ protected:
 
 	MaterialIndex 															mMaterialIndex { std::numeric_limits<MaterialIndex>::max() }; 
 	VertexAttribute															mAttribute{ 0b0000'0000'0000'0000 };
+
+	UINT																	mRefCount{ 0 };
 };
 
 

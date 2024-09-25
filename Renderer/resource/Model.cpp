@@ -59,6 +59,14 @@ void Model::WriteContext(void* data)
 	mInstanceCount++;
 }
 
+/// <summary>
+/// 일단 세자. 나중에 MaxRef 가 넘어갈 때, 재할당에 사용해야한다. 
+/// </summary>
+void Model::AddRef() noexcept
+{
+	mRefCount++;
+}
+
 
 void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
 {

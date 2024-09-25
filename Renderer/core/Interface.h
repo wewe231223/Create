@@ -7,10 +7,6 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-__interface IModel {
+__interface IRendererEntity {
 	void WriteContext(void* data) PURE;
-};
-
-__interface IGameObject {
-	void Reload(void* dst) PURE;
 };

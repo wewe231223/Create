@@ -23,7 +23,7 @@ ResourceManager::ModelContainer::~ModelContainer()
 {
 }
 
-void ResourceManager::ModelContainer::Insert(std::shared_ptr<Model>&& newModel)
+void ResourceManager::ModelContainer::Insert(const std::string& model, std::shared_ptr<Model>&& newModel)
 {
 	// std::lower_bound를 사용하여 새로운 모델이 들어갈 위치를 찾음
 	auto it = std::upper_bound(mModels.begin(), mModels.end(), newModel,
@@ -33,6 +33,17 @@ void ResourceManager::ModelContainer::Insert(std::shared_ptr<Model>&& newModel)
 
 	// 적절한 위치에 삽입
 	mModels.insert(it, newModel);
+	mModelMap[model] = newModel;
+}
+
+std::shared_ptr<IRendererEntity> ResourceManager::ModelContainer::GetModel(const std::string& name)
+{
+	auto it = mModelMap.find(name);
+	if (it == mModelMap.end()) {
+		return nullptr;
+	}
+	it->second->AddRef();
+	return it->second;
 }
 
 std::vector<std::shared_ptr<Model>>::iterator ResourceManager::ModelContainer::begin()
@@ -131,11 +142,21 @@ TextureIndex ResourceManager::GetTexture(const std::string& name)
 	return mTextureMap[name];
 }
 
-void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+std::shared_ptr<IRendererEntity> ResourceManager::GetModel(const std::string& name)
+{
+	return mModelContainer->GetModel(name);
+}
+
+void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	std::shared_ptr<Model>& prev = *mModelContainer->begin();
 	prev->SetShader(commandList);
 	ResourceManager::SetGlobals(commandList);
+}
+
+void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	std::shared_ptr<Model>& prev = *mModelContainer->begin();
 
 	for (auto& model : *mModelContainer) {
 		model->Render(commandList);
