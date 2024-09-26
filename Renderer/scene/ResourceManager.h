@@ -31,7 +31,7 @@ public:
 	
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
-	std::shared_ptr<class GraphicsShaderBase>	GetShader(const std::string& name);
+	std::shared_ptr<IGraphicsShader>			GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
 	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name);
@@ -46,7 +46,7 @@ private:
 	std::vector<std::unique_ptr<class DefaultBuffer>>	mTextures{};
 	std::vector<Material>								mMaterials{};
 	
-	std::unordered_map<std::string, std::shared_ptr<class GraphicsShaderBase>>	mShaderMap{};
+	std::unordered_map<std::string, std::shared_ptr<IGraphicsShader>>			mShaderMap{};
 	std::unordered_map<std::string, TextureIndex>								mTextureMap{};
 	std::unordered_map<std::string, MaterialIndex>								mMaterialMap{};
 

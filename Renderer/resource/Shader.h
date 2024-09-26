@@ -10,7 +10,7 @@
 
 
 // 셰이더의 기본 틀은 여기서 지원하고, 디테일한 셰이더 구현은 상속을 통해 처리한다. 
-class GraphicsShaderBase {
+class GraphicsShaderBase : public IGraphicsShader {
 
 protected:
 	// CS = 0, END = 6 은 별다른 의미가 있는건 아니고 그냥 보기 편하라고 적었음. 
@@ -26,8 +26,8 @@ public:
 	GraphicsShaderBase(ComPtr<ID3D12Device>& device);
 	~GraphicsShaderBase();
 
-	size_t GetShaderID() const noexcept;
-	void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	virtual size_t GetShaderID() const noexcept override;
+	virtual void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 	bool CheckAttribute(VertexAttribute attribute);
 protected:
 	void MakeShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel,const D3D_SHADER_MACRO* defines = nullptr);

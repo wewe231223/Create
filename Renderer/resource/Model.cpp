@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-Model::Model(ComPtr<ID3D12Device>& device,std::shared_ptr<GraphicsShaderBase> shader)
+Model::Model(ComPtr<ID3D12Device>& device,std::shared_ptr<IGraphicsShader> shader)
 	: mShader(shader)
 {
 	D3D12_RESOURCE_DESC desc{};
@@ -88,8 +88,6 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->IASetIndexBuffer(&mIndexBufferView);
 	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 
-
-	// refcount 세야함. 
 	for (auto& mesh : mMeshes) {
 		mesh->Render(commandList,mInstanceCount);
 	}
@@ -108,7 +106,7 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 //////////////////////////////////////////////////////////////////////////
 #include "resource/TerrainImage.h"
 
-TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<GraphicsShaderBase> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale, MaterialIndex matidx)
+TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale, MaterialIndex matidx)
 	: Model(device,terrainShader), mTerrainImage(terrainImage), mScale(scale)
 {
 	mMaterialIndex = matidx;

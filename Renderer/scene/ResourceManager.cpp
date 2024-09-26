@@ -127,7 +127,7 @@ void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
-std::shared_ptr<GraphicsShaderBase> ResourceManager::GetShader(const std::string& name)
+std::shared_ptr<IGraphicsShader> ResourceManager::GetShader(const std::string& name)
 {
 	return mShaderMap[name];
 }

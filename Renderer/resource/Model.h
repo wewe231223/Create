@@ -13,7 +13,7 @@ class Model : public IRendererEntity {
 		ModelContext* mBufferPtr{ nullptr };
 	};
 public:
-	Model(ComPtr<ID3D12Device>& device,std::shared_ptr<class GraphicsShaderBase> shader);
+	Model(ComPtr<ID3D12Device>& device,std::shared_ptr<IGraphicsShader> shader);
 	~Model();
 
 	virtual void WriteContext(void* data) override;
@@ -31,7 +31,7 @@ protected:
 	D3D12_INDEX_BUFFER_VIEW													mIndexBufferView{};
 
 	std::vector<std::unique_ptr<class Mesh>>								mMeshes{};
-	std::shared_ptr<class GraphicsShaderBase>								mShader{ nullptr };
+	std::shared_ptr<IGraphicsShader>										mShader{ nullptr };
 
 	std::array<ModelContextBuffer, static_cast<size_t>(GC_FrameCount)>		mModelContexts{};
 
@@ -57,7 +57,7 @@ protected:
 
 class TerrainModel : public Model {
 public:
-	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<class GraphicsShaderBase> terrainShader,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale,MaterialIndex matidx);
+	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale,MaterialIndex matidx);
 	~TerrainModel();
 private:
 	void Create(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
