@@ -20,14 +20,15 @@ public:
 	DirectX::SimpleMath::Vector3 GetRight() const;
 	DirectX::SimpleMath::Vector3 GetUp() const;
 
-	std::reference_wrapper<DirectX::SimpleMath::Vector3> GetCameraPosition();
-	std::reference_wrapper<CameraParam> GetCameraParam();
+	DirectX::SimpleMath::Vector3& GetCameraPosition();
+	CameraParam& GetCameraParam();
 
 	void Rotate(float pitch, float yaw);
 	void SetLookAt(const DirectX::SimpleMath::Vector3& target);
 
 	void Move(const DirectX::SimpleMath::Vector3& direction, float distance);
 
+	bool Intersect(DirectX::BoundingOrientedBox& box);
 	void UpdateDynamicVariables();
 	void UpdateStaticVariables();
 	void SetVariables(ComPtr<ID3D12GraphicsCommandList>& commandList);

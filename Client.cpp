@@ -60,6 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else {
             Time.AdvanceTime();
+            gameScene->Update();
             dxrenderer.StartRender();
             dxrenderer.Render();
             dxrenderer.EndRender();

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game/GameScenes.h"
 #include "Renderer/resource/TerrainImage.h"
+#include "Game/Camera.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -16,9 +17,40 @@ GameScene::GameScene(const std::string& name)
 GameScene::~GameScene()
 {
 }
+std::shared_ptr<IRendererEntity> re{ nullptr };
+
+void GameScene::Update()
+{
+	auto& pos = mCamera->GetCameraPosition();
+	pos = { 0.f,0.f,-10.f };
+
+	mCamera->SetLookAt({ 0.f,0.f,0.f });
+	mCamera->UpdateDynamicVariables();
+
+	ModelContext context{};
+
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 0.f);
+	context.Visible = true;
+
+	re->WriteContext(&context);
+
+}
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	mCamera = std::make_unique<Camera>(device, commandList);
+
+	auto& CameraParam = mCamera->GetCameraParam();
+	CameraParam.Aspect = 1920.f / 1080.f;
+	CameraParam.FOV = DirectX::XMConvertToRadians(60.f);
+	CameraParam.NearZ = 0.1f;
+	CameraParam.FarZ = 1000.f;
+
+
+	mCamera->UpdateStaticVariables();
+
+
+
 	mSceneResource = std::make_unique<ResourceManager>(device);
 
 	mSceneResource->CreateTexture(device, commandList, "TerrainTexture", L"./Resources/terrain/Grass.dds");
@@ -33,15 +65,17 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}, 
 		mSceneResource->GetMaterial("TerrainMaterial")
 	);
+	
+	re = mSceneResource->GetModel("TerrainModel");
+	
+	
 
 	mSceneResource->UploadMaterial(device, commandList);
 }
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-
-
-
-
+	mSceneResource->PrepareRender(commandList);
+	mCamera->SetVariables(commandList);
 	mSceneResource->Render(commandList);
 }

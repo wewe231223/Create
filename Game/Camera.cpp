@@ -40,6 +40,9 @@ Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& 
 
 Camera::~Camera()
 {
+	for (auto& context : mCameraContexts) {
+		context.mBuffer->Unmap(0, nullptr);
+	}
 }
 
 DirectX::SimpleMath::Vector3 Camera::GetForward() const
@@ -57,22 +60,22 @@ DirectX::SimpleMath::Vector3 Camera::GetUp() const
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up, mRotation);
 }
 
-std::reference_wrapper<DirectX::SimpleMath::Vector3> Camera::GetCameraPosition()
+DirectX::SimpleMath::Vector3& Camera::GetCameraPosition()
 {
 	return std::ref(mPosition);
 }
 
-std::reference_wrapper<Camera::CameraParam> Camera::GetCameraParam()
+Camera::CameraParam& Camera::GetCameraParam()
 {
 	return std::ref(mCameraParam);
 }
 
 void Camera::Rotate(float pitch, float yaw)
 {
-	DirectX::SimpleMath::Quaternion yawRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Camera::GetUp(), yaw);
-	DirectX::SimpleMath::Quaternion pitchRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(Camera::GetRight(), pitch);
+	DirectX::SimpleMath::Quaternion yawRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Forward, yaw);
+	DirectX::SimpleMath::Quaternion pitchRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Right, pitch);
 
-	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, yawRotation);
+	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation,yawRotation);
 	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation,pitchRotation);
 	mRotation.Normalize();
 }
@@ -104,22 +107,31 @@ void Camera::Move(const DirectX::SimpleMath::Vector3& direction, float distance)
 	mPosition += direction * distance;
 }
 
+bool Camera::Intersect(DirectX::BoundingOrientedBox& box)
+{
+	return mWorldFrustum.Intersects(box);
+}
+
 void Camera::UpdateDynamicVariables()
 {
-	mViewMatrix = DirectX::XMMatrixLookAtLH(mPosition, mPosition + GetForward(), GetUp());
+	mViewMatrix = DirectX::XMMatrixLookAtLH(mPosition, mPosition - GetForward(), GetUp());
 	mViewFrustum.Transform(mWorldFrustum, mViewMatrix.Invert());
 }
 
 void Camera::UpdateStaticVariables()
 {
-	mProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(mCameraParam.FOV), mCameraParam.Aspect, mCameraParam.NearZ, mCameraParam.FarZ);
+	mProjectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(mCameraParam.FOV, mCameraParam.Aspect, mCameraParam.NearZ, mCameraParam.FarZ);
 	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
 
 }
 
+
+
+
 void Camera::SetVariables(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	auto& context = mCameraContexts[mMemoryIndex];
+
 	context.mBufferPtr->View = mViewMatrix;
 	context.mBufferPtr->Projection = mProjectionMatrix;
 	context.mBufferPtr->ViewProjection = mViewMatrix * mProjectionMatrix;

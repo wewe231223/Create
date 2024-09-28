@@ -24,12 +24,8 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 {
     Terrain_VS_OUT output = (Terrain_VS_OUT) 0;
 
-   
-    
-    // Transform to world space.
     float4 posW = float4(input.Pos, 1.0f);
     output.PosW = mul(posW, gObjects[input.InstanceID].worldMatrix).xyz;
-    // Transform to homogeneous clip space.
     output.PosH = mul(posW, viewProjectionMatrix);
     
     // Pass through other data.
