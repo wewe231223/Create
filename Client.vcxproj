@@ -138,7 +138,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
-    <ClInclude Include="Game\Components\Transform.h" />
+    <ClInclude Include="Game\components\Component.h" />
+    <ClInclude Include="Game\components\Transform.h" />
     <ClInclude Include="Game\GameObject.h" />
     <ClInclude Include="Game\GameScenes.h" />
     <ClInclude Include="pch.h" />
@@ -147,7 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Game\Components\Transform.cpp" />
+    <ClCompile Include="Game\components\Component.cpp" />
+    <ClCompile Include="Game\components\Transform.cpp" />
     <ClCompile Include="Game\GameObject.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />
     <ClCompile Include="pch.cpp">

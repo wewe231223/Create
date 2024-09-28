@@ -42,7 +42,10 @@
     <ClInclude Include="Game\GameObject.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Components\Transform.h">
+    <ClInclude Include="Game\components\Component.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\components\Transform.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +62,10 @@
     <ClCompile Include="Game\GameObject.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Components\Transform.cpp">
+    <ClCompile Include="Game\components\Component.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\components\Transform.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
   </ItemGroup>
