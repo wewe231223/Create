@@ -1,11 +1,7 @@
 #include "pch.h"
 #include "Game/GameScenes.h"
-#include "Renderer/scene/ResourceManager.h"
 #include "Renderer/resource/TerrainImage.h"
-#include "Renderer/resource/Shader.h"
-#include "Renderer/resource/Model.h"
-#include "Renderer/resource/Mesh.h"
-#include "Renderer/buffer/DefaultBuffer.h"
+
 GameScene::GameScene()
 	: Scene()
 {

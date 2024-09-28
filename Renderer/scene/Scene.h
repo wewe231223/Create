@@ -11,6 +11,6 @@ public:
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList)									= 0;
 protected:
 	std::string mName{ "SceneName" };
-	// 이걸 인터페이스로... 
+
 	std::unique_ptr<class ResourceManager> mSceneResource{ nullptr };
 };

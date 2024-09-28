@@ -19,4 +19,8 @@
 #include "Renderer/directx/DxRenderer.h"
 #include "Renderer/scene/Scene.h"
 
-#include "Game/components/Component.h"
+#include "Renderer/scene/ResourceManager.h"
+#include "Renderer/resource/Shader.h"
+#include "Renderer/resource/Model.h"
+#include "Renderer/resource/Mesh.h"
+#include "Renderer/buffer/DefaultBuffer.h"

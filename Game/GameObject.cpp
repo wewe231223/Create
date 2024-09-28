@@ -3,6 +3,10 @@
 
 GameObject::GameObject()
 {
-	mComponents = std::make_unique<Component[]>(static_cast<size_t>(EComponentType::END));
+	
+}
+
+void GameObject::Update()
+{
 	
 }

@@ -138,20 +138,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
-    <ClInclude Include="Game\components\Component.h" />
-    <ClInclude Include="Game\components\Transform.h" />
+    <ClInclude Include="Game\Camera.h" />
     <ClInclude Include="Game\GameObject.h" />
     <ClInclude Include="Game\GameScenes.h" />
+    <ClInclude Include="Game\Transform.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Game\components\Component.cpp" />
-    <ClCompile Include="Game\components\Transform.cpp" />
+    <ClCompile Include="Game\Camera.cpp" />
     <ClCompile Include="Game\GameObject.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />
+    <ClCompile Include="Game\Transform.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>

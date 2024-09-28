@@ -37,8 +37,8 @@ cbuffer MeshCB : register(b0)
 // b1 : Root Descriptor CBV 
 cbuffer CameraCB : register(b1)
 {
-//    matrix viewMatrix;
-//   matrix projectionMatrix;
+    matrix viewMatrix;
+    matrix projectionMatrix;
     matrix viewProjectionMatrix;
 };
 
