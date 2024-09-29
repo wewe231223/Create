@@ -25,6 +25,10 @@ void GameScene::Update()
 	ModelContext context{};
 	context.World = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 0.f);
 	context.Visible = true;
+
+	auto& pos = mCamera->GetCameraPosition();
+	pos.y -= Time.GetDeltaTime<float>() * 100.f;
+
 	re->WriteContext(&context);
 }
 

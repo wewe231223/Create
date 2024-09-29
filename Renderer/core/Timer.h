@@ -29,11 +29,11 @@ template<typename T>
 concept TimeUnit = std::chrono::_Is_duration_v<T>;
 
 class GTime {
-	using clock				= std::chrono::high_resolution_clock;
-	using rep				= double;
-	using period			= std::nano;
-	using time_point		= clock::time_point;
-	using duration			= std::chrono::duration<double, period>;
+	using clock = std::chrono::high_resolution_clock;
+	using rep = double;
+	using period = std::nano;
+	using time_point = clock::time_point;
+	using duration = std::chrono::duration<double, period>;
 
 	//sceduled event 가 우선되는 문제가 있다. 
 	struct Event {
@@ -66,35 +66,35 @@ public:
 	GTime();
 	~GTime();
 
-	template<TimeUnit Tu = std::chrono::seconds, typename ResultTy = double>
+	template<typename ResultTy = double, TimeUnit Tu = std::chrono::seconds>
 	[[nodiscard]]
 	ResultTy GetDeltaTime(scaled sc = scaled::result_time_unscaled) {
 		if (sc == scaled::result_time_scaled) {
-			return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(mDeltaTime * mTimeScale).count();
+			return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(mDeltaTime * mTimeScale).count();
 		}
 		// scaled::result_time_unscaled
-		return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(mDeltaTime).count();
+		return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(mDeltaTime).count();
 	}
 
-	template<TimeUnit Tu = std::chrono::seconds, typename ResultTy = double>
+	template<typename ResultTy = double, TimeUnit Tu = std::chrono::seconds>
 	[[nodiscard]]
 	ResultTy GetTimeSinceStarted(scaled sc = scaled::result_time_unscaled) {
 		if (sc == scaled::result_time_scaled) {
-			return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(mScaledStarted).count();
+			return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(mScaledStarted).count();
 		}
 		// scaled::result_time_unscaled
 		duration AbsoluteElapsed = clock::now() - mAbsoluteStarted;
-		return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(AbsoluteElapsed).count();
+		return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(AbsoluteElapsed).count();
 	}
 
-	template<TimeUnit Tu = std::chrono::seconds, typename ResultTy = double>
+	template<typename ResultTy = double, TimeUnit Tu = std::chrono::seconds>
 	[[nodiscard]]
 	ResultTy GetTimeSinceSceneStarted() {
 		duration Elapsed = clock::now() - mSceneStarted;
-		return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(Elapsed).count();
+		return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(Elapsed).count();
 	}
 
-	template<TimeUnit Tu = std::chrono::seconds, typename ResultTy = double>
+	template<typename ResultTy = double, TimeUnit Tu = std::chrono::seconds>
 	[[nodiscard]]
 	ResultTy GetSmoothDeltaTime() {
 		auto sumofSamples = std::accumulate(mDeltaTimeBuffer.begin(), mDeltaTimeBuffer.end(), duration::zero(),
@@ -103,7 +103,7 @@ public:
 					return a;
 				return a + b;
 			});
-		return std::chrono::duration_cast<std::chrono::duration<double, typename Tu::period>, ResultTy>(sumofSamples / mDeltaTimeBufferSize).count();
+		return std::chrono::duration_cast<std::chrono::duration<ResultTy, typename Tu::period>>(sumofSamples / mDeltaTimeBufferSize).count();
 	}
 	/// <summary>
 	/// 이 함수에는 bool 형을 반환하는 Callable 을 넣어주시기 바랍니다. 
