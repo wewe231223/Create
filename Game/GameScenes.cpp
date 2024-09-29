@@ -21,19 +21,11 @@ std::shared_ptr<IRendererEntity> re{ nullptr };
 
 void GameScene::Update()
 {
-	auto& pos = mCamera->GetCameraPosition();
-	pos = { 0.f,0.f,-10.f };
-
-	mCamera->SetLookAt({ 0.f,0.f,0.f });
-	mCamera->UpdateDynamicVariables();
 
 	ModelContext context{};
-
 	context.World = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 0.f);
 	context.Visible = true;
-
 	re->WriteContext(&context);
-
 }
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -44,12 +36,15 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 	CameraParam.Aspect = 1920.f / 1080.f;
 	CameraParam.FOV = DirectX::XMConvertToRadians(60.f);
 	CameraParam.NearZ = 0.1f;
-	CameraParam.FarZ = 1000.f;
+	CameraParam.FarZ = 2000.f;
 
 
 	mCamera->UpdateStaticVariables();
 
+	auto& pos = mCamera->GetCameraPosition();
+	pos = { 100.f,800.f,100.f };
 
+	mCamera->SetLookAt({ 870.f,10.f,10.f });
 
 	mSceneResource = std::make_unique<ResourceManager>(device);
 

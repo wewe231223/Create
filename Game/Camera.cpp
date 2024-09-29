@@ -33,9 +33,6 @@ Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& 
 
 		context.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(context.mBufferPtr)));
 	}
-
-
-
 }
 
 Camera::~Camera()
@@ -82,22 +79,29 @@ void Camera::Rotate(float pitch, float yaw)
 
 void Camera::SetLookAt(const DirectX::SimpleMath::Vector3& target)
 {
-	DirectX::SimpleMath::Vector3 direction = mPosition - target;
+	// 카메라의 방향 벡터 계산
+	DirectX::SimpleMath::Vector3 direction = target - mPosition;
 	direction.Normalize();
 
-	DirectX::SimpleMath::Vector3 forward = Camera::GetForward();
+	// 쿼터니언을 사용하여 회전 계산
+	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
+	float dot = forward.Dot(direction);
 
-	DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
-
-	if (axis.LengthSquared() > 0.0001f) {
+	if (fabs(dot - (-1.0f)) < 0.000001f) {
+		// 180도 회전
+		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
+		mRotation.Normalize();
+	}
+	else if (fabs(dot - (1.0f)) < 0.000001f) {
+		// 0도 회전
+		mRotation = DirectX::SimpleMath::Quaternion::Identity;
+		mRotation.Normalize();
+	}
+	else {
+		float angle = acosf(dot);
+		DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
 		axis.Normalize();
-
-
-		float dot = forward.Dot(direction);
-		float angle = std::acosf(dot);
-
-		DirectX::SimpleMath::Quaternion LookRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
-		mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, LookRotation);
+		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
 		mRotation.Normalize();
 	}
 }
@@ -114,7 +118,8 @@ bool Camera::Intersect(DirectX::BoundingOrientedBox& box)
 
 void Camera::UpdateDynamicVariables()
 {
-	mViewMatrix = DirectX::XMMatrixLookAtLH(mPosition, mPosition - GetForward(), GetUp());
+	// 뷰 행렬 생성
+	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mPosition, mPosition + GetForward() , GetUp() );
 	mViewFrustum.Transform(mWorldFrustum, mViewMatrix.Invert());
 }
 
@@ -126,15 +131,15 @@ void Camera::UpdateStaticVariables()
 }
 
 
-
-
 void Camera::SetVariables(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	auto& context = mCameraContexts[mMemoryIndex];
 
-	context.mBufferPtr->View = mViewMatrix;
-	context.mBufferPtr->Projection = mProjectionMatrix;
-	context.mBufferPtr->ViewProjection = mViewMatrix * mProjectionMatrix;
+	Camera::UpdateDynamicVariables();
+
+	context.mBufferPtr->View = mViewMatrix.Transpose();
+	context.mBufferPtr->Projection = mProjectionMatrix.Transpose();
+	context.mBufferPtr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
 
 	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, context.mBuffer->GetGPUVirtualAddress());
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
