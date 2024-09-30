@@ -27,7 +27,6 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
     float4x4 worldviewproj = mul(world, viewProjectionMatrix);
     output.Pos = mul(float4(input.Pos, 1.0f), worldviewproj);
     
-    
     // Pass through other data.
     output.Tex1 = input.Tex1;
     output.Tex2 = input.Tex2;

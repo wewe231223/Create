@@ -25,7 +25,7 @@ struct Material {
 
 struct ObjectCB
 {
-    row_major matrix worldMatrix;
+    matrix worldMatrix;
 };
 
 // b0 : Root Constants 
