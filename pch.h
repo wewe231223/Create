@@ -14,6 +14,9 @@
 #else 
 #endif 
 
+#include "Renderer/external/Include/DirectXTK12/Keyboard.h"
+#include "Renderer/external/Include/DirectXTK12/Mouse.h"
+
 #include "Renderer/pch.h"
 #include "Renderer/core/window.h"
 #include "Renderer/directx/DxRenderer.h"
@@ -24,3 +27,7 @@
 #include "Renderer/resource/Model.h"
 #include "Renderer/resource/Mesh.h"
 #include "Renderer/buffer/DefaultBuffer.h"
+
+
+#include "Game/Transform.h"
+#include "Game/Input.h"

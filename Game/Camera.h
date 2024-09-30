@@ -16,22 +16,14 @@ public:
 	Camera(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
 	~Camera();
 
-	DirectX::SimpleMath::Vector3 GetForward() const;
-	DirectX::SimpleMath::Vector3 GetRight() const;
-	DirectX::SimpleMath::Vector3 GetUp() const;
-
-	DirectX::SimpleMath::Vector3& GetCameraPosition();
 	CameraParam& GetCameraParam();
-
-	void Rotate(float pitch, float yaw);
-	void SetLookAt(const DirectX::SimpleMath::Vector3& target);
-
-	void Move(const DirectX::SimpleMath::Vector3& direction, float distance);
 
 	bool Intersect(DirectX::BoundingOrientedBox& box);
 	void UpdateDynamicVariables();
 	void UpdateStaticVariables();
 	void SetVariables(ComPtr<ID3D12GraphicsCommandList>& commandList);
+
+	Transform& GetTransform();
 private:
 	CameraParam														mCameraParam{};
 	std::array<CameraBuffer, static_cast<size_t>(GC_FrameCount)>	mCameraContexts{};
@@ -45,4 +37,6 @@ private:
 	
 	DirectX::BoundingFrustum										mViewFrustum{};
 	DirectX::BoundingFrustum										mWorldFrustum{};
+
+	Transform mTransform{};
 };

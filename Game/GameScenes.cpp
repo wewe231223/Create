@@ -26,8 +26,12 @@ void GameScene::Update()
 	context.World = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 0.f);
 	context.Visible = true;
 
-	auto& pos = mCamera->GetCameraPosition();
-	pos.y -= Time.GetDeltaTime<float>() * 100.f;
+	//mCamera->GetTransform().Rotate(0.f, Time.GetDeltaTime<float>(), 0.f);
+
+	if (Input.GetKeyboardState().W)
+	{
+		mCamera->GetTransform().Translate({ 0.f,1.f,0.f });
+	}
 
 	re->WriteContext(&context);
 }
@@ -45,10 +49,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mCamera->UpdateStaticVariables();
 
-	auto& pos = mCamera->GetCameraPosition();
-	pos = { 100.f,800.f,100.f };
+	mCamera->GetTransform().Translate({ 100.f,100.f,100.f });
 
-	mCamera->SetLookAt({ 870.f,10.f,10.f });
+	mCamera->GetTransform().LookAt({0.f,0.f,0.f});
 
 	mSceneResource = std::make_unique<ResourceManager>(device);
 
