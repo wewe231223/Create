@@ -122,7 +122,6 @@ void ResourceManager::UploadMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12
 
 void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	commandList->SetGraphicsRootShaderResourceView(GRP_MaterialSRV, mMaterialBuffer->GetBuffer()->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
 }
@@ -151,6 +150,7 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 {
 	std::shared_ptr<Model>& prev = *mModelContainer->begin();
 	prev->SetShader(commandList);
+	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	ResourceManager::SetGlobals(commandList);
 }
 
