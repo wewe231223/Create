@@ -83,7 +83,6 @@ struct CameraContext {
 
 struct ModelContext {
 	DirectX::SimpleMath::Matrix World{ DirectX::SimpleMath::Matrix::Identity };
-	bool Visible{ true };
 };
 
 

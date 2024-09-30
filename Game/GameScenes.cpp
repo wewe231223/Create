@@ -23,8 +23,14 @@ void GameScene::Update()
 {
 
 	ModelContext context{};
-	context.World = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 0.f);
-	context.Visible = true;
+	
+	for (auto i = 0; i < 10; ++i) {
+		for (auto j = 0; j < 10; ++j) {
+			context.World = DirectX::SimpleMath::Matrix::CreateTranslation(i * 200.f,0.f,j * 200.f);
+			re->WriteContext(&context);
+		}
+	}
+
 
 	//mCamera->GetTransform().Rotate(0.f, Time.GetDeltaTime<float>(), 0.f);
 
@@ -32,8 +38,6 @@ void GameScene::Update()
 	{
 		mCamera->GetTransform().Translate({ 0.f,1.f,0.f });
 	}
-
-	re->WriteContext(&context);
 }
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -44,12 +48,12 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 	CameraParam.Aspect = 1920.f / 1080.f;
 	CameraParam.FOV = DirectX::XMConvertToRadians(60.f);
 	CameraParam.NearZ = 0.1f;
-	CameraParam.FarZ = 2000.f;
+	CameraParam.FarZ = 3000.f;
 
 
 	mCamera->UpdateStaticVariables();
 
-	mCamera->GetTransform().Translate({ 100.f,100.f,100.f });
+	mCamera->GetTransform().Translate({ 0.f,100.f,0.f });
 
 	mCamera->GetTransform().LookAt({0.f,0.f,0.f});
 
