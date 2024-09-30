@@ -26,11 +26,10 @@ void GameScene::Update()
 	
 	for (auto i = 0; i < 10; ++i) {
 		for (auto j = 0; j < 10; ++j) {
-			context.World = DirectX::SimpleMath::Matrix::CreateTranslation(i * 200.f,0.f,j * 200.f);
+			context.World = DirectX::SimpleMath::Matrix::CreateTranslation(i * 300.f,0.f,j * 300.f);
 			re->WriteContext(&context);
 		}
 	}
-
 
 	//mCamera->GetTransform().Rotate(0.f, Time.GetDeltaTime<float>(), 0.f);
 

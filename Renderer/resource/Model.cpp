@@ -30,6 +30,7 @@ Model::Model(ComPtr<ID3D12Device>& device,std::shared_ptr<IGraphicsShader> shade
 	desc.SampleDesc.Quality = 0;
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	
 
 	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_UPLOAD);
 

@@ -164,7 +164,7 @@ bool GraphicsShaderBase::CheckParams()
         return true;
     }
 
-	auto result = fs::last_write_time("Shaders/HLSLs/Params.hlsli") > fs::last_write_time("Shaders/Binarys/Params.cso");
+	auto result = fs::last_write_time("Shaders/HLSLs/Params.hlsl") > fs::last_write_time("Shaders/Binarys/Params.cso");
 	if (result) {
         Console.InfoLog("셰이더 Param 이 수정되었습니다. 모든 셰이더를 다시 컴파일합니다.");
         GraphicsShaderBase::DeleteAllBinarys();

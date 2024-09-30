@@ -232,7 +232,7 @@
     <ClCompile Include="ui\HexColors.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shaders\HLSLs\Params.hlsli">
+    <FxCompile Include="..\Shaders\HLSLs\Params.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">

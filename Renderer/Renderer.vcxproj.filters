@@ -205,7 +205,7 @@
     <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Shaders\HLSLs\Params.hlsli">
+    <FxCompile Include="..\Shaders\HLSLs\Params.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSLs\Terrain.hlsl">
