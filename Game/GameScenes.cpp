@@ -18,15 +18,17 @@ GameScene::~GameScene()
 {
 }
 std::shared_ptr<IRendererEntity> re{ nullptr };
+std::shared_ptr<IRendererEntity> re2{ nullptr };
 
 void GameScene::Update()
 {
 
 	ModelContext context{};
 	
-	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f });
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f }).Transpose() ;
 	re->WriteContext(&context);
-
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,300.f,0.f }).Transpose();
+	re2->WriteContext(&context);
 	
 	if (Input.GetKeyboardState().E)
 	{
@@ -77,12 +79,17 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mSceneResource->CreateTexture(device, commandList, "TerrainBaseTexture", L"./Resources/terrain/Base_Texture.dds");
 	mSceneResource->CreateTexture(device, commandList, "TerrainDetailTexture", L"./Resources/terrain/Detail_Texture_7.dds");
+	mSceneResource->CreateTexture(device, commandList, "aaa", L"./Resources/terrain/NormalMap.dds");
 
 	Material mat{};
 	mat.DiffuseTexIndex_1 = mSceneResource->GetTexture("TerrainBaseTexture");
 	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("TerrainDetailTexture");
 
 	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", mat);
+	
+	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("aaa");
+	mSceneResource->CreateMaterial(device, commandList, "TerrainMaterial2", mat);
+	
 	mSceneResource->CreateShader<TerrainShader>(device,"TerrainShader");
 	mSceneResource->CreateModel<TerrainModel>(
 		"TerrainModel",
@@ -90,12 +97,11 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 		commandList, 
 		mSceneResource->GetShader("TerrainShader"), 
 		std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw"), 
-		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}, 
-		mSceneResource->GetMaterial("TerrainMaterial")
+		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}
 	);
 	
-	re = mSceneResource->GetModel("TerrainModel");
-	
+	re = mSceneResource->GetModel("TerrainModel", { mSceneResource->GetMaterial("TerrainMaterial") });
+	re2 = mSceneResource->GetModel("TerrainModel", { mSceneResource->GetMaterial("TerrainMaterial2") });
 	
 
 	mSceneResource->UploadMaterial(device, commandList);

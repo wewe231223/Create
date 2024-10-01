@@ -28,12 +28,6 @@ struct ObjectCB
     matrix worldMatrix;
 };
 
-// b0 : Root Constants 
-cbuffer MeshCB : register(b0)
-{
-    uint materialIndex;
-}
-   
 // b1 : Root Descriptor CBV 
 cbuffer CameraCB : register(b1)
 {
@@ -42,14 +36,16 @@ cbuffer CameraCB : register(b1)
     matrix viewProjectionMatrix;
 };
 
+// t0 : Root Descriptor Static SRV ( CB )
+StructuredBuffer<uint> gMaterialIndices : register(t0);
 // t0 : Root Descriptor Dynamic SRV ( CB ) 
-StructuredBuffer<ObjectCB>  gObjects        : register(t0);
+StructuredBuffer<ObjectCB>  gObjects        : register(t1);
 // t1 : Root Descriptor Static SRV ( CB )
-StructuredBuffer<Material>  gMaterials      : register(t1);
+StructuredBuffer<Material>  gMaterials      : register(t2);
 // t2 : Textures
-Texture2D                   gTextures[1024]            : register(t2,space0);
-Texture2DArray              gTextureArray[512]         : register(t2,space1);   
-TextureCube                 gTextureCube[512]          : register(t2,space2);
+Texture2D                   gTextures[1024]            : register(t3,space0);
+Texture2DArray              gTextureArray[512]         : register(t3,space1);   
+TextureCube                 gTextureCube[512]          : register(t3,space2);
 
 
 SamplerState pointWrapSampler : register(s0);

@@ -63,9 +63,19 @@ void Model::WriteContext(void* data)
 /// <summary>
 /// 일단 세자. 나중에 MaxRef 가 넘어갈 때, 재할당에 사용해야한다. 
 /// </summary>
-void Model::AddRef() noexcept
+void Model::AddRef(const std::vector<MaterialIndex>& materials) 
 {
+	for (auto i = 0; i < mMeshes.size(); ++i) {
+		mMeshes[i]->Ref(materials[i]);
+	}
 	mRefCount++;
+}
+
+void Model::UploadMaterials(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	for (auto& mesh : mMeshes) {
+		mesh->UploadMaterialInfo(device, commandList);
+	}
 }
 
 
@@ -107,10 +117,9 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 //////////////////////////////////////////////////////////////////////////
 #include "resource/TerrainImage.h"
 
-TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale, MaterialIndex matidx)
+TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale)
 	: Model(device,terrainShader), mTerrainImage(terrainImage), mScale(scale)
 {
-	mMaterialIndex = matidx;
 	mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
 
 	// 서로 맞지 않는 경우 객체 생성이 중단됨. ( 유효하지 않은 객체가 생성됨 ) 
@@ -188,5 +197,5 @@ void TerrainModel::Create(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCom
 	mIndexBuffer		= std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
 	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
 
-	mMeshes.emplace_back(std::make_unique<Mesh>(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size()), mMaterialIndex));
+	mMeshes.emplace_back(std::make_unique<Mesh>(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size())));
 }

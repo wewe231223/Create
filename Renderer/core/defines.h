@@ -96,8 +96,8 @@ enum EGlobalConstants : UINT {
 
 
 enum EGraphicRootParamIndex : UINT {
-	GRP_MeshConstants = 0,
-	GRP_CameraConstants = 1,
+	GRP_CameraConstants = 0,
+	GRP_MeshConstants = 1,
 	GRP_ObjectConstants = 2,
 	GRP_MaterialSRV = 3,
 	GRP_Texture = 4,

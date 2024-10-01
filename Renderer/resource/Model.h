@@ -18,7 +18,8 @@ public:
 
 	virtual void WriteContext(void* data) override;
 
-	void AddRef() noexcept;
+	void AddRef(const std::vector<MaterialIndex>& materials);
+	void UploadMaterials(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
 	bool CompareShader(const std::shared_ptr<Model>& other) const noexcept;
@@ -38,7 +39,6 @@ protected:
 	UINT																	mInstanceCount{ 0 };
 	UINT																	mMemoryIndex{ 0 };
 
-	MaterialIndex 															mMaterialIndex { std::numeric_limits<MaterialIndex>::max() }; 
 	VertexAttribute															mAttribute{ 0b0000'0000'0000'0000 };
 
 	UINT																	mRefCount{ 0 };
@@ -57,7 +57,7 @@ protected:
 
 class TerrainModel : public Model {
 public:
-	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale,MaterialIndex matidx);
+	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale);
 	~TerrainModel();
 private:
 	void Create(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);

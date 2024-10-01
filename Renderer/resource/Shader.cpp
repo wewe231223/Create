@@ -300,19 +300,19 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     // 애는 하나만씀. 
 	D3D12_DESCRIPTOR_RANGE texRange[3];
     // Tex2D 
-    texRange[0].BaseShaderRegister = 2;
+    texRange[0].BaseShaderRegister = 3;
 	texRange[0].NumDescriptors = 1024;
     texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	texRange[0].RegisterSpace = 0;
     // Tex2DArray
-    texRange[1].BaseShaderRegister = 2;
+    texRange[1].BaseShaderRegister = 3;
     texRange[1].NumDescriptors = 512;
     texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[1].RegisterSpace = 1;
     // TexCube 
-    texRange[2].BaseShaderRegister = 2;
+    texRange[2].BaseShaderRegister = 3;
     texRange[2].NumDescriptors = 512;
     texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -320,24 +320,23 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
 
 	D3D12_ROOT_PARAMETER rootParams[GRP_END]{};
 
-    rootParams[GRP_MeshConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-	rootParams[GRP_MeshConstants].Constants.Num32BitValues = 1;
-	rootParams[GRP_MeshConstants].Constants.ShaderRegister = 0;
-	rootParams[GRP_MeshConstants].Constants.RegisterSpace = 0;
-	rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
     rootParams[GRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
  	rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
 	rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
 	rootParams[GRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_MeshConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParams[GRP_MeshConstants].Descriptor.ShaderRegister = 0;
+	rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
+	rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 	rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 0;
+	rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 1;
 	rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
 	rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 1;
+	rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 2;
 	rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
 	rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
