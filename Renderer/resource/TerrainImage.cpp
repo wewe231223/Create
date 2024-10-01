@@ -31,12 +31,13 @@ TerrainImage::TerrainImage(const fs::path& path)
 	file.read(reinterpret_cast<char*>(buffer.get()), size);
 	file.close();
 
-	// 상하대칭 
+	//// 상하대칭 
 	for (int y = 0; y < mHeight; ++y) {
 		for (int x = 0; x < mWidth; ++x) {
 			mPixels[x + (y * mWidth)] = buffer[x + ((mHeight - y - 1) * mWidth)];
 		}
 	}
+	// memcpy(mPixels.get(), buffer.get(), sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
 
 	Console.InfoLog("{} 파일을 성공적으로 로드했습니다.", path.string().c_str());
 }
