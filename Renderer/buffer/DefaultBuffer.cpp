@@ -67,6 +67,7 @@ DefaultBuffer::DefaultBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 		else {
 			CheckHR(DirectX::CreateWICTextureFromFile(device.Get(), UploaderRef, path.c_str(), mDefaultBuffer.GetAddressOf()));
 		}
+		Console.InfoLog("{} 텍스쳐를 로드했습니다.", path.string());
 	}
 }
 

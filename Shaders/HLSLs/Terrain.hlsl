@@ -37,5 +37,10 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 
 float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
 {
-    return float4(1.f, 1.f, 1.f, 1.f);
+    float4 baseColor = gTextures[gMaterials[materialIndex].DiffuseTexIndex_1].Sample(linearWrapSampler, input.Tex1);
+    float4 detailColor = gTextures[gMaterials[materialIndex].DiffuseTexIndex_2].Sample(linearWrapSampler, input.Tex2);
+    
+    float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f) ;
+    
+    return Color;
 }

@@ -24,19 +24,36 @@ void GameScene::Update()
 
 	ModelContext context{};
 	
-	for (auto i = 0; i < 10; ++i) {
-		for (auto j = 0; j < 10; ++j) {
-			context.World = DirectX::SimpleMath::Matrix::CreateTranslation(i * 300.f,0.f,j * 300.f).Transpose();
-			re->WriteContext(&context);
-		}
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f });
+	re->WriteContext(&context);
+
+	
+	if (Input.GetKeyboardState().E)
+	{
+		mCamera->GetTransform().Translate({ 0.f,0.1f,0.f });
 	}
-
-	//mCamera->GetTransform().Rotate(0.f, Time.GetDeltaTime<float>(), 0.f);
-
+	if (Input.GetKeyboardState().Q)
+	{
+		mCamera->GetTransform().Translate({ 0.f,-0.1f,0.f });
+	}
 	if (Input.GetKeyboardState().W)
 	{
-		mCamera->GetTransform().Translate({ 0.f,1.f,0.f });
+		mCamera->GetTransform().Translate({ 0.f,0.f,0.1f });
 	}
+	if (Input.GetKeyboardState().S)
+	{
+		mCamera->GetTransform().Translate({ 0.f,0.f,-0.1f });
+	}
+	if (Input.GetKeyboardState().A)
+	{
+		mCamera->GetTransform().Translate({ -0.1f,0.f,0.f });
+	}
+	if (Input.GetKeyboardState().D)
+	{
+		mCamera->GetTransform().Translate({ 0.1f,0.f,0.f });
+	}
+
+
 }
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -58,8 +75,14 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mSceneResource = std::make_unique<ResourceManager>(device);
 
-	mSceneResource->CreateTexture(device, commandList, "TerrainTexture", L"./Resources/terrain/Grass.dds");
-	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", {});
+	mSceneResource->CreateTexture(device, commandList, "TerrainBaseTexture", L"./Resources/terrain/Base_Texture.dds");
+	mSceneResource->CreateTexture(device, commandList, "TerrainDetailTexture", L"./Resources/terrain/Detail_Texture_7.dds");
+
+	Material mat{};
+	mat.DiffuseTexIndex_1 = mSceneResource->GetTexture("TerrainBaseTexture");
+	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("TerrainDetailTexture");
+
+	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", mat);
 	mSceneResource->CreateShader<TerrainShader>(device,"TerrainShader");
 	mSceneResource->CreateModel<TerrainModel>(
 		"TerrainModel",

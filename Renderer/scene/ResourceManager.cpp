@@ -98,7 +98,7 @@ void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12G
 	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	device->CreateShaderResourceView(newTexture.Get(), &srvDesc, texheapHandle);
 
-	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() - 1);
+	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() );
 }
 
 void ResourceManager::CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material)
