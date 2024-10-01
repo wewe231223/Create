@@ -32,7 +32,7 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
     output.Tex1 = input.Tex1;
     output.Tex2 = input.Tex2;
     output.Normal = input.Normal;
-    output.MateialID = input.InstanceID;
+    output.MateialID = gMaterialIndices[input.InstanceID];
     return output;
 };
 
@@ -40,8 +40,8 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
 {
     
-    float4 baseColor = gTextures[gMaterials[gMaterialIndices[input.MateialID]].DiffuseTexIndex_1].Sample(linearWrapSampler, input.Tex1);
-    float4 detailColor = gTextures[gMaterials[gMaterialIndices[input.MateialID]].DiffuseTexIndex_2].Sample(linearWrapSampler, input.Tex2);
+    float4 baseColor = gTextures[gMaterials[input.MateialID].DiffuseTexIndex_1].Sample(linearWrapSampler, input.Tex1);
+    float4 detailColor = gTextures[gMaterials[input.MateialID].DiffuseTexIndex_2].Sample(linearWrapSampler, input.Tex2);
     
     float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f) ;
     
