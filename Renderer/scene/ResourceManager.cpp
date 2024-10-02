@@ -155,18 +155,22 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 
 void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-	std::shared_ptr<Model>& prev = *mModelContainer->begin();
+	auto prev = mModelContainer->begin();
+	auto cur = mModelContainer->begin();
+	if (cur == mModelContainer->end())
+		return;
 
-	for (auto& model : *mModelContainer) {
-		model->Render(commandList);
-		if (prev->CompareShader(model)) {
-			model->SetShader(commandList);
+	cur->get()->Render(commandList);
+	++cur;
+
+	for (; cur != mModelContainer->end(); ++prev, ++cur) {
+		if (cur->get()->CompareShader(*prev)) {
+			cur->get()->SetShader(commandList);
 			ResourceManager::SetGlobals(commandList);
-			prev = model;
 		}
 
+		cur->get()->Render(commandList);
 	}
-
 }
 
 

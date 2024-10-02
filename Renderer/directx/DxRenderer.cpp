@@ -53,10 +53,15 @@ void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 	else {
 		Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
+	
+		mLoadCommandAllocator->Reset();
+		mCommandList->Reset(mLoadCommandAllocator.Get(), nullptr);
+
 		scene->Load(mDevice, mCommandList);
 		mScene = scene;
 		
-		DefaultBuffer::Upload(mCommandQueue);
+		DxRenderer::ExecuteCommandList();
+		DxRenderer::FlushCommandQueue();
 	}
 }
 

@@ -18,13 +18,11 @@ public:
 
 	ComPtr<ID3D12Resource> GetBuffer() const;
 
-	static void Upload(ComPtr<ID3D12CommandQueue>& commandQueue);
-	static void Release();
+
 private:
 	void LoadDefaultTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	ComPtr<ID3D12Resource> mDefaultBuffer{ nullptr };
+	ComPtr<ID3D12Resource> mUploadBuffer{ nullptr };
 
-	static std::unique_ptr<DirectX::ResourceUploadBatch> mUploader;
-	static bool mUploaderClosed;
 };

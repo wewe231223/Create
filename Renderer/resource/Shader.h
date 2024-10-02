@@ -103,3 +103,19 @@ public:
 	TerrainShader(ComPtr<ID3D12Device>& device);
 	~TerrainShader();
 };
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						TexturedObject Shader							//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class TexturedObjectShader : public GraphicsShaderBase {
+public:
+	TexturedObjectShader(ComPtr<ID3D12Device>& device);
+	~TexturedObjectShader();
+};

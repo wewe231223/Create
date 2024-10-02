@@ -211,5 +211,8 @@
     <FxCompile Include="..\Shaders\HLSLs\Terrain.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\TexturedObject.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

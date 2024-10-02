@@ -18,6 +18,9 @@ GameScene::~GameScene()
 {
 }
 std::shared_ptr<IRendererEntity> re{ nullptr };
+std::shared_ptr<IRendererEntity> ree{ nullptr };
+
+int a = 30;
 
 void GameScene::Update()
 {
@@ -26,11 +29,13 @@ void GameScene::Update()
 
 	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f }).Transpose();
 	MaterialIndex mi[]{ mSceneResource->GetMaterial("TerrainMaterial") };
-	re->WriteContext(&context, std::span(mi));
+	ree->WriteContext(&context, std::span(mi));
 
-	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,200.f,0.f }).Transpose();
+
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,5.f,0.f }).Transpose();
 	mi[0] = mSceneResource->GetMaterial("aa");
 	re->WriteContext(&context, std::span(mi));
+
 
 	mCamera->GetTransform().LookAt({ 0.f,0.f,0.f });
 	
@@ -58,8 +63,6 @@ void GameScene::Update()
 	{
 		mCamera->GetTransform().Translate({ 0.1f,0.f,0.f });
 	}
-
-
 }
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -83,19 +86,23 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mSceneResource->CreateTexture(device, commandList, "TerrainBaseTexture", L"./Resources/terrain/Base_Texture.dds");
 	mSceneResource->CreateTexture(device, commandList, "TerrainDetailTexture", L"./Resources/terrain/Detail_Texture_7.dds");
-	mSceneResource->CreateTexture(device, commandList, "aa", L"./Resources/terrain/Detail_Texture_6.dds");
+	// mSceneResource->CreateTexture(device, commandList, "aa", L"./Resources/terrain/Detail_Texture_6.dds");
+
+
 
 	Material mat{};
 	mat.DiffuseTexIndex_1 = mSceneResource->GetTexture("TerrainBaseTexture");
 	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("TerrainDetailTexture");
+
 	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", mat);
-	
-	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("aa");
+	mat.DiffuseTexIndex_1 = mSceneResource->GetTexture("TerrainDetailTexture");
 	mSceneResource->CreateMaterial(device, commandList, "aa", mat);
 
 
 
 	mSceneResource->CreateShader<TerrainShader>(device,"TerrainShader");
+	mSceneResource->CreateShader<TexturedObjectShader>(device, "TexturedObjectShader");
+	
 	mSceneResource->CreateModel<TerrainModel>(
 		"TerrainModel",
 		device, 
@@ -104,9 +111,17 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 		std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw"), 
 		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}
 	);
+
+	mSceneResource->CreateModel<TexturedModel>(
+		"TexturedModel",
+		device,
+		commandList,
+		mSceneResource->GetShader("TexturedObjectShader"),
+		TexturedModel::Cube
+	);
 	
-	re = mSceneResource->GetModel("TerrainModel");
-	
+	ree = mSceneResource->GetModel("TerrainModel");
+	re = mSceneResource->GetModel("TexturedModel");
 
 	mSceneResource->UploadMaterial(device, commandList);
 }
