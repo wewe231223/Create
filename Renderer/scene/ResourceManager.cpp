@@ -36,13 +36,13 @@ void ResourceManager::ModelContainer::Insert(const std::string& model, std::shar
 	mModelMap[model] = newModel;
 }
 
-std::shared_ptr<IRendererEntity> ResourceManager::ModelContainer::GetModel(const std::string& name,const std::vector<MaterialIndex>& materials)
+std::shared_ptr<IRendererEntity> ResourceManager::ModelContainer::GetModel(const std::string& name)
 {
 	auto it = mModelMap.find(name);
 	if (it == mModelMap.end()) {
 		return nullptr;
 	}
-	it->second->AddRef(materials);
+	it->second->AddRef();
 	return it->second;
 }
 
@@ -116,11 +116,6 @@ void ResourceManager::UploadMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12
 
 	auto size = sizeof(Material) * mMaterials.size();
 	mMaterialBuffer = std::make_unique<DefaultBuffer>(device,commandList,mMaterials.data(),sizeof(Material) * mMaterials.size());
-
-	// 서브메쉬 재질 업로드. 
-	for (auto& model : *mModelContainer) {
-		model->UploadMaterials(device, commandList);
-	}
 }
 
 
@@ -145,9 +140,9 @@ TextureIndex ResourceManager::GetTexture(const std::string& name)
 	return mTextureMap[name];
 }
 
-std::shared_ptr<IRendererEntity> ResourceManager::GetModel(const std::string& name, const std::vector<MaterialIndex>& materials)
+std::shared_ptr<IRendererEntity> ResourceManager::GetModel(const std::string& name)
 {
-	return mModelContainer->GetModel(name,materials);
+	return mModelContainer->GetModel(name);
 }
 
 void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)

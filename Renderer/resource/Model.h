@@ -16,10 +16,9 @@ public:
 	Model(ComPtr<ID3D12Device>& device,std::shared_ptr<IGraphicsShader> shader);
 	~Model();
 
-	virtual void WriteContext(void* data) override;
+	virtual void WriteContext(ModelContext* data, const std::span<MaterialIndex>& materials) override;
 
-	void AddRef(const std::vector<MaterialIndex>& materials);
-	void UploadMaterials(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void AddRef();
 
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
 	bool CompareShader(const std::shared_ptr<Model>& other) const noexcept;

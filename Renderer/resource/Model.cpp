@@ -54,30 +54,24 @@ Model::~Model()
 {
 }
 
-void Model::WriteContext(void* data)
+void Model::WriteContext(ModelContext* data, const std::span<MaterialIndex>& materials)
 {
 	memcpy(mModelContexts[mMemoryIndex].mBufferPtr + mInstanceCount, data, sizeof(ModelContext));
+
+	for (auto i = 0; i < mMeshes.size(); ++i) {
+		mMeshes[i]->WriteContext(materials[i]);
+	}
+
 	mInstanceCount++;
 }
 
 /// <summary>
 /// 일단 세자. 나중에 MaxRef 가 넘어갈 때, 재할당에 사용해야한다. 
 /// </summary>
-void Model::AddRef(const std::vector<MaterialIndex>& materials) 
+void Model::AddRef() 
 {
-	for (auto i = 0; i < mMeshes.size(); ++i) {
-		mMeshes[i]->Ref(materials[i]);
-	}
 	mRefCount++;
 }
-
-void Model::UploadMaterials(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
-{
-	for (auto& mesh : mMeshes) {
-		mesh->UploadMaterialInfo(device, commandList);
-	}
-}
-
 
 void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
 {
@@ -100,7 +94,7 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 
 	for (auto& mesh : mMeshes) {
-		mesh->Render(commandList,mInstanceCount);
+		mesh->Render(commandList);
 	}
 	
 	mInstanceCount = 0;
@@ -197,5 +191,5 @@ void TerrainModel::Create(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCom
 	mIndexBuffer		= std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
 	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
 
-	mMeshes.emplace_back(std::make_unique<Mesh>(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size())));
+	mMeshes.emplace_back(std::make_unique<Mesh>(device,D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size())));
 }

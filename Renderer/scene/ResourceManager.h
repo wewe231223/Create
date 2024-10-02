@@ -7,7 +7,7 @@ class ResourceManager {
 		~ModelContainer();
 
 		void Insert(const std::string& name,std::shared_ptr<class Model>&& newModel);
-		std::shared_ptr<IRendererEntity> GetModel(const std::string& name, const std::vector<MaterialIndex>& materials);
+		std::shared_ptr<IRendererEntity> GetModel(const std::string& name);
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
 		std::vector<std::shared_ptr<class Model>>::iterator end();
 	private:
@@ -34,7 +34,7 @@ public:
 	std::shared_ptr<IGraphicsShader>			GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
-	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name, const std::vector<MaterialIndex>& materials);
+	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name);
 
 	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);

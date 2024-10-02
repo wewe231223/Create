@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 __interface IRendererEntity {
-	void WriteContext(void* data) PURE;
+	void WriteContext(ModelContext* data,const std::span<MaterialIndex>& materials) PURE;
 };
 
 __interface IGraphicsShader {

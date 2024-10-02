@@ -64,6 +64,7 @@
 #include <iterator>
 #include <fstream>
 #include <filesystem>
+#include <span>
 using namespace Microsoft::WRL;
 using namespace std::chrono_literals;
 namespace fs = std::filesystem;

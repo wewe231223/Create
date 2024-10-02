@@ -23,9 +23,14 @@ void GameScene::Update()
 {
 
 	ModelContext context{};
-	
-	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f }).Transpose() ;
-	re->WriteContext(&context);
+
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,0.f,0.f }).Transpose();
+	MaterialIndex mi[]{ mSceneResource->GetMaterial("TerrainMaterial") };
+	re->WriteContext(&context, std::span(mi));
+
+	context.World = DirectX::SimpleMath::Matrix::CreateTranslation({ 0.f,200.f,0.f }).Transpose();
+	mi[0] = mSceneResource->GetMaterial("aa");
+	re->WriteContext(&context, std::span(mi));
 
 	mCamera->GetTransform().LookAt({ 0.f,0.f,0.f });
 	
@@ -78,13 +83,18 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mSceneResource->CreateTexture(device, commandList, "TerrainBaseTexture", L"./Resources/terrain/Base_Texture.dds");
 	mSceneResource->CreateTexture(device, commandList, "TerrainDetailTexture", L"./Resources/terrain/Detail_Texture_7.dds");
+	mSceneResource->CreateTexture(device, commandList, "aa", L"./Resources/terrain/Detail_Texture_6.dds");
 
 	Material mat{};
 	mat.DiffuseTexIndex_1 = mSceneResource->GetTexture("TerrainBaseTexture");
 	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("TerrainDetailTexture");
-
 	mSceneResource->CreateMaterial(device, commandList,"TerrainMaterial", mat);
 	
+	mat.DiffuseTexIndex_2 = mSceneResource->GetTexture("aa");
+	mSceneResource->CreateMaterial(device, commandList, "aa", mat);
+
+
+
 	mSceneResource->CreateShader<TerrainShader>(device,"TerrainShader");
 	mSceneResource->CreateModel<TerrainModel>(
 		"TerrainModel",
@@ -95,7 +105,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 		DirectX::SimpleMath::Vector3{1.f,1.f,1.f}
 	);
 	
-	re = mSceneResource->GetModel("TerrainModel", { mSceneResource->GetMaterial("TerrainMaterial") });
+	re = mSceneResource->GetModel("TerrainModel");
 	
 
 	mSceneResource->UploadMaterial(device, commandList);
