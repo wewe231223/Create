@@ -11,7 +11,7 @@ public:
 	void UploadMaterialInfo(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList,UINT instance) const;
 private:
-	D3D12_PRIMITIVE_TOPOLOGY mTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST };
+	D3D12_PRIMITIVE_TOPOLOGY mTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP };
 	UINT mIndexBegin{ 0 };
 	UINT mIndexCount{ 0 };
 	UINT mMaterialIndex{ 0 };

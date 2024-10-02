@@ -37,7 +37,6 @@ TerrainImage::TerrainImage(const fs::path& path)
 			mPixels[x + (y * mWidth)] = buffer[x + ((mHeight - y - 1) * mWidth)];
 		}
 	}
-	// memcpy(mPixels.get(), buffer.get(), sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
 
 	Console.InfoLog("{} 파일을 성공적으로 로드했습니다.", path.string().c_str());
 }

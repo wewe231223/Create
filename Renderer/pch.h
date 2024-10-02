@@ -40,10 +40,8 @@
 #pragma comment(lib, "dxguid.lib")
 #ifdef _DEBUG 
 #pragma comment(lib,"external/lib/debug/DirectXTK12.lib")
-#pragma comment(lib,"external/lib/debug/DirectXTex.lib")
 #else
 #pragma comment(lib,"external/lib/release/DirectXTK12.lib")
-#pragma comment(lib,"external/lib/release/DirectXTex.lib")
 #endif
 #include <optional>
 #include <string>
