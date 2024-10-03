@@ -2,6 +2,7 @@
 #include "Game/GameScenes.h"
 #include "Renderer/resource/TerrainImage.h"
 #include "Game/Camera.h"
+#include "Game/utils/NonReplacementSampler.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -38,7 +39,7 @@ void GameScene::Update()
 
 	mCamera->GetTransform().LookAt({ 0.f,0.f,0.f });
 	
-
+	Console.InfoLog("{}", NrSampler.Sample());
 
 }
 

@@ -22,6 +22,9 @@
     <Filter Include="Game\components">
       <UniqueIdentifier>{a2fb9988-ddb7-4e03-9573-d7c2474af7ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\utils">
+      <UniqueIdentifier>{bec8362d-41ff-4af4-a484-a79dcd592eda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -51,6 +54,12 @@
     <ClInclude Include="Game\components\Transform.h">
       <Filter>Game\components</Filter>
     </ClInclude>
+    <ClInclude Include="Game\utils\NonReplacementSampler.h">
+      <Filter>Game\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\utils\RandomEngine.h">
+      <Filter>Game\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -73,6 +82,12 @@
     </ClCompile>
     <ClCompile Include="Game\components\Transform.cpp">
       <Filter>Game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\utils\NonReplacementSampler.cpp">
+      <Filter>Game\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\utils\RandomEngine.cpp">
+      <Filter>Game\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

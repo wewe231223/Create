@@ -9,6 +9,10 @@
 #include <memory.h>
 #include <tchar.h>
 
+#include <random>
+#include <numeric>
+#include <bitset>
+
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
 #else 

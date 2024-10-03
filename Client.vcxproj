@@ -143,6 +143,8 @@
     <ClInclude Include="Game\GameObject.h" />
     <ClInclude Include="Game\GameScenes.h" />
     <ClInclude Include="Game\Input.h" />
+    <ClInclude Include="Game\utils\NonReplacementSampler.h" />
+    <ClInclude Include="Game\utils\RandomEngine.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -154,6 +156,8 @@
     <ClCompile Include="Game\GameObject.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />
     <ClCompile Include="Game\Input.cpp" />
+    <ClCompile Include="Game\utils\NonReplacementSampler.cpp" />
+    <ClCompile Include="Game\utils\RandomEngine.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
