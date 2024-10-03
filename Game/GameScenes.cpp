@@ -38,30 +38,8 @@ void GameScene::Update()
 
 	mCamera->GetTransform().LookAt({ 0.f,0.f,0.f });
 	
-	if (Input.GetKeyboardState().E)
-	{
-		mCamera->GetTransform().Translate({ 0.f,0.1f,0.f });
-	}
-	if (Input.GetKeyboardState().Q)
-	{
-		mCamera->GetTransform().Translate({ 0.f,-0.1f,0.f });
-	}
-	if (Input.GetKeyboardState().W)
-	{
-		mCamera->GetTransform().Translate({ 0.f,0.f,0.1f });
-	}
-	if (Input.GetKeyboardState().S)
-	{
-		mCamera->GetTransform().Translate({ 0.f,0.f,-0.1f });
-	}
-	if (Input.GetKeyboardState().A)
-	{
-		mCamera->GetTransform().Translate({ -0.1f,0.f,0.f });
-	}
-	if (Input.GetKeyboardState().D)
-	{
-		mCamera->GetTransform().Translate({ 0.1f,0.f,0.f });
-	}
+
+
 }
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<Window> window)
@@ -73,6 +51,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 	mCamera->GetTransform().Translate({ 0.f,100.f,0.f });
 
 	mCamera->GetTransform().LookAt({0.f,0.f,0.f});
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,0.1f });  });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,-0.1f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, [&]() {mCamera->GetTransform().Translate({ -0.1f,0.f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, [&]() {mCamera->GetTransform().Translate({ 0.1f,0.f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, [&]() {mCamera->GetTransform().Translate({ 0.f,-0.1f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, [&]() {mCamera->GetTransform().Translate({ 0.f,0.1f,0.f }); });
 
 	mSceneResource = std::make_unique<ResourceManager>(device);
 

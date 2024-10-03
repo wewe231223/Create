@@ -236,6 +236,7 @@ namespace DirectX
 
             Pa1 = 0xfd,
             OemClear = 0xfe,
+            END = 0xff
         };
 
         struct State
