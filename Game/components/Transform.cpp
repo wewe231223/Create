@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Game/Transform.h"
+#include "Game/components/Transform.h"
 
 Transform::Transform()
 {

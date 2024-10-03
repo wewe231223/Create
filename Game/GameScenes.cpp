@@ -20,7 +20,6 @@ GameScene::~GameScene()
 std::shared_ptr<IRendererEntity> re{ nullptr };
 std::shared_ptr<IRendererEntity> ree{ nullptr };
 
-int a = 30;
 
 void GameScene::Update()
 {
@@ -65,16 +64,9 @@ void GameScene::Update()
 	}
 }
 
-void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<Window> window)
 {
-	mCamera = std::make_unique<Camera>(device, commandList);
-
-	auto& CameraParam = mCamera->GetCameraParam();
-	CameraParam.Aspect = 1920.f / 1080.f;
-	CameraParam.FOV = DirectX::XMConvertToRadians(60.f);
-	CameraParam.NearZ = 0.1f;
-	CameraParam.FarZ = 3000.f;
-
+	mCamera = std::make_unique<Camera>(device, commandList, window);
 
 	mCamera->UpdateStaticVariables();
 

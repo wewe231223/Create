@@ -2,6 +2,7 @@
 #include "scene/Scene.h"
 #include "scene/ResourceManager.h"
 #include "buffer/DefaultBuffer.h"
+#include "core/window.h"
 Scene::Scene()
 {
 }

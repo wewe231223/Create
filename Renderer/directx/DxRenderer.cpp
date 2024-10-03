@@ -57,7 +57,7 @@ void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 		mLoadCommandAllocator->Reset();
 		mCommandList->Reset(mLoadCommandAllocator.Get(), nullptr);
 
-		scene->Load(mDevice, mCommandList);
+		scene->Load(mDevice, mCommandList, mWindow);
 		mScene = scene;
 		
 		DxRenderer::ExecuteCommandList();

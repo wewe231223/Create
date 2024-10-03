@@ -29,5 +29,5 @@
 #include "Renderer/buffer/DefaultBuffer.h"
 
 
-#include "Game/Transform.h"
+#include "Game/components/Transform.h"
 #include "Game/Input.h"

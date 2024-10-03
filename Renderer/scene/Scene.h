@@ -7,8 +7,8 @@ public:
 	void SetName(const std::string& name);
 
 	const std::string& GetName() const;
-	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)		= 0;
-	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList)									= 0;
+	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window) PURE;
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList)	PURE;
 protected:
 	std::string mName{ "SceneName" };
 

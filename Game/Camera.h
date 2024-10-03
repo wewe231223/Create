@@ -13,7 +13,7 @@ public:
 		float Aspect;
 	};
 public:
-	Camera(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
+	Camera(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<Window> window);
 	~Camera();
 
 	CameraParam& GetCameraParam();
@@ -26,6 +26,7 @@ public:
 	Transform& GetTransform();
 private:
 	CameraParam														mCameraParam{};
+	std::shared_ptr<Window>											mWindow{ nullptr };
 	std::array<CameraBuffer, static_cast<size_t>(GC_FrameCount)>	mCameraContexts{};
 	UINT															mMemoryIndex{ 0 };
 

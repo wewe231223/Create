@@ -2,7 +2,8 @@
 #include "Game/Camera.h"
 
 
-Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<Window> window)
+	: mWindow(window)
 {
 
 	D3D12_RESOURCE_DESC desc{};
@@ -33,6 +34,12 @@ Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& 
 
 		context.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(context.mBufferPtr)));
 	}
+
+
+	mCameraParam.FOV = DirectX::XMConvertToRadians(60.f);
+	mCameraParam.Aspect = mWindow->GetWindowWidth<float>() / mWindow->GetWindowHeight<float>();
+	mCameraParam.NearZ = 0.1f;
+	mCameraParam.FarZ = 1000.f;
 }
 
 Camera::~Camera()
