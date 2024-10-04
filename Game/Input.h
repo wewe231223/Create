@@ -12,7 +12,6 @@ public:
 	DirectX::Keyboard::KeyboardStateTracker& GetKeyboardTracker();
 	DirectX::Mouse::ButtonStateTracker& GetMouseTracker();
 
-	// TODO : 콜백을 삭제할 방법을 만들자 
 	void RegisterKeyPressCallBack	(DirectX::Keyboard::Keys key,int sign,std::function<void()>&& callback);
 	void RegisterKeyDownCallBack	(DirectX::Keyboard::Keys key,int sign, std::function<void()>&& callback);
 	void RegisterKeyReleaseCallBack	(DirectX::Keyboard::Keys key,int sign, std::function<void()>&& callback);

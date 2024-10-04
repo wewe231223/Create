@@ -101,6 +101,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 	re = mSceneResource->GetModel("TexturedModel");
 
 	mSceneResource->UploadMaterial(device, commandList);
+
+
+	
 }
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)

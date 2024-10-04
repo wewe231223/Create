@@ -9,6 +9,11 @@ Transform::~Transform()
 {
 }
 
+void Transform::Update(GameObject* object)
+{
+	
+}
+
 void Transform::Translate(const DirectX::SimpleMath::Vector3& translation)
 {
 	mPosition += translation;

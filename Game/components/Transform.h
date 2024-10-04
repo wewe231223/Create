@@ -21,10 +21,12 @@ GetEnumerator(): 자식 오브젝트를 반복할 수 있는 열거자를 반환
 */
 
 
-class Transform {
+class Transform : public ComponentBase {
 public:
 	Transform();
-	~Transform();
+	virtual ~Transform();
+
+	void Update(GameObject* object) override;
 
 	void Translate(const DirectX::SimpleMath::Vector3& translation);
 	void Rotate(float yaw = 0.f, float pitch = 0.f, float roll = 0.f);

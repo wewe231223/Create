@@ -12,6 +12,7 @@
 #include <random>
 #include <numeric>
 #include <bitset>
+#include <concepts>
 
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
@@ -31,7 +32,9 @@
 #include "Renderer/resource/Model.h"
 #include "Renderer/resource/Mesh.h"
 #include "Renderer/buffer/DefaultBuffer.h"
-
 #include "Renderer/ui/Console.h"
+
+
+#include "Game/GameObject.h"
 #include "Game/components/Transform.h"
 #include "Game/Input.h"
