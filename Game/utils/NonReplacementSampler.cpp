@@ -12,6 +12,7 @@ NonReplacementSampler::~NonReplacementSampler()
 {
 }
 
+
 int NonReplacementSampler::Sample()
 {
 	assert(mCount < TOTAL_SAMPLES);  // 샘플링할 수 있는 숫자가 남아있는지 확인
@@ -24,6 +25,12 @@ int NonReplacementSampler::Sample()
     mUsed.set(number);  // 숫자를 선택된 것으로 마크
     ++mCount;
     return number;
+}
+
+void NonReplacementSampler::Free(int sign)
+{
+	mUsed.reset(sign);
+	--mCount;
 }
 
 NonReplacementSampler NrSampler{};

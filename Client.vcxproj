@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="Game\Camera.h" />
+    <ClInclude Include="Game\CameraController.h" />
     <ClInclude Include="Game\components\Transform.h" />
     <ClInclude Include="Game\GameObject.h" />
     <ClInclude Include="Game\GameScenes.h" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Game\Camera.cpp" />
+    <ClCompile Include="Game\CameraController.cpp" />
     <ClCompile Include="Game\components\Transform.cpp" />
     <ClCompile Include="Game\GameObject.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />

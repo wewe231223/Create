@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Game/Input.h"
+#include "Game/utils/NonReplacementSampler.h"
 
 std::array<unsigned char, DirectX::Keyboard::Keys::END>  keys{};
 GInput::GInput()
@@ -22,17 +23,17 @@ void GInput::Update()
 	for (auto& key : keys) {
 		if (mKeyboardState.IsKeyDown(static_cast<DirectX::Keyboard::Keys>(key))) {
 			if (mKeyboardTracker.IsKeyPressed(static_cast<DirectX::Keyboard::Keys>(key))) {
-				for (auto& callback : mKeyDownCallbacks[key]) {
+				for (auto& [ callback,sign ] : mKeyDownCallbacks[key]) {
 					std::invoke(callback);
 				}
 			}
 			else {
-				for (auto& callback : mKeyPressCallbacks[key]) {
+				for (auto& [callback, sign] : mKeyPressCallbacks[key]) {
 					std::invoke(callback);
 				}
 			}
 		} else if (mKeyboardTracker.IsKeyReleased(static_cast<DirectX::Keyboard::Keys>(key))) {
-			for (auto& callback : mKeyReleaseCallbacks[key]) {
+			for (auto& [callback, sign] : mKeyReleaseCallbacks[key]) {
 				std::invoke(callback);
 			}
 		}
@@ -60,19 +61,37 @@ DirectX::Mouse::ButtonStateTracker& GInput::GetMouseTracker()
 	return std::ref(mMouseTracker);
 }
 
-void GInput::RegisterKeyPressCallBack(DirectX::Keyboard::Keys key, std::function<void()>&& callback)
+void GInput::RegisterKeyPressCallBack(DirectX::Keyboard::Keys key, int sign, std::function<void()>&& callback)
 {
-	mKeyPressCallbacks[key].emplace_back(callback);
+	mKeyPressCallbacks[key].emplace_back(callback,sign);
+
 }
 
-void GInput::RegisterKeyDownCallBack(DirectX::Keyboard::Keys key, std::function<void()>&& callback)
+void GInput::RegisterKeyDownCallBack(DirectX::Keyboard::Keys key, int sign, std::function<void()>&& callback)
 {
-	mKeyDownCallbacks[key].emplace_back(callback);
+	mKeyDownCallbacks[key].emplace_back(callback,sign);
 }
 
-void GInput::RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys key, std::function<void()>&& callback)
+void GInput::RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys key, int sign, std::function<void()>&& callback)
 {
-	mKeyReleaseCallbacks[key].emplace_back(callback);
+	mKeyReleaseCallbacks[key].emplace_back(callback,sign);
 }
+
+void GInput::EraseCallBack(int sign)
+{
+	for (auto& callbacks : mKeyPressCallbacks) {
+		std::erase_if(callbacks, [sign](auto& callback) {return callback.second == sign; });
+	}
+
+	for (auto& callbacks : mKeyDownCallbacks) {
+		std::erase_if(callbacks, [sign](auto& callback) {return callback.second == sign; });
+	}
+
+	for (auto& callbacks : mKeyReleaseCallbacks) {
+		std::erase_if(callbacks, [sign](auto& callback) {return callback.second == sign; });
+	}
+}
+
+
 
 GInput Input{};

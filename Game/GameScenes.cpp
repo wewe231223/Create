@@ -38,11 +38,9 @@ void GameScene::Update()
 
 
 	mCamera->GetTransform().LookAt({ 0.f,0.f,0.f });
-	
-	Console.InfoLog("{}", NrSampler.Sample());
-
 }
 
+#include "Game/utils/NonReplacementSampler.h"
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<Window> window)
 {
 	mCamera = std::make_unique<Camera>(device, commandList, window);
@@ -53,12 +51,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandL
 
 	mCamera->GetTransform().LookAt({0.f,0.f,0.f});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,0.1f });  });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,-0.1f }); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, [&]() {mCamera->GetTransform().Translate({ -0.1f,0.f,0.f }); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, [&]() {mCamera->GetTransform().Translate({ 0.1f,0.f,0.f }); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, [&]() {mCamera->GetTransform().Translate({ 0.f,-0.1f,0.f }); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, [&]() {mCamera->GetTransform().Translate({ 0.f,0.1f,0.f }); });
+	int sign = NrSampler.Sample();
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,0.1f });  });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [&]() {mCamera->GetTransform().Translate({ 0.f,0.f,-0.1f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, sign, [&]() {mCamera->GetTransform().Translate({ -0.1f,0.f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, sign, [&]() {mCamera->GetTransform().Translate({ 0.1f,0.f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [&]() {mCamera->GetTransform().Translate({ 0.f,-0.1f,0.f }); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [&]() {mCamera->GetTransform().Translate({ 0.f,0.1f,0.f }); });
 
 	mSceneResource = std::make_unique<ResourceManager>(device);
 
