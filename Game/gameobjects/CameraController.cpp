@@ -1,10 +1,14 @@
 #include "pch.h"
-#include "Game/CameraController.h"
+#include "Game/gameobjects/CameraController.h"
 
 CameraController::CameraController()
 {
+	
 }
 
 CameraController::~CameraController()
 {
 }
+
+
+

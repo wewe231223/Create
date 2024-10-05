@@ -25,6 +25,9 @@
     <Filter Include="Game\utils">
       <UniqueIdentifier>{bec8362d-41ff-4af4-a484-a79dcd592eda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\gameobjects">
+      <UniqueIdentifier>{e392dcf3-743b-47ef-8931-a83f4e83842b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -40,12 +43,6 @@
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="Game\GameScenes.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\GameObject.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Camera.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Input.h">
@@ -69,8 +66,14 @@
     <ClInclude Include="Game\defines.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\components\CameraController.h">
-      <Filter>Game\components</Filter>
+    <ClInclude Include="Game\gameobjects\Camera.h">
+      <Filter>Game\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\gameobjects\CameraController.h">
+      <Filter>Game\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\gameobjects\GameObject.h">
+      <Filter>Game\gameobjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -81,12 +84,6 @@
       <Filter>pch</Filter>
     </ClCompile>
     <ClCompile Include="Game\GameScenes.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\GameObject.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Camera.cpp">
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\Input.cpp">
@@ -110,8 +107,14 @@
     <ClCompile Include="Game\defines.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\components\CameraController.cpp">
-      <Filter>Game\components</Filter>
+    <ClCompile Include="Game\gameobjects\Camera.cpp">
+      <Filter>Game\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobjects\CameraController.cpp">
+      <Filter>Game\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobjects\GameObject.cpp">
+      <Filter>Game\gameobjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

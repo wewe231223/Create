@@ -44,6 +44,10 @@ void GameWorld::Update()
 	for (auto& gameobject : mGameObjects) {
 		gameobject->Update(this);
 	}
+
+	for (auto& gameobject : mGameObjects) {
+		gameobject->LateUpdate(this);
+	}
 }
 
 void GameWorld::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)

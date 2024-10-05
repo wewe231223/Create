@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Game/GameObject.h"
+#include "Game/gameobjects/GameObject.h"
 #include "Game/GameWorld.h"
 
 ComponentBase::ComponentBase()

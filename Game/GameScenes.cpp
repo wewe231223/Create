@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Game/GameScenes.h"
 #include "Renderer/resource/TerrainImage.h"
-#include "Game/Camera.h"
 #include "Game/utils/NonReplacementSampler.h"
 #include "Game/GameWorld.h"
 
