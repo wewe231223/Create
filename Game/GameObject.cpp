@@ -46,8 +46,17 @@ GameObject::~GameObject()
 {
 }
 
+void GameObject::Awake(GameWorld* world)
+{
+	if (mMonoBehavior) {
+		mMonoBehavior->Awake(world, this);
+	}
+}
+
 void GameObject::Update(class GameWorld* world)
 {
+	if (not mActiveState) return; 
+
 	if (mMonoBehavior) {
 		mMonoBehavior->Update(world, this);
 		for (auto& components : mUpdatableComponents) {
@@ -64,9 +73,16 @@ void GameObject::Update(class GameWorld* world)
 
 void GameObject::LateUpdate(GameWorld* world)
 {
+	if (not mActiveState) return; 
+
 	if (mMonoBehavior) {
 		mMonoBehavior->LateUpdate(world, this);
 	}
+}
+
+void GameObject::SetActiveState(bool state)
+{
+	mActiveState = state;
 }
 
 void GameObject::SetActiveState(GameWorld* world, bool state)

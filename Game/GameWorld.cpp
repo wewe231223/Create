@@ -32,6 +32,13 @@ void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>&&
 	mGameObjects.emplace_back(mGameObjectsbyTag[tag].back());
 }
 
+void GameWorld::Awake()
+{
+	for (auto& gameobject : mGameObjects) {
+		gameobject->Awake(this);
+	}
+}
+
 void GameWorld::Update()
 {
 	for (auto& gameobject : mGameObjects) {

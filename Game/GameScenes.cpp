@@ -30,8 +30,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mGameWorld = std::make_unique<GameWorld>(device);
 
 	// 이 사이 씬에서 사용될 게임 오브젝트들을 채운다. 
+	auto p = std::make_shared<GameObject>();
 
 	mGameWorld->GetSceneResource()->ExecuteUpload(commandQueue);
+	mGameWorld->Awake();
 }
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
