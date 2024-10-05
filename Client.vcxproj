@@ -139,10 +139,13 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="Game\Camera.h" />
-    <ClInclude Include="Game\CameraController.h" />
+    <ClInclude Include="Game\components\CameraController.h" />
+    <ClInclude Include="Game\components\MeshRenderer.h" />
     <ClInclude Include="Game\components\Transform.h" />
+    <ClInclude Include="Game\defines.h" />
     <ClInclude Include="Game\GameObject.h" />
     <ClInclude Include="Game\GameScenes.h" />
+    <ClInclude Include="Game\GameWorld.h" />
     <ClInclude Include="Game\Input.h" />
     <ClInclude Include="Game\utils\NonReplacementSampler.h" />
     <ClInclude Include="Game\utils\RandomEngine.h" />
@@ -153,10 +156,13 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Game\Camera.cpp" />
-    <ClCompile Include="Game\CameraController.cpp" />
+    <ClCompile Include="Game\components\CameraController.cpp" />
+    <ClCompile Include="Game\components\MeshRenderer.cpp" />
     <ClCompile Include="Game\components\Transform.cpp" />
+    <ClCompile Include="Game\defines.cpp" />
     <ClCompile Include="Game\GameObject.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />
+    <ClCompile Include="Game\GameWorld.cpp" />
     <ClCompile Include="Game\Input.cpp" />
     <ClCompile Include="Game\utils\NonReplacementSampler.cpp" />
     <ClCompile Include="Game\utils\RandomEngine.cpp" />

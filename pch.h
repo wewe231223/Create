@@ -34,7 +34,7 @@
 #include "Renderer/buffer/DefaultBuffer.h"
 #include "Renderer/ui/Console.h"
 
-
+#include "Game/defines.h"
 #include "Game/GameObject.h"
 #include "Game/components/Transform.h"
 #include "Game/Input.h"

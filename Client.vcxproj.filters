@@ -60,8 +60,17 @@
     <ClInclude Include="Game\utils\RandomEngine.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Game\CameraController.h">
+    <ClInclude Include="Game\components\MeshRenderer.h">
+      <Filter>Game\components</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameWorld.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\defines.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\components\CameraController.h">
+      <Filter>Game\components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,8 +101,17 @@
     <ClCompile Include="Game\utils\RandomEngine.cpp">
       <Filter>Game\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game\CameraController.cpp">
+    <ClCompile Include="Game\components\MeshRenderer.cpp">
+      <Filter>Game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameWorld.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\defines.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\components\CameraController.cpp">
+      <Filter>Game\components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

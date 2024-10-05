@@ -49,7 +49,6 @@ private:
 	ComPtr<ID3D12Fence>	mFence{ nullptr };
 	UINT64 mFenceValue{ 0 };
 
-	ComPtr<ID3D12CommandAllocator>		mLoadCommandAllocator{ nullptr };
 	ComPtr<ID3D12GraphicsCommandList>	mCommandList{ nullptr };
 	UINT mCurrentFrameMemoryIndex{ 0 };
 	std::array<std::shared_ptr<class FrameMemory>,static_cast<size_t>(EGlobalConstants::GC_FrameCount)> mFrameMemories{};

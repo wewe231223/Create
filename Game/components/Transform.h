@@ -20,13 +20,14 @@ GetEnumerator(): 자식 오브젝트를 반복할 수 있는 열거자를 반환
 
 */
 
+//  TODO : Mesh Renderer , Camera  컴포넌트 만들어라 
 
 class Transform : public ComponentBase {
 public:
+	static constexpr size_t TypeIndex = 0;
+
 	Transform();
 	virtual ~Transform();
-
-	void Update(GameObject* object) override;
 
 	void Translate(const DirectX::SimpleMath::Vector3& translation);
 	void Rotate(float yaw = 0.f, float pitch = 0.f, float roll = 0.f);

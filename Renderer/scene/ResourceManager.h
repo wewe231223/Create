@@ -1,4 +1,6 @@
 #pragma once 
+
+#define MODEL_CONT_CHECK_EMPTY 
 // 씬에서 사용할 모든 리소스 저장. ( 모델, 텍스쳐 등등 )  
 class ResourceManager {
 	class ModelContainer {
@@ -6,6 +8,7 @@ class ResourceManager {
 		ModelContainer();
 		~ModelContainer();
 
+		bool Empty() const noexcept;
 		void Insert(const std::string& name,std::shared_ptr<class Model>&& newModel);
 		std::shared_ptr<IRendererEntity> GetModel(const std::string& name);
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
@@ -18,27 +21,37 @@ public:
 	ResourceManager(ComPtr<ID3D12Device>& device);
 	~ResourceManager();
 
-	template<typename T>
-	void CreateShader(ComPtr<ID3D12Device>& device, const std::string& name);
 
-	void CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const fs::path& path);
-	void CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material);
+	// 직렬화가 필요한 부분이다...
+	template<typename T>
+	void CreateShader(const std::string& name);
+	void CreateTexture(const std::string& name, const fs::path& path);
+	void CreateMaterial(const std::string& name, const Material& material);
 	
 	template<typename T,typename... Args> 
-	void CreateModel(const std::string&,ComPtr<ID3D12Device>&,ComPtr<ID3D12GraphicsCommandList>&,Args&&...);
-	void UploadMaterial(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void CreateModel(const std::string&, Args&&...);
 
-	
-	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	// 이 함수를 호출한 뒤에 반드시 FlushCommandQueue 를 호출할 것 ( 이 객체와 Fence 는 무관하기에 동작을 구분하였음 ) 
+	void ExecuteUpload(ComPtr<ID3D12CommandQueue>& queue);
 
 	std::shared_ptr<IGraphicsShader>			GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
 	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name);
 
+	// 이 부분들은 렌더링할 때 호출된다. 로드 커맨드 리스트와 다르므로, 이 세 함수는 렌더 커맨드 리스트를 받아야 한다. 
+	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
+	void Reset();
+	void UploadMaterial();
+private:
+	// 여기에 디바이스를 놓기 너무 싫은데 이건 안할수가 없다.. 
+	ComPtr<ID3D12Device>				mDevice{ nullptr };
+	ComPtr<ID3D12GraphicsCommandList>	mLoadCommandList{ nullptr };
+	ComPtr<ID3D12CommandAllocator>		mCommandAllocator{ nullptr };
+			
 	ComPtr<ID3D12DescriptorHeap> mTexHeap{ nullptr };
 
 	std::unique_ptr<class DefaultBuffer>				mMaterialBuffer{ nullptr };
@@ -54,15 +67,15 @@ private:
 };
 
 template<typename T>
-inline void ResourceManager::CreateShader(ComPtr<ID3D12Device>& device,const std::string& name)
+inline void ResourceManager::CreateShader(const std::string& name)
 {
-	auto newShader = std::make_shared<T>(device);
+	auto newShader = std::make_shared<T>(mDevice);
 	mShaderMap[name] = std::move(newShader);
 }
 
 template<typename T, typename ...Args>
-inline void ResourceManager::CreateModel(const std::string& name,ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, Args && ...args)
+inline void ResourceManager::CreateModel(const std::string& name, Args && ...args)
 {
-	auto newModel = std::make_shared<T>(device,commandList,std::forward<Args>(args)...);
+	auto newModel = std::make_shared<T>(mDevice,mLoadCommandList,std::forward<Args>(args)...);
 	mModelContainer->Insert(name,std::move(newModel));
 }

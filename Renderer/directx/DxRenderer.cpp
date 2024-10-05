@@ -53,14 +53,9 @@ void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 	else {
 		Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
-	
-		mLoadCommandAllocator->Reset();
-		mCommandList->Reset(mLoadCommandAllocator.Get(), nullptr);
-
-		scene->Load(mDevice, mCommandList, mWindow);
+		scene->Load(mDevice,mCommandQueue,mWindow);
 		mScene = scene;
-		
-		DxRenderer::ExecuteCommandList();
+
 		DxRenderer::FlushCommandQueue();
 	}
 }
@@ -246,7 +241,6 @@ void DxRenderer::InitFrameMemories()
 
 void DxRenderer::InitCommandList()
 {
-	CheckHR(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mLoadCommandAllocator.GetAddressOf())));
 	CheckHR(mDevice->CreateCommandList(
 		0, 
 		D3D12_COMMAND_LIST_TYPE_DIRECT, 

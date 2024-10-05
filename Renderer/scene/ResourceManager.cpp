@@ -23,6 +23,11 @@ ResourceManager::ModelContainer::~ModelContainer()
 {
 }
 
+bool ResourceManager::ModelContainer::Empty() const noexcept
+{
+	return mModels.empty();
+}
+
 void ResourceManager::ModelContainer::Insert(const std::string& model, std::shared_ptr<Model>&& newModel)
 {
 	// std::lower_bound를 사용하여 새로운 모델이 들어갈 위치를 찾음
@@ -76,16 +81,29 @@ ResourceManager::ResourceManager(ComPtr<ID3D12Device>& device)
 
 	mModelContainer = std::make_unique<ModelContainer>();
 	
+	mDevice = device;
+
+	CheckHR(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mCommandAllocator.GetAddressOf())));
+	CheckHR(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(mLoadCommandList.GetAddressOf())));
+	CheckHR(mLoadCommandList->Close());
 	CheckHR(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(mTexHeap.GetAddressOf())));
+
+	ResourceManager::Reset();
 }
 
 ResourceManager::~ResourceManager()
 {
 }
 
-void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const fs::path& path)
+void ResourceManager::Reset()
 {
-	auto newTexture = mTextures.emplace_back(std::make_unique<DefaultBuffer>(device, commandList, path))->GetBuffer();
+	CheckHR(mCommandAllocator->Reset());
+	CheckHR(mLoadCommandList->Reset(mCommandAllocator.Get(), nullptr));
+}
+
+void ResourceManager::CreateTexture(const std::string& name, const fs::path& path)
+{
+	auto newTexture = mTextures.emplace_back(std::make_unique<DefaultBuffer>(mDevice, mLoadCommandList, path))->GetBuffer();
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -95,27 +113,36 @@ void ResourceManager::CreateTexture(ComPtr<ID3D12Device>& device, ComPtr<ID3D12G
 	srvDesc.Texture2D.MipLevels = 1;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE texheapHandle{ mTexHeap->GetCPUDescriptorHandleForHeapStart() };
-	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-	device->CreateShaderResourceView(newTexture.Get(), &srvDesc, texheapHandle);
+	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	mDevice->CreateShaderResourceView(newTexture.Get(), &srvDesc, texheapHandle);
 
 	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() );
 }
 
-void ResourceManager::CreateMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, const std::string& name, const Material& material)
+void ResourceManager::CreateMaterial(const std::string& name, const Material& material)
 {
 	mMaterials.push_back(material);
 	mMaterialMap[name] = static_cast<MaterialIndex>(mMaterials.size() - 1);
 }
 
 
-void ResourceManager::UploadMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+void ResourceManager::UploadMaterial()
 {
 	if (mMaterials.empty()) {
 		return;
 	}
 
 	auto size = sizeof(Material) * mMaterials.size();
-	mMaterialBuffer = std::make_unique<DefaultBuffer>(device,commandList,mMaterials.data(),sizeof(Material) * mMaterials.size());
+	mMaterialBuffer = std::make_unique<DefaultBuffer>(mDevice, mLoadCommandList, mMaterials.data(),sizeof(Material) * mMaterials.size());
+}
+
+void ResourceManager::ExecuteUpload(ComPtr<ID3D12CommandQueue>& queue)
+{
+	ResourceManager::UploadMaterial();
+
+	mLoadCommandList->Close();
+	ID3D12CommandList* commandLists[] = { mLoadCommandList.Get() };
+	queue->ExecuteCommandLists(1, commandLists);
 }
 
 
@@ -147,14 +174,43 @@ std::shared_ptr<IRendererEntity> ResourceManager::GetModel(const std::string& na
 
 void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+#ifdef MODEL_CONT_CHECK_EMPTY 
+	if (not mModelContainer->Empty()) {
+		std::shared_ptr<Model>& prev = *mModelContainer->begin();
+		prev->SetShader(commandList);
+		commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
+		ResourceManager::SetGlobals(commandList);
+	}
+#else 
 	std::shared_ptr<Model>& prev = *mModelContainer->begin();
 	prev->SetShader(commandList);
 	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	ResourceManager::SetGlobals(commandList);
+#endif 
 }
 
 void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+#ifdef MODEL_CONT_CHECK_EMPTY 
+	if (not mModelContainer->Empty()) {
+		auto prev = mModelContainer->begin();
+		auto cur = mModelContainer->begin();
+		if (cur == mModelContainer->end())
+			return;
+
+		cur->get()->Render(commandList);
+		++cur;
+
+		for (; cur != mModelContainer->end(); ++prev, ++cur) {
+			if (cur->get()->CompareShader(*prev)) {
+				cur->get()->SetShader(commandList);
+				ResourceManager::SetGlobals(commandList);
+			}
+
+			cur->get()->Render(commandList);
+		}
+	}
+#else 
 	auto prev = mModelContainer->begin();
 	auto cur = mModelContainer->begin();
 	if (cur == mModelContainer->end())
@@ -171,6 +227,8 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 		cur->get()->Render(commandList);
 	}
+
+#endif 
 }
 
 
