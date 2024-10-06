@@ -59,6 +59,8 @@ bool Camera::Intersect(DirectX::BoundingOrientedBox& box)
 	return mWorldFrustum.Intersects(box);
 }
 
+
+
 void Camera::UpdateDynamicVariables()
 {
 	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetFoward(), mTransform.GetUp());

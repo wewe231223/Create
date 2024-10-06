@@ -1,3 +1,5 @@
+#include "ResourceManager.h"
+#include "ResourceManager.h"
 #include "pch.h"
 #include "scene/ResourceManager.h"
 #include "buffer/DefaultBuffer.h"
@@ -93,6 +95,16 @@ ResourceManager::ResourceManager(ComPtr<ID3D12Device>& device)
 
 ResourceManager::~ResourceManager()
 {
+}
+
+ComPtr<ID3D12Device> ResourceManager::GetDevice() const noexcept
+{
+	return mDevice;
+}
+
+ComPtr<ID3D12GraphicsCommandList> ResourceManager::GetLoadCommandList() const noexcept
+{
+	return mLoadCommandList;
 }
 
 void ResourceManager::Reset()

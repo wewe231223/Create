@@ -1,4 +1,5 @@
 #pragma once 
+#include <pch.h>
 // 모델 컨테이너가 현재 존재하는 모델이 없는지 검사합니다.
 #define MODEL_CONT_CHECK_EMPTY 
 
@@ -22,7 +23,8 @@ public:
 	ResourceManager(ComPtr<ID3D12Device>& device);
 	~ResourceManager();
 
-
+	ComPtr<ID3D12Device> GetDevice() const noexcept;
+	ComPtr<ID3D12GraphicsCommandList> GetLoadCommandList() const noexcept;
 	// 직렬화가 필요한 부분이다...
 	template<typename T>
 	void CreateShader(const std::string& name);

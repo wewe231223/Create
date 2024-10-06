@@ -26,10 +26,14 @@ void GameScene::Update()
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
-	mGameWorld = std::make_unique<GameWorld>(device);
+	std::shared_ptr<ResourceManager> resourceManager = std::make_shared<ResourceManager>(device);
+	mGameWorld = std::make_unique<GameWorld>(resourceManager);
 
 	// 이 사이 씬에서 사용될 게임 오브젝트들을 채운다. 
 	auto p = std::make_shared<GameObject>();
+
+
+
 
 	mGameWorld->GetSceneResource()->ExecuteUpload(commandQueue);
 	mGameWorld->Awake();

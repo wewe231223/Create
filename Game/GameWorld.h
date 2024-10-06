@@ -1,7 +1,7 @@
 #pragma once 
 class GameWorld {
 public:
-	GameWorld(ComPtr<ID3D12Device>& device);
+	GameWorld(std::shared_ptr<ResourceManager> resourcemgr);
 	~GameWorld();
 
 	ResourceManager* GetSceneResource();
@@ -15,7 +15,7 @@ public:
 	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
-	std::unique_ptr<ResourceManager> mResource{ nullptr };
+	std::shared_ptr<ResourceManager> mResource{ nullptr };
 
 	std::array<std::vector<std::shared_ptr<GameObject>>, EGameObjectTag::END> mGameObjectsbyTag{};
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};

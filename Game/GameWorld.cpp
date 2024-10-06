@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Game/GameWorld.h"
 
-GameWorld::GameWorld(ComPtr<ID3D12Device>& device)
-	: mResource(std::make_unique<ResourceManager>(device))
+GameWorld::GameWorld(std::shared_ptr<ResourceManager> resourcemgr)
+	: mResource(resourcemgr)
 {
 	
 }
