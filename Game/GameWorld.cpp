@@ -4,7 +4,7 @@
 GameWorld::GameWorld(std::shared_ptr<ResourceManager> resourcemgr)
 	: mResource(resourcemgr)
 {
-	
+
 }
 
 GameWorld::~GameWorld()
@@ -21,12 +21,12 @@ std::span<std::shared_ptr<GameObject>> GameWorld::GetGameObject(EGameObjectTag t
 	return std::span(mGameObjectsbyTag[tag]);
 }
 
-void GameWorld::MakeGameObject(std::shared_ptr<GameObject>&& gameObject)
+void GameWorld::MakeGameObject(std::shared_ptr<GameObject>& gameObject)
 {
 	mGameObjects.emplace_back(gameObject);
 }
 
-void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>&& gameObject)
+void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>& gameObject)
 {
 	mGameObjectsbyTag[tag].emplace_back(gameObject);
 	mGameObjects.emplace_back(mGameObjectsbyTag[tag].back());
@@ -35,6 +35,11 @@ void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>&&
 void GameWorld::SetMainCamera(std::shared_ptr<GameObject>& camera)
 {
 	mMainCamera = camera;
+}
+
+std::shared_ptr<GameObject> GameWorld::GetMainCamera()
+{
+	return mMainCamera;
 }
 
 void GameWorld::Awake()

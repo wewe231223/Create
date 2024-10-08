@@ -58,11 +58,10 @@ void GameObject::Update(class GameWorld* world)
 	if (not mActiveState) return; 
 
 	if (mMonoBehavior) {
-		mMonoBehavior->Update(world, this);
 		for (auto& components : mUpdatableComponents) {
 			components->Update(this);
 		}
-		mMonoBehavior->LateUpdate(world, this);
+		mMonoBehavior->Update(world, this);
 	}
 	else {
 		for (auto& components : mUpdatableComponents) {

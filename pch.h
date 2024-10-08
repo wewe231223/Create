@@ -35,6 +35,7 @@
 #include "Renderer/ui/Console.h"
 
 #include "Game/defines.h"
+#include "Game/utils/NonReplacementSampler.h"
 #include "Game/gameobjects/GameObject.h"
 #include "Game/components/Transform.h"
 #include "Game/Input.h"

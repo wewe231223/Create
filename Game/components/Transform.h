@@ -30,6 +30,7 @@ public:
 	virtual ~Transform();
 
 	void Translate(const DirectX::SimpleMath::Vector3& translation);
+	void SetPosition(const DirectX::SimpleMath::Vector3& position);
 	void Rotate(float yaw = 0.f, float pitch = 0.f, float roll = 0.f);
 	void Scale(const DirectX::SimpleMath::Vector3& scale);
 	void Scale(float x = 1.f, float y = 1.f, float z = 1.f);

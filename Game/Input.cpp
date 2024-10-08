@@ -14,6 +14,9 @@ GInput::~GInput()
 
 void GInput::Update()
 {
+	mPrevX = mMouseState.x;
+	mPrevY = mMouseState.y;
+
 	mKeyboardState = mKeyboard->GetState();
 	mMouseState = mMouse->GetState();
 
@@ -75,6 +78,16 @@ void GInput::RegisterKeyDownCallBack(DirectX::Keyboard::Keys key, int sign, std:
 void GInput::RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys key, int sign, std::function<void()>&& callback)
 {
 	mKeyReleaseCallbacks[key].emplace_back(callback,sign);
+}
+
+float GInput::GetDeltaMouseX() const
+{
+	return static_cast<float>(mMouseState.x - mPrevX);
+}
+
+float GInput::GetDeltaMouseY() const
+{
+	return static_cast<float>(mMouseState.y - mPrevY);
 }
 
 void GInput::EraseCallBack(int sign)

@@ -12,8 +12,10 @@ public:
 		float FarZ;
 		float Aspect;
 	};
+
+	static constexpr size_t TypeIndex = 3;
 public:
-	Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commnadList, std::shared_ptr<Window> window);
+	Camera(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window);
 	virtual ~Camera() override;
 
 public:

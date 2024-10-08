@@ -96,7 +96,7 @@ public:
     
     // 애들도 직렬화가 필요한 부분이다.. 
     // 정형적인 행위를 하는 Component 를 만드는 함수. Component 는 Render 에 관여하는 RenderableComponent 와 Update 가 필요한 UpdatableComponent 가 있고, 셋 중 하나에도 들지 않는 일반 Component 도 있음. 모든 컴포넌트는 TypeIndex 라는 static constexpr size_t 필드를 필요로 한다. 컴포넌트 디자인에 있어 명심할 것. 
-    template<typename ComponentType, typename... Args> requires HasTypeIndex<ComponentType> && std::movable<ComponentType> && std::constructible_from<ComponentType, Args...>
+    template<typename ComponentType, typename... Args> requires HasTypeIndex<ComponentType> && std::constructible_from<ComponentType, Args...>
     void AddComponent(Args&&... args);
 
     // Specialize 한 행위를 하는 MonoBehavior 을 만드는 함수. 최적화를 위해 각 GameObject 마다 MonoBehavior 은 하나로 제한함. 
@@ -116,7 +116,7 @@ private:
 };
 
 template<typename ComponentType, typename ...Args>
-    requires HasTypeIndex<ComponentType> && std::movable<ComponentType> && std::constructible_from<ComponentType, Args...>
+    requires HasTypeIndex<ComponentType> && std::constructible_from<ComponentType, Args...>
 inline void GameObject::AddComponent(Args&& ...args)
 {
 	std::shared_ptr<ComponentType> component = std::make_shared<ComponentType>(std::forward<Args>(args)...);

@@ -14,6 +14,11 @@ void Transform::Translate(const DirectX::SimpleMath::Vector3& translation)
 	mPosition += translation;
 }
 
+void Transform::SetPosition(const DirectX::SimpleMath::Vector3& position)
+{
+	mPosition = position;
+}
+
 void Transform::Rotate(float yaw, float pitch, float roll)
 {
 	auto newRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);

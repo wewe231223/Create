@@ -3,6 +3,7 @@
 #include "Renderer/resource/TerrainImage.h"
 #include "Game/utils/NonReplacementSampler.h"
 #include "Game/GameWorld.h"
+#include "Game/gameobjects/Camera.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -30,10 +31,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mGameWorld = std::make_unique<GameWorld>(resourceManager);
 
 	// 이 사이 씬에서 사용될 게임 오브젝트들을 채운다. 
-	auto p = std::make_shared<GameObject>();
-
-
-
+	auto camera = std::make_shared<GameObject>();
+	camera->AddComponent<Transform>();
+	camera->AddComponent<Camera>(device, window);
+	mGameWorld->SetMainCamera(camera);
 
 	mGameWorld->GetSceneResource()->ExecuteUpload(commandQueue);
 	mGameWorld->Awake();

@@ -2,7 +2,7 @@
 #include "Game/gameobjects/Camera.h"
 
 
-Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<Window> window)
+Camera::Camera(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window)
 	: mWindow(window)
 {
 
