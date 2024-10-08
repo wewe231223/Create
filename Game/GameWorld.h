@@ -10,6 +10,8 @@ public:
 	void MakeGameObject(std::shared_ptr<GameObject>&& gameObject);
 	void MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>&& gameObject);
 
+	void SetMainCamera(std::shared_ptr<GameObject>& camera);
+	
 	void Awake();
 	void Update();
 	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
@@ -19,4 +21,7 @@ private:
 
 	std::array<std::vector<std::shared_ptr<GameObject>>, EGameObjectTag::END> mGameObjectsbyTag{};
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
+
+	// 카메라는 특별하게 취급한다. 
+	std::shared_ptr<GameObject> mMainCamera{ nullptr };
 };

@@ -1,7 +1,7 @@
 #pragma once 
 
-enum EGameObjectTag : size_t{
-	Player,
+enum EGameObjectTag : size_t {
+	Tag_Player,
 	END,
 };
 

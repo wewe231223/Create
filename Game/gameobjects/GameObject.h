@@ -105,7 +105,7 @@ public:
 
     // 같은 GameObject 내 다른 컴포넌트 참조를 위해 이 함수를 만들었음. 
     template<typename ComponentType> requires HasTypeIndex<ComponentType> 
-    std::optional<ComponentType*> GetComponent();
+    ComponentType* GetComponent();
 private:
     std::vector<std::shared_ptr<RenderableComponentBase>>   mRenderableComponents{};
     std::vector<std::shared_ptr<UpdatableComponentBase>>    mUpdatableComponents{};
@@ -144,10 +144,10 @@ inline void GameObject::MakeMonoBehavior(Args && ...args)
 
 template<typename ComponentType>
     requires HasTypeIndex<ComponentType>
-inline std::optional<ComponentType*> GameObject::GetComponent()
+inline ComponentType* GameObject::GetComponent()
 {    
-	if (mComponents.size() <= ComponentType::TypeIndex) return std::nullopt;
-	if (mComponents[ComponentType::TypeIndex] == nullptr) return std::nullopt;
+	if (mComponents.size() <= ComponentType::TypeIndex) return nullptr;
+	if (mComponents[ComponentType::TypeIndex] == nullptr) return nullptr;
     
     return reinterpret_cast<ComponentType*>((mComponents.begin() + ComponentType::TypeIndex)->get());
 }

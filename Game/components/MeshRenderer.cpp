@@ -27,7 +27,7 @@ void MeshRenderer::SetCullState(bool state)
 void MeshRenderer::Render(GameObject* object, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	if (not mCullState) {
-		auto transform = object->GetComponent<Transform>().value();
+		auto transform = object->GetComponent<Transform>();
 		mContext.World = transform->GetWorldMatrix();
 
 		mModel->WriteContext(std::addressof(mContext), mMaterials);

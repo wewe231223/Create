@@ -23,13 +23,18 @@ std::span<std::shared_ptr<GameObject>> GameWorld::GetGameObject(EGameObjectTag t
 
 void GameWorld::MakeGameObject(std::shared_ptr<GameObject>&& gameObject)
 {
-	mGameObjects.emplace_back(std::move(gameObject));
+	mGameObjects.emplace_back(gameObject);
 }
 
 void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>&& gameObject)
 {
-	mGameObjectsbyTag[tag].emplace_back(std::move(gameObject));
+	mGameObjectsbyTag[tag].emplace_back(gameObject);
 	mGameObjects.emplace_back(mGameObjectsbyTag[tag].back());
+}
+
+void GameWorld::SetMainCamera(std::shared_ptr<GameObject>& camera)
+{
+	mMainCamera = camera;
 }
 
 void GameWorld::Awake()

@@ -40,6 +40,8 @@ Camera::Camera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& 
 	mCameraParam.Aspect = mWindow->GetWindowWidth<float>() / mWindow->GetWindowHeight<float>();
 	mCameraParam.NearZ = 0.1f;
 	mCameraParam.FarZ = 1000.f;
+
+	Camera::UpdateProjectionMatrix();
 }
 
 Camera::~Camera()
@@ -59,37 +61,40 @@ bool Camera::Intersect(DirectX::BoundingOrientedBox& box)
 	return mWorldFrustum.Intersects(box);
 }
 
-
-
-void Camera::UpdateDynamicVariables()
+void Camera::Update(GameObject* object)
 {
-	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetFoward(), mTransform.GetUp());
+	auto transform = object->GetComponent<Transform>();
+	
+	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(
+		transform->GetPosition(),
+		transform->GetPosition() + transform->GetFoward(),
+		transform->GetUp()
+	);
+
 	mViewFrustum.Transform(mWorldFrustum, mViewMatrix.Invert());
 }
 
-void Camera::UpdateStaticVariables()
-{
-	mProjectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(mCameraParam.FOV, mCameraParam.Aspect, mCameraParam.NearZ, mCameraParam.FarZ);
-	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
-
-}
-
-
-void Camera::SetVariables(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void Camera::Render(GameObject* object, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	auto& context = mCameraContexts[mMemoryIndex];
-
-	Camera::UpdateDynamicVariables();
-
 	context.mBufferPtr->View = mViewMatrix.Transpose();
 	context.mBufferPtr->Projection = mProjectionMatrix.Transpose();
 	context.mBufferPtr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
 
 	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, context.mBuffer->GetGPUVirtualAddress());
-	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
 }
 
-Transform& Camera::GetTransform()
+void Camera::UpdateProjectionMatrix()
 {
-	return std::ref(mTransform);
+	mProjectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		mCameraParam.FOV,
+		mCameraParam.Aspect,
+		mCameraParam.NearZ,
+		mCameraParam.FarZ
+	);
+
+	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
 }
+
+
+
