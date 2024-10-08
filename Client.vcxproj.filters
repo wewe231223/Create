@@ -75,6 +75,12 @@
     <ClInclude Include="Game\gameobjects\GameObject.h">
       <Filter>Game\gameobjects</Filter>
     </ClInclude>
+    <ClInclude Include="Game\gameobjects\MyGameObjects.h">
+      <Filter>Game\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\gameobjects\Collider.h">
+      <Filter>Game\gameobjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -114,6 +120,12 @@
       <Filter>Game\gameobjects</Filter>
     </ClCompile>
     <ClCompile Include="Game\gameobjects\GameObject.cpp">
+      <Filter>Game\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobjects\MyGameObjects.cpp">
+      <Filter>Game\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobjects\Collider.cpp">
       <Filter>Game\gameobjects</Filter>
     </ClCompile>
   </ItemGroup>

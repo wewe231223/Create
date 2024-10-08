@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 __interface IRendererEntity {
-	void WriteContext(ModelContext* data,const std::span<MaterialIndex>& materials) PURE;
+	virtual DirectX::BoundingOrientedBox GetBoundingBox() const PURE;
+	virtual void WriteContext(ModelContext* data,const std::span<MaterialIndex>& materials) PURE;
 };
 
 __interface IGraphicsShader {

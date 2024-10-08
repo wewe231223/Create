@@ -143,7 +143,9 @@
     <ClInclude Include="Game\defines.h" />
     <ClInclude Include="Game\gameobjects\Camera.h" />
     <ClInclude Include="Game\gameobjects\CameraController.h" />
+    <ClInclude Include="Game\gameobjects\Collider.h" />
     <ClInclude Include="Game\gameobjects\GameObject.h" />
+    <ClInclude Include="Game\gameobjects\MyGameObjects.h" />
     <ClInclude Include="Game\GameScenes.h" />
     <ClInclude Include="Game\GameWorld.h" />
     <ClInclude Include="Game\Input.h" />
@@ -160,7 +162,9 @@
     <ClCompile Include="Game\defines.cpp" />
     <ClCompile Include="Game\gameobjects\Camera.cpp" />
     <ClCompile Include="Game\gameobjects\CameraController.cpp" />
+    <ClCompile Include="Game\gameobjects\Collider.cpp" />
     <ClCompile Include="Game\gameobjects\GameObject.cpp" />
+    <ClCompile Include="Game\gameobjects\MyGameObjects.cpp" />
     <ClCompile Include="Game\GameScenes.cpp" />
     <ClCompile Include="Game\GameWorld.cpp" />
     <ClCompile Include="Game\Input.cpp" />

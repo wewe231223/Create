@@ -123,11 +123,13 @@ DirectX::SimpleMath::Vector3 Transform::GetUp() const
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up,mRotation);
 }
 
-DirectX::SimpleMath::Matrix Transform::GetWorldMatrix() const
+DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 {
-	DirectX::SimpleMath::Matrix worldmatrix{ DirectX::SimpleMath::Matrix::Identity };
+	mWorldMatrix = DirectX::SimpleMath::Matrix::CreateScale(mScale) * DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(mPosition);
+	return mWorldMatrix;
+}
 
-	worldmatrix = DirectX::SimpleMath::Matrix::CreateScale(mScale) * DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(mPosition);
-
-	return worldmatrix;
+DirectX::SimpleMath::Matrix& Transform::GetWorldMatrix() 
+{
+	return mWorldMatrix;
 }

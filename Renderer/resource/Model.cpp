@@ -54,6 +54,11 @@ Model::~Model()
 {
 }
 
+DirectX::BoundingOrientedBox Model::GetBoundingBox() const
+{
+	return mBoundingBox;
+}
+
 void Model::WriteContext(ModelContext* data, const std::span<MaterialIndex>& materials)
 {
 	memcpy(mModelContexts[mMemoryIndex].mBufferPtr + mInstanceCount, data, sizeof(ModelContext));
@@ -99,6 +104,14 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	
 	mInstanceCount = 0;
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
+}
+
+void Model::CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions)
+{
+	DirectX::BoundingBox box{};
+	DirectX::BoundingBox::CreateFromPoints(box, positions.size(), positions.data(), sizeof(DirectX::XMFLOAT3));
+
+	mBoundingBox = DirectX::BoundingOrientedBox{ box.Center,box.Extents,{0.f,0.f,0.f,1.f} };
 }
 
 
@@ -175,6 +188,8 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
 
 	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size())));
+
+	Model::CreateBBFromMeshes(positions);
 }
 
 TerrainModel::~TerrainModel()
@@ -258,6 +273,8 @@ TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
 
 	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0, static_cast<UINT>(indices.size())));
+
+	Model::CreateBBFromMeshes(positions);
 }
 
 TexturedModel::~TexturedModel()

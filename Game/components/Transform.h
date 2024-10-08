@@ -45,10 +45,13 @@ public:
 	DirectX::SimpleMath::Vector3 GetRight() const;
 	DirectX::SimpleMath::Vector3 GetUp() const;
 
-	DirectX::SimpleMath::Matrix GetWorldMatrix() const ;
+	DirectX::SimpleMath::Matrix& CreateWorldMatrix();
+	DirectX::SimpleMath::Matrix& GetWorldMatrix();
 private:
 	DirectX::SimpleMath::Vector3 mPosition{ DirectX::SimpleMath::Vector3::Zero };
 	DirectX::SimpleMath::Quaternion mRotation{ DirectX::SimpleMath::Quaternion::Identity };
 	DirectX::SimpleMath::Vector3 mScale{ DirectX::SimpleMath::Vector3::Zero };
+
+	DirectX::SimpleMath::Matrix mWorldMatrix{ DirectX::SimpleMath::Matrix::Identity };
 };
 

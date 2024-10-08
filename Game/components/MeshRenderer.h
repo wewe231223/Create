@@ -7,12 +7,14 @@ public:
 	MeshRenderer(const ModelInfo& model);
 	~MeshRenderer();
 	void SetMaterial(const std::vector<MaterialIndex>& materials);
-	void SetCullState(bool state);
 
+	void SetCullState(bool state);
 	void Render(GameObject* object, ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
 	std::shared_ptr<IRendererEntity> mModel{ nullptr };
 	std::vector<MaterialIndex> mMaterials{};
+
+	DirectX::BoundingOrientedBox mBoundingBox{};
 
 	bool mCullState{ false };
 	ModelContext mContext{};

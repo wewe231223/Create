@@ -46,8 +46,6 @@ OnDisable()	                            오브젝트 비활성화 시 호출
 */
 class MonoBehavior {
 public:
-    static constexpr size_t TypeIndex = 2;
-
     MonoBehavior();
     virtual ~MonoBehavior();
 
@@ -78,7 +76,7 @@ concept HasTypeIndex = requires(T t) {
 class GameObject {
 public:
     GameObject();
-    ~GameObject();
+    virtual ~GameObject();
     
     // 다른 게임 오브젝트를 참조하고 싶은 게임 오브젝트들을 위해 존재함. 모든 게임 오브젝트가 로딩 된 후, Scene 이 그려지기 전에 호출됨. 
     void Awake(class GameWorld*);
@@ -103,15 +101,18 @@ public:
     template<typename BehaviorType, typename... Args> 
 	void MakeMonoBehavior(Args&&... args);
 
+	template<typename ComponentType> requires HasTypeIndex<ComponentType>
+    bool HasComponent() const;
     // 같은 GameObject 내 다른 컴포넌트 참조를 위해 이 함수를 만들었음. 
     template<typename ComponentType> requires HasTypeIndex<ComponentType> 
     ComponentType* GetComponent();
-private:
+protected:
     std::vector<std::shared_ptr<RenderableComponentBase>>   mRenderableComponents{};
     std::vector<std::shared_ptr<UpdatableComponentBase>>    mUpdatableComponents{};
     std::vector<std::shared_ptr<ComponentBase>>             mComponents{};
 	std::unique_ptr<MonoBehavior>                           mMonoBehavior{ nullptr };
 
+	std::shared_ptr<Collider>   					        mCollider{ nullptr };          
     bool                                                    mActiveState{ true };
 };
 
@@ -132,7 +133,7 @@ inline void GameObject::AddComponent(Args&& ...args)
     if (typeIndex >= mComponents.size()) {
         mComponents.resize(typeIndex + 1);
     }
-	mComponents.emplace(mComponents.begin() + typeIndex,component);
+    mComponents.emplace(mComponents.begin() + typeIndex, std::reinterpret_pointer_cast<ComponentBase>(component));
 }
 
 template<typename BehaviorType, typename ...Args>
@@ -142,12 +143,16 @@ inline void GameObject::MakeMonoBehavior(Args && ...args)
 	mMonoBehavior = std::move(behavior);
 }
 
-template<typename ComponentType>
-    requires HasTypeIndex<ComponentType>
+template<typename ComponentType> requires HasTypeIndex<ComponentType>
+inline bool GameObject::HasComponent() const 
+{
+    if (mComponents.size() <= ComponentType::TypeIndex) return false;
+    if (mComponents[ComponentType::TypeIndex] == nullptr) return false;
+    return true;
+}
+
+template<typename ComponentType> requires HasTypeIndex<ComponentType>
 inline ComponentType* GameObject::GetComponent()
 {    
-	if (mComponents.size() <= ComponentType::TypeIndex) return nullptr;
-	if (mComponents[ComponentType::TypeIndex] == nullptr) return nullptr;
-    
     return reinterpret_cast<ComponentType*>((mComponents.begin() + ComponentType::TypeIndex)->get());
 }

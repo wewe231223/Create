@@ -96,5 +96,12 @@ void Camera::UpdateProjectionMatrix()
 	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
 }
 
+CameraObject::CameraObject(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window)
+{
+	GameObject::AddComponent<Transform>();
+	GameObject::AddComponent<Camera>(device, window);
+}
 
-
+CameraObject::~CameraObject()
+{
+}

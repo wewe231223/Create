@@ -38,4 +38,5 @@
 #include "Game/utils/NonReplacementSampler.h"
 #include "Game/gameobjects/GameObject.h"
 #include "Game/components/Transform.h"
+#include "Game/gameobjects/Collider.h"
 #include "Game/Input.h"

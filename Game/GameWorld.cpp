@@ -21,18 +21,18 @@ std::span<std::shared_ptr<GameObject>> GameWorld::GetGameObject(EGameObjectTag t
 	return std::span(mGameObjectsbyTag[tag]);
 }
 
-void GameWorld::MakeGameObject(std::shared_ptr<GameObject>& gameObject)
+void GameWorld::MakeGameObject(const std::shared_ptr<GameObject>& gameObject)
 {
 	mGameObjects.emplace_back(gameObject);
 }
 
-void GameWorld::MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>& gameObject)
+void GameWorld::MakeGameObject(EGameObjectTag tag,const std::shared_ptr<GameObject>& gameObject)
 {
 	mGameObjectsbyTag[tag].emplace_back(gameObject);
 	mGameObjects.emplace_back(mGameObjectsbyTag[tag].back());
 }
 
-void GameWorld::SetMainCamera(std::shared_ptr<GameObject>& camera)
+void GameWorld::SetMainCamera(const std::shared_ptr<GameObject>& camera)
 {
 	mMainCamera = camera;
 }
@@ -58,6 +58,7 @@ void GameWorld::Update()
 	for (auto& gameobject : mGameObjects) {
 		gameobject->LateUpdate(this);
 	}
+	mMainCamera->Update(this);
 }
 
 void GameWorld::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -67,6 +68,8 @@ void GameWorld::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 void GameWorld::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	mMainCamera->Render(commandList);
+
 	for (auto& gameobject : mGameObjects) {
 		gameobject->Render(commandList);
 	}

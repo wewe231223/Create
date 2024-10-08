@@ -6,7 +6,7 @@ MeshRenderer::MeshRenderer(const ModelInfo& modelInfo)
 {
 	assert(mModel != nullptr);
 	mMaterials.resize(modelInfo.material.size());
-	std::copy(modelInfo.material.begin(), modelInfo.material.end(), mMaterials.begin());
+	std::copy(modelInfo.material.begin(), modelInfo.material.end(), mMaterials.begin());	
 }
 
 MeshRenderer::~MeshRenderer()

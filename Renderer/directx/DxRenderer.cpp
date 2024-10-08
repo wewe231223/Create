@@ -19,8 +19,7 @@ DxRenderer::DxRenderer(std::shared_ptr<Window> window)
 	DxRenderer::Initialize();
 
 	Time.AddEvent(1s, []() {
-		ImGuiIO& io = ImGui::GetIO();
-		Console.InfoLog("FrameRate : {:.2f}", 1.f / Time.GetSmoothDeltaTime<float>());
+		Console.InfoLog("FrameRate : {:.5f}", 1.f / Time.GetSmoothDeltaTime<float>());
 		return true;
 		});
 	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.");

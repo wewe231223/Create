@@ -17,6 +17,7 @@ public:
 	Model(ComPtr<ID3D12Device>& device,std::shared_ptr<IGraphicsShader> shader);
 	~Model();
 
+	virtual DirectX::BoundingOrientedBox GetBoundingBox() const override;
 	virtual void WriteContext(ModelContext* data, const std::span<MaterialIndex>& materials) override;
 
 	void AddRef();
@@ -24,6 +25,8 @@ public:
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
 	bool CompareShader(const std::shared_ptr<Model>& other) const noexcept;
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+protected:
+	void CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions);
 protected:
 	std::array<std::unique_ptr<class DefaultBuffer>,VertexAttrib_end>		mVertexBuffers{};
 	std::unique_ptr<class DefaultBuffer>									mIndexBuffer{ nullptr };
@@ -41,6 +44,7 @@ protected:
 
 	VertexAttribute															mAttribute{ 0b0000'0000'0000'0000 };
 
+	DirectX::BoundingOrientedBox											mBoundingBox{};
 	UINT																	mRefCount{ 0 };
 };
 

@@ -39,3 +39,10 @@ private:
 	DirectX::BoundingFrustum mViewFrustum{};
 	DirectX::BoundingFrustum mWorldFrustum{};
 };
+
+
+class CameraObject : public GameObject {
+public:
+	CameraObject(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window);
+	virtual ~CameraObject() override;
+};

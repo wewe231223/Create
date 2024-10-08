@@ -7,10 +7,10 @@ public:
 	ResourceManager* GetSceneResource();
 	std::span<std::shared_ptr<GameObject>> GetGameObject(EGameObjectTag tag);
 
-	void MakeGameObject(std::shared_ptr<GameObject>& gameObject);
-	void MakeGameObject(EGameObjectTag tag, std::shared_ptr<GameObject>& gameObject);
+	void MakeGameObject(const std::shared_ptr<GameObject>& gameObject);
+	void MakeGameObject(EGameObjectTag tag,const std::shared_ptr<GameObject>& gameObject);
 
-	void SetMainCamera(std::shared_ptr<GameObject>& camera);
+	void SetMainCamera(const std::shared_ptr<GameObject>& camera);
 	std::shared_ptr<GameObject> GetMainCamera();
 	
 	void Awake();
