@@ -71,7 +71,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::Cube);
 
 
-
 	for (auto i = 1; i <= 10; ++i) {
 		for (auto j = 1; j <= 10; ++j) {
 			auto cube = std::make_shared<CubeObject>(mResourceManager);
@@ -92,25 +91,34 @@ void GameScene::Update()
 	
 	mGameObjects[49]->GetTransform().Translate({ 0.01f,0.f,0.f });
 	
-	
-	for (auto& object : mGameObjects) {
-		object->Update();
-	}
 
-
-	
 	mTerrain->UpdateGameObjectAboveTerrain();
 
 
+	
+	
+
+	
+
+	static float yaw = 0.f;
+	yaw = std::fmodf(yaw + Input.GetDeltaMouseX() * 0.01f, DirectX::XMConvertToRadians(360.f));
+	mGameObjects[49]->GetTransform().Rotate(yaw, 0.f, 0.f);
+
 	auto pos = mGameObjects[49]->GetTransform().GetPosition();
-	auto offset = DirectX::SimpleMath::Vector3{ 20.f,-10.f,0.f };
+	auto offset = mGameObjects[49]->GetTransform().GetRight() * 10.f + mGameObjects[49]->GetTransform().GetUp() * 5.f;
 
 	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
 	mMainCamera->GetTransform().LookAt(mGameObjects[49]->GetTransform());
 	mMainCamera->GetTransform().SetPosition({ pos - offset });
-	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
-//	mMainCamera->GetTransform().Rotate(Input.GetDeltaMouseX() * 0.003f,Input.GetDeltaMouseY() * -0.003f, 0.f);
 
+
+
+
+	for (auto& object : mGameObjects) {
+		object->Update();
+	}
+
+	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 	mMainCamera->Update();
 }
 
@@ -119,8 +127,6 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	for (auto& object : mGameObjects) {
 		object->Render(mMainCamera, commandList);
 	}
-
-
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
