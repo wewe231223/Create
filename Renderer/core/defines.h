@@ -91,7 +91,7 @@ enum EGlobalConstants : UINT {
 	GC_BackBufferCount		= 3,
 	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
 	GC_MaxTextureNumber		= 2048,
-	GC_MaxRefPerModel		= 128
+	GC_MaxRefPerModel		= 1024,
 };
 
 

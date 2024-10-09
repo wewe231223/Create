@@ -23,6 +23,18 @@ void Transform::SetPosition(const DirectX::SimpleMath::Vector3& position)
 	mPosition = position;
 }
 
+void Transform::SetRotate(const DirectX::SimpleMath::Quaternion& rotation)
+{
+	mRotation = rotation;
+	mRotation.Normalize();
+}
+
+void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, float lerpFactor)
+{
+	mRotation = DirectX::SimpleMath::Quaternion::Slerp(mRotation, rotation, lerpFactor);
+	mRotation.Normalize();
+}
+
 void Transform::Rotate(float yaw, float pitch, float roll)
 {
 	auto newRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
@@ -83,24 +95,29 @@ void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
 	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
 	float dot = forward.Dot(direction);
 
+	DirectX::SimpleMath::Quaternion quat{};
+
 	if (fabs(dot - (-1.0f)) < 0.000001f)
 	{
-		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
-		mRotation.Normalize();
+		quat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
+		quat.Normalize();
 	}
 	else if (fabs(dot - (1.0f)) < 0.000001f)
 	{
-		mRotation = DirectX::SimpleMath::Quaternion::Identity;
-		mRotation.Normalize();
+		quat = DirectX::SimpleMath::Quaternion::Identity;
+		quat.Normalize();
 	}
 	else
 	{
 		float angle = acosf(dot);
 		DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
 		axis.Normalize();
-		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
-		mRotation.Normalize();
+		quat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
+		quat.Normalize();
 	}
+
+	mRotation.Concatenate(mRotation, quat);
+	mRotation.Normalize();
 }
 
 void Transform::SetParent(Transform* parent)

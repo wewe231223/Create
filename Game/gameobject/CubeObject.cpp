@@ -22,6 +22,7 @@ void CubeObject::Update()
 
 void CubeObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-	GameObject::Render(camera, commandList);
-	
+	if (GameObject::IsInFrustum(camera)) {
+		GameObject::Render(camera, commandList);
+	}
 }

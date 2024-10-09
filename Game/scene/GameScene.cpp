@@ -33,39 +33,39 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	std::shared_ptr<TerrainImage> terrainImage = std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw");
 
-	mTerrain = std::make_shared<TerrainCollider>(terrainImage, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
-	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f)));
+	mTerrain = std::make_shared<TerrainCollider>(terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f));
+	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
 
 
 
 
 
-	int mCallBackSign = NrSampler.Sample();
+	//int mCallBackSign = NrSampler.Sample();
 
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({0.f, 0.f, 0.1f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);
+	//	});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({ 0.f, 0.f, -0.1f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * -0.1f );
+	//	});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({ -0.1f, 0.f, 0.f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * 0.1f);
+	//	});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({ 0.1f, 0.f, 0.f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * -0.1f);
+	//	});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({ 0.f, -0.1f, 0.f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -0.1f);
+	//	});
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate({ 0.f,0.1f, 0.f });
-		});
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mCallBackSign, [this]() {
+	//	mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
+	//	});
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::Cube);
@@ -89,12 +89,27 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 void GameScene::Update()
 {
+	
+	mGameObjects[49]->GetTransform().Translate({ 0.01f,0.f,0.f });
+	
+	
 	for (auto& object : mGameObjects) {
 		object->Update();
 	}
+
+
+	
 	mTerrain->UpdateGameObjectAboveTerrain();
 
-	mMainCamera->GetTransform().Rotate(Input.GetDeltaMouseX() * 0.003f,Input.GetDeltaMouseY() * -0.003f, 0.f);
+
+	auto pos = mGameObjects[49]->GetTransform().GetPosition();
+	auto offset = DirectX::SimpleMath::Vector3{ 20.f,-10.f,0.f };
+
+	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
+	mMainCamera->GetTransform().LookAt(mGameObjects[49]->GetTransform());
+	mMainCamera->GetTransform().SetPosition({ pos - offset });
+	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
+//	mMainCamera->GetTransform().Rotate(Input.GetDeltaMouseX() * 0.003f,Input.GetDeltaMouseY() * -0.003f, 0.f);
 
 	mMainCamera->Update();
 }

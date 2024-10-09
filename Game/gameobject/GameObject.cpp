@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "Game/gameobject/GameObject.h"
 
+
 GameObject::GameObject()
 {
+	
 }
 
 GameObject::GameObject(const std::string& name)

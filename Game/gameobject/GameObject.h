@@ -24,7 +24,6 @@ protected:
 	std::vector<MaterialIndex> mMaterials{};
 	std::shared_ptr<IRendererEntity> mModel{ nullptr };
 
-	bool mSkipFrustumCulling{ false };
 };
 
 

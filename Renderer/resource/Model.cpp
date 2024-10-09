@@ -141,7 +141,7 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 			positions.emplace_back(x * mScale.x, mTerrainImage->GetHeight(x, z) * mScale.y, z * mScale.z);
 			normals.emplace_back(mTerrainImage->GetNormal(static_cast<int>(x), static_cast<int>(z), mScale));
 			texcoords1.emplace_back(x / static_cast<float>(mTerrainImage->GetWidth() - 1), static_cast<float>(mTerrainImage->GetHeight() - 1 - z) / static_cast<float>(mTerrainImage->GetHeight() - 1));
-			texcoords2.emplace_back(x / mScale.x * 0.5f, z / mScale.z * 0.5f);
+			texcoords2.emplace_back(x / mScale.x * 10.f, z / mScale.z * 10.f);
 		}
 	}
 

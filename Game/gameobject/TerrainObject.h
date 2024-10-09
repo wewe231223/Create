@@ -8,6 +8,7 @@ public:
 	void MakeObjectOnTerrain(std::shared_ptr<class GameObject> object);
 
 	void UpdateGameObjectAboveTerrain();
+	void UpdateCameraAboveTerrain(std::shared_ptr<Camera> camera);
 private:
 	std::shared_ptr<TerrainImage> mTerrainHeightMap{ nullptr };
 	DirectX::SimpleMath::Vector3 mScale{ 1.0f,1.0f,1.0f };
