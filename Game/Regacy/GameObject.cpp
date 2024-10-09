@@ -56,10 +56,11 @@ void GameObject::Awake(GameWorld* world)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	게임 오브젝트의 업데이트 흐름은 다음과 같음.																					//
 //																															//
-//	[ <-		위치 가변			->][ <-											위치 불변 							-> ]	//
-//	Update(Component/MonoBehavior) -> Rigidbody -> Collide -> LateUpdate(MonoBehavior) -> Camera FrustumCulling -> Render	//
+//	[ <-				위치 가변					->][ <-						위치 불변 						-> ]			//
+//	Update(Component/MonoBehavior) -> Rigidbody -> LateUpdate(MonoBehavior) -> Camera FrustumCulling -> Render				//
 //																															//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void GameObject::Update(class GameWorld* world)
 {

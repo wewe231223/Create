@@ -49,16 +49,31 @@ void GameWorld::Awake()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//	게임 오브젝트의 업데이트 흐름은 다음과 같음.																					//
+//																															//
+//	[ <-				위치 가변					->][ <-						위치 불변 						-> ]			//
+//	Update(Component/MonoBehavior) -> Rigidbody -> LateUpdate(MonoBehavior) -> Camera FrustumCulling -> Render				//
+//																															//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void GameWorld::Update()
 {
+	// Update 
 	for (auto& gameobject : mGameObjects) {
 		gameobject->Update(this);
 	}
+	
+	// Rigidbody
 
+	// LateUpdate
 	for (auto& gameobject : mGameObjects) {
 		gameobject->LateUpdate(this);
 	}
 	mMainCamera->Update(this);
+	
+	// FrustumCulling
+
 }
 
 void GameWorld::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)

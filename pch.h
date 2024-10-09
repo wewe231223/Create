@@ -34,9 +34,8 @@
 #include "Renderer/buffer/DefaultBuffer.h"
 #include "Renderer/ui/Console.h"
 
-#include "Game/defines.h"
-#include "Game/utils/NonReplacementSampler.h"
-#include "Game/gameobjects/GameObject.h"
-#include "Game/components/Transform.h"
-#include "Game/gameobjects/Collider.h"
-#include "Game/Input.h"
+
+#include "Game/utils/Transform.h"
+#include "Game/scene/Camera.h"
+
+#include "Game/gameobject/GameObject.h"

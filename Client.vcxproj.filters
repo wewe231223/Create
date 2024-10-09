@@ -19,14 +19,14 @@
     <Filter Include="pch">
       <UniqueIdentifier>{a977c1fa-3665-4bc6-8f7e-1b717629c3c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\components">
-      <UniqueIdentifier>{a2fb9988-ddb7-4e03-9573-d7c2474af7ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\utils">
       <UniqueIdentifier>{bec8362d-41ff-4af4-a484-a79dcd592eda}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\gameobjects">
-      <UniqueIdentifier>{e392dcf3-743b-47ef-8931-a83f4e83842b}</UniqueIdentifier>
+    <Filter Include="Game\scene">
+      <UniqueIdentifier>{babadf00-1571-462a-a4de-014222054772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\gameobject">
+      <UniqueIdentifier>{67048a5a-0b77-4456-9cf9-b58d3f0a9fa0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,44 +42,32 @@
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="Game\GameScenes.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Input.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\components\Transform.h">
-      <Filter>Game\components</Filter>
-    </ClInclude>
     <ClInclude Include="Game\utils\NonReplacementSampler.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
     <ClInclude Include="Game\utils\RandomEngine.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Game\components\MeshRenderer.h">
-      <Filter>Game\components</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\GameWorld.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="Game\utils\Input.h">
+      <Filter>Game\utils</Filter>
     </ClInclude>
     <ClInclude Include="Game\defines.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobjects\Camera.h">
-      <Filter>Game\gameobjects</Filter>
+    <ClInclude Include="Game\gameobject\GameObject.h">
+      <Filter>Game\gameobject</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobjects\CameraController.h">
-      <Filter>Game\gameobjects</Filter>
+    <ClInclude Include="Game\scene\GameScene.h">
+      <Filter>Game\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobjects\GameObject.h">
-      <Filter>Game\gameobjects</Filter>
+    <ClInclude Include="Game\scene\Camera.h">
+      <Filter>Game\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobjects\MyGameObjects.h">
-      <Filter>Game\gameobjects</Filter>
+    <ClInclude Include="Game\utils\Transform.h">
+      <Filter>Game\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobjects\Collider.h">
-      <Filter>Game\gameobjects</Filter>
+    <ClInclude Include="Game\gameobject\TerrainObject.h">
+      <Filter>Game\gameobject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,44 +77,32 @@
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
     </ClCompile>
-    <ClCompile Include="Game\GameScenes.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Input.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\components\Transform.cpp">
-      <Filter>Game\components</Filter>
-    </ClCompile>
     <ClCompile Include="Game\utils\NonReplacementSampler.cpp">
       <Filter>Game\utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\utils\RandomEngine.cpp">
       <Filter>Game\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game\components\MeshRenderer.cpp">
-      <Filter>Game\components</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\GameWorld.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Game\utils\Input.cpp">
+      <Filter>Game\utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\defines.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobjects\Camera.cpp">
-      <Filter>Game\gameobjects</Filter>
+    <ClCompile Include="Game\gameobject\GameObject.cpp">
+      <Filter>Game\gameobject</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobjects\CameraController.cpp">
-      <Filter>Game\gameobjects</Filter>
+    <ClCompile Include="Game\scene\GameScene.cpp">
+      <Filter>Game\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobjects\GameObject.cpp">
-      <Filter>Game\gameobjects</Filter>
+    <ClCompile Include="Game\scene\Camera.cpp">
+      <Filter>Game\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobjects\MyGameObjects.cpp">
-      <Filter>Game\gameobjects</Filter>
+    <ClCompile Include="Game\utils\Transform.cpp">
+      <Filter>Game\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobjects\Collider.cpp">
-      <Filter>Game\gameobjects</Filter>
+    <ClCompile Include="Game\gameobject\TerrainObject.cpp">
+      <Filter>Game\gameobject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

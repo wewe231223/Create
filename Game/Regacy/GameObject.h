@@ -112,7 +112,7 @@ protected:
     std::vector<std::shared_ptr<ComponentBase>>             mComponents{};
 	std::unique_ptr<MonoBehavior>                           mMonoBehavior{ nullptr };
 
-	std::shared_ptr<Collider>   					        mCollider{ nullptr };          
+	std::shared_ptr<RigidBody>   					        mRigidBody{ nullptr };          
     bool                                                    mActiveState{ true };
 };
 

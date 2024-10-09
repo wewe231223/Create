@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Game/Input.h"
+#include "Game/utils/Input.h"
 #include "Game/utils/NonReplacementSampler.h"
 
 std::array<unsigned char, DirectX::Keyboard::Keys::END>  keys{};

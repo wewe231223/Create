@@ -8,7 +8,7 @@ public:
 	TerrainImage(const fs::path& path,int width, int height);
 	~TerrainImage();
 
-	DirectX::SimpleMath::Vector3	GetNormal(int x, int z,DirectX::SimpleMath::Vector3 scale) const;
+	DirectX::SimpleMath::Vector3	GetNormal(int x, int z, DirectX::SimpleMath::Vector3 scale) const;
 	float							GetHeight(float x, float z) const;
 	int								GetWidth() const;
 	int								GetHeight() const;

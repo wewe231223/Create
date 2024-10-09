@@ -138,38 +138,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
-    <ClInclude Include="Game\components\MeshRenderer.h" />
-    <ClInclude Include="Game\components\Transform.h" />
     <ClInclude Include="Game\defines.h" />
-    <ClInclude Include="Game\gameobjects\Camera.h" />
-    <ClInclude Include="Game\gameobjects\CameraController.h" />
-    <ClInclude Include="Game\gameobjects\Collider.h" />
-    <ClInclude Include="Game\gameobjects\GameObject.h" />
-    <ClInclude Include="Game\gameobjects\MyGameObjects.h" />
-    <ClInclude Include="Game\GameScenes.h" />
-    <ClInclude Include="Game\GameWorld.h" />
-    <ClInclude Include="Game\Input.h" />
+    <ClInclude Include="Game\gameobject\GameObject.h" />
+    <ClInclude Include="Game\gameobject\TerrainObject.h" />
+    <ClInclude Include="Game\scene\Camera.h" />
+    <ClInclude Include="Game\scene\GameScene.h" />
+    <ClInclude Include="Game\utils\Input.h" />
     <ClInclude Include="Game\utils\NonReplacementSampler.h" />
     <ClInclude Include="Game\utils\RandomEngine.h" />
+    <ClInclude Include="Game\utils\Transform.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Game\components\MeshRenderer.cpp" />
-    <ClCompile Include="Game\components\Transform.cpp" />
     <ClCompile Include="Game\defines.cpp" />
-    <ClCompile Include="Game\gameobjects\Camera.cpp" />
-    <ClCompile Include="Game\gameobjects\CameraController.cpp" />
-    <ClCompile Include="Game\gameobjects\Collider.cpp" />
-    <ClCompile Include="Game\gameobjects\GameObject.cpp" />
-    <ClCompile Include="Game\gameobjects\MyGameObjects.cpp" />
-    <ClCompile Include="Game\GameScenes.cpp" />
-    <ClCompile Include="Game\GameWorld.cpp" />
-    <ClCompile Include="Game\Input.cpp" />
+    <ClCompile Include="Game\gameobject\GameObject.cpp" />
+    <ClCompile Include="Game\gameobject\TerrainObject.cpp" />
+    <ClCompile Include="Game\scene\Camera.cpp" />
+    <ClCompile Include="Game\scene\GameScene.cpp" />
+    <ClCompile Include="Game\utils\Input.cpp" />
     <ClCompile Include="Game\utils\NonReplacementSampler.cpp" />
     <ClCompile Include="Game\utils\RandomEngine.cpp" />
+    <ClCompile Include="Game\utils\Transform.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>

@@ -3,8 +3,8 @@
 
 #include "pch.h"
 #include "Client.h"
-#include "Game/GameScenes.h"
-#include "Game/Input.h"
+#include "Game/utils/Input.h"
+#include "Game/scene/GameScene.h"
 
 #define MAX_LOADSTRING 100
 
