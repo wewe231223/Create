@@ -16,10 +16,6 @@ private:
 };
 
 
-
-
-
-
 class TerrainObject : public GameObject {
 public:
 	TerrainObject(std::shared_ptr<ResourceManager> resourceMgr,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale);

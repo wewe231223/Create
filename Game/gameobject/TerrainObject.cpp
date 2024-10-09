@@ -27,16 +27,20 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
         }
         
         // Rotate transform's up to match terrain normal
-        DirectX::SimpleMath::Vector3 terrainNormal = mTerrainHeightMap->GetNormal(static_cast<int>(transform.GetPosition().x),static_cast<int>(transform.GetPosition().z),mScale);
+  //      DirectX::SimpleMath::Vector3 terrainNormal = mTerrainHeightMap->GetNormal(static_cast<int>(transform.GetPosition().x),static_cast<int>(transform.GetPosition().z),mScale);
 
-		DirectX::SimpleMath::Vector3 up = transform.GetUp();
-		DirectX::SimpleMath::Vector3 rotateAxis = up.Cross(terrainNormal);
-        rotateAxis.Normalize();
+		//DirectX::SimpleMath::Vector3 up = transform.GetUp();
+		//DirectX::SimpleMath::Vector3 rotateAxis = up.Cross(terrainNormal);
+  //      rotateAxis.Normalize();
 
-		float dot = up.Dot(terrainNormal);
-		float angle = acosf(dot);
+  //      if (rotateAxis.Length() < FLT_EPSILON) {
+  //          continue;
+  //      }
 
-        transform.Rotate(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(rotateAxis, angle));
+		//float dot = up.Dot(terrainNormal);
+		//float angle = acosf(dot);
+
+  //      transform.Rotate(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(rotateAxis, angle));
         //// a와 b의 외적을 사용하여 회전 축 계산
         //Vector3 rotationAxis = a.Cross(b);
         //rotationAxis.Normalize();

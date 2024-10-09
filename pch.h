@@ -34,7 +34,8 @@
 #include "Renderer/buffer/DefaultBuffer.h"
 #include "Renderer/ui/Console.h"
 
-
+#include "Game/utils/NonReplacementSampler.h"
+#include "Game/utils/Input.h"
 #include "Game/utils/Transform.h"
 #include "Game/scene/Camera.h"
 
