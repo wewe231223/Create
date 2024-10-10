@@ -71,7 +71,6 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
                 rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
                 rotation.Normalize();
             }
-            transform.ResetRotation();
 			transform.RotateSmoothly(rotation);
 
         }

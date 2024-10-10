@@ -95,8 +95,8 @@ void GameScene::Update()
 
 	static float yaw = 0.f;
 	yaw += 0.005f;
+	//mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
 	mTerrain->UpdateGameObjectAboveTerrain();
-	mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
 	
 	
 	auto pos = mGameObjects[49]->GetTransform().GetPosition();
@@ -109,6 +109,11 @@ void GameScene::Update()
 	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
 
+	GameScene::UpdateShaderVariables();
+}
+
+void GameScene::UpdateShaderVariables()
+{
 	for (auto& object : mGameObjects) {
 		object->Update();
 	}
@@ -125,3 +130,4 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
 }
+

@@ -12,6 +12,8 @@ public:
 	void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
+	void UpdateShaderVariables();
+private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
 

@@ -74,25 +74,29 @@ void Transform::LookAt(const Transform& target)
 	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
 	float dot = forward.Dot(direction);
 
-	if (fabs(dot - (-1.0f)) < 0.000001f)
+	DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::Identity;
+
+	if (fabs(dot - (-1.0f)) < 0.0001f)
 	{
-		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
-		mRotation.Normalize();
+		rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
+		rotation.Normalize();
 	}
-	else if (fabs(dot - (1.0f)) < 0.000001f)
+	else if (fabs(dot - (1.0f)) < 0.0001f)
 	{
-		mRotation = DirectX::SimpleMath::Quaternion::Identity;
-		mRotation.Normalize();
+		rotation = DirectX::SimpleMath::Quaternion::Identity;
+		rotation.Normalize();
 	}
 	else
 	{
 		float angle = acosf(dot);
 		DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
 		axis.Normalize();
-		mRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
-		mRotation.Normalize();
+		rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
+		rotation.Normalize();
 	}
 
+	mRotation = mRotation.Concatenate(mRotation, rotation);
+	//mRotation.Normalize();
 }
 
 void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
@@ -124,7 +128,7 @@ void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
 		quat.Normalize();
 	}
 
-	mRotation.Concatenate(mRotation, quat);
+	mRotation = mRotation.Concatenate(mRotation, quat);
 	mRotation.Normalize();
 }
 
@@ -183,6 +187,7 @@ DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 
 
 	mOrientedBoundingBox.Transform(mWorldBoundingBox, mWorldMatrix);
+	mRotation = DirectX::SimpleMath::Quaternion::Identity;
 
 	return mWorldMatrix;
 }
