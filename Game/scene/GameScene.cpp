@@ -92,33 +92,30 @@ void GameScene::Update()
 	mGameObjects[49]->GetTransform().Translate({ 0.01f,0.f,0.f });
 	
 
-	mTerrain->UpdateGameObjectAboveTerrain();
-
-
-	
-	
-
-	
 
 	static float yaw = 0.f;
-	yaw = std::fmodf(yaw + Input.GetDeltaMouseX() * 0.01f, DirectX::XMConvertToRadians(360.f));
-	mGameObjects[49]->GetTransform().Rotate(yaw, 0.f, 0.f);
+	//yaw = std::fmodf(yaw + Input.GetDeltaMouseX() * 0.01f, DirectX::XMConvertToRadians(360.f));
+	mTerrain->UpdateGameObjectAboveTerrain();
+	yaw += 0.001f;
 
-	auto pos = mGameObjects[49]->GetTransform().GetPosition();
-	auto offset = mGameObjects[49]->GetTransform().GetRight() * 10.f + mGameObjects[49]->GetTransform().GetUp() * 5.f;
 
+	auto rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 0.f,yaw,0.f });
+	rot.Normalize();
+	mGameObjects[50]->GetTransform().Rotate(rot);
+
+	auto pos = mGameObjects[50]->GetTransform().GetPosition();
+	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
+
+	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	mMainCamera->GetTransform().LookAt(mGameObjects[49]->GetTransform());
-	mMainCamera->GetTransform().SetPosition({ pos - offset });
-
-
+	mMainCamera->GetTransform().LookAt(mGameObjects[50]->GetTransform());
+	mMainCamera->GetTransform().SetPosition({ pos + offset });
 
 
 	for (auto& object : mGameObjects) {
 		object->Update();
 	}
 
-	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 	mMainCamera->Update();
 }
 
