@@ -89,24 +89,24 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 void GameScene::Update()
 {
 	
-	mGameObjects[49]->GetTransform().Translate({ 0.01f,0.f,0.f });
+	mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
 
 
 	static float yaw = 0.f;
-	yaw += 0.001f;
+	yaw += 0.005f;
 	mTerrain->UpdateGameObjectAboveTerrain();
-	mGameObjects[50]->GetTransform().Rotate(yaw,0.f,0.f);
+	mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
 	
 	
-	auto pos = mGameObjects[50]->GetTransform().GetPosition();
-	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
+	auto pos = mGameObjects[49]->GetTransform().GetPosition();
+	auto offset = mGameObjects[49]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
 	
 
-	// mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	mMainCamera->GetTransform().LookAt(mGameObjects[50]->GetTransform());
+	mMainCamera->GetTransform().LookAt(mGameObjects[49]->GetTransform());
 	mMainCamera->GetTransform().SetPosition({ pos + offset });
+	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
 
 	for (auto& object : mGameObjects) {
