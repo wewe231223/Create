@@ -2,7 +2,7 @@
 #include "Game/utils/Transform.h"
 
 
-
+// TODO : 축 둘을 받아서 a -> b 시키는 회전을 계산하는 함수를 만들자., 
 
 
 Transform::Transform()

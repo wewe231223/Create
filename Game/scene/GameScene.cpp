@@ -94,15 +94,10 @@ void GameScene::Update()
 
 
 	// static float yaw = 0.f;
-	//mTerrain->UpdateGameObjectAboveTerrain();
+	mTerrain->UpdateGameObjectAboveTerrain();
 	
-	
-	float yaw = Input.GetDeltaMouseX();
-	// yaw += DirectX::XMConvertToRadians(Time.GetDeltaTime<float>()) * 0.1f;
 
-	auto rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 0.f,DirectX::XMConvertToRadians(yaw * 0.1f),0.f });
-	rot.Normalize();
-	mGameObjects[50]->GetTransform().Rotate(rot);
+	mGameObjects[50]->GetTransform().Rotate(0.1f,0.f,0.f);
 
 	auto pos = mGameObjects[50]->GetTransform().GetPosition();
 	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
