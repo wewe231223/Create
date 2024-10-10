@@ -93,15 +93,15 @@ void GameScene::Update()
 	
 
 
-	// static float yaw = 0.f;
+	static float yaw = 0.f;
+	yaw += 0.001f;
 	mTerrain->UpdateGameObjectAboveTerrain();
+	mGameObjects[50]->GetTransform().Rotate(yaw,0.f,0.f);
 	
-
-	mGameObjects[50]->GetTransform().Rotate(0.1f,0.f,0.f);
-
+	
 	auto pos = mGameObjects[50]->GetTransform().GetPosition();
-	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
-
+	//auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
+	 auto offset = DirectX::SimpleMath::Vector3::Right * 10.f + DirectX::SimpleMath::Vector3::Up * 5.f;
 	
 
 	// mTerrain->UpdateCameraAboveTerrain(mMainCamera);

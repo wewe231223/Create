@@ -45,20 +45,34 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
             DirectX::XMFLOAT3 Bot{ DirectX::SimpleMath::Vector3::Lerp(LB, RB, fx) };
             DirectX::XMFLOAT3 Top{ DirectX::SimpleMath::Vector3::Lerp(LT, RT, fx) };
 
-            DirectX::XMFLOAT3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
+            DirectX::SimpleMath::Vector3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
+            terrainNormal.Normalize();
 
-            DirectX::SimpleMath::Vector3 up = transform.GetUp();
-            DirectX::SimpleMath::Vector3 rotateAxis = up.Cross(terrainNormal);
-
-            if (rotateAxis.Length() < 0.1f) {
-                continue;
-            }
-            rotateAxis.Normalize();
-
+			DirectX::SimpleMath::Vector3 up{ DirectX::SimpleMath::Vector3::Up };
+      
+			
             float dot = up.Dot(terrainNormal);
-            float angle = acosf(dot);
+			DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::Identity;
+            if (fabs(dot - (-1.0f)) < 0.001f)
+            {
+                rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
+                rotation.Normalize();
+            }
+            else if (fabs(dot - (1.0f)) < 0.001f)
+            {
+                rotation = DirectX::SimpleMath::Quaternion::Identity;
+                rotation.Normalize();
+            }
+            else
+            {
+                float angle = acosf(dot);
+                DirectX::SimpleMath::Vector3 axis = up.Cross(terrainNormal);
+                axis.Normalize();
+                rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
+                rotation.Normalize();
+            }
 
-            transform.RotateSmoothly(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(rotateAxis, angle));
+			transform.RotateSmoothly(rotation);
 
         }
         

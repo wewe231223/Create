@@ -31,13 +31,17 @@ void Transform::SetRotate(const DirectX::SimpleMath::Quaternion& rotation)
 
 void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, float lerpFactor)
 {
-	mRotation = DirectX::SimpleMath::Quaternion::Slerp(mRotation, rotation, lerpFactor);
+	mRotation = DirectX::SimpleMath::Quaternion::Identity;
+	auto newRotation = DirectX::SimpleMath::Quaternion::Slerp(mRotation, rotation, lerpFactor);
+	newRotation.Normalize();
+	mRotation = mRotation.Concatenate(mRotation, rotation);
 	mRotation.Normalize();
 }
 
 void Transform::Rotate(float yaw, float pitch, float roll)
 {
 	auto newRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
+	newRotation.Normalize();
 	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, newRotation);
 	mRotation.Normalize();
 }
