@@ -17,6 +17,7 @@ void GInput::Update()
 	mPrevX = mMouseState.x;
 	mPrevY = mMouseState.y;
 
+
 	mKeyboardState = mKeyboard->GetState();
 	mMouseState = mMouse->GetState();
 
@@ -41,6 +42,7 @@ void GInput::Update()
 			}
 		}
 	}
+
 
 }
 

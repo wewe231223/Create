@@ -58,7 +58,7 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
             float dot = up.Dot(terrainNormal);
             float angle = acosf(dot);
 
-            transform.RotateSmoothly(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(rotateAxis, angle));
+            // transform.RotateSmoothly(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(rotateAxis, angle));
 
         }
         

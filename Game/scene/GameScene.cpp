@@ -93,20 +93,23 @@ void GameScene::Update()
 	
 
 
-	static float yaw = 0.f;
-	//yaw = std::fmodf(yaw + Input.GetDeltaMouseX() * 0.01f, DirectX::XMConvertToRadians(360.f));
-	mTerrain->UpdateGameObjectAboveTerrain();
-	yaw += 0.001f;
+	// static float yaw = 0.f;
+	//mTerrain->UpdateGameObjectAboveTerrain();
+	
+	
+	float yaw = Input.GetDeltaMouseX();
+	// yaw += DirectX::XMConvertToRadians(Time.GetDeltaTime<float>()) * 0.1f;
 
-
-	auto rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 0.f,yaw,0.f });
+	auto rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 0.f,DirectX::XMConvertToRadians(yaw * 0.1f),0.f });
 	rot.Normalize();
 	mGameObjects[50]->GetTransform().Rotate(rot);
 
 	auto pos = mGameObjects[50]->GetTransform().GetPosition();
 	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
 
-	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
+	
+
+	// mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
 	mMainCamera->GetTransform().LookAt(mGameObjects[50]->GetTransform());
 	mMainCamera->GetTransform().SetPosition({ pos + offset });
