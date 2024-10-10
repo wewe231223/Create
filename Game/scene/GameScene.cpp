@@ -100,8 +100,7 @@ void GameScene::Update()
 	
 	
 	auto pos = mGameObjects[50]->GetTransform().GetPosition();
-	//auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
-	 auto offset = DirectX::SimpleMath::Vector3::Right * 10.f + DirectX::SimpleMath::Vector3::Up * 5.f;
+	auto offset = mGameObjects[50]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
 	
 
 	// mTerrain->UpdateCameraAboveTerrain(mMainCamera);

@@ -29,9 +29,13 @@ void Transform::SetRotate(const DirectX::SimpleMath::Quaternion& rotation)
 	mRotation.Normalize();
 }
 
-void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, float lerpFactor)
+void Transform::ResetRotation()
 {
 	mRotation = DirectX::SimpleMath::Quaternion::Identity;
+}
+
+void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, float lerpFactor)
+{
 	auto newRotation = DirectX::SimpleMath::Quaternion::Slerp(mRotation, rotation, lerpFactor);
 	newRotation.Normalize();
 	mRotation = mRotation.Concatenate(mRotation, rotation);
