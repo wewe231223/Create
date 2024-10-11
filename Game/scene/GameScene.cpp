@@ -89,14 +89,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 void GameScene::Update()
 {
 	
+
 	mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
-
-
 	static float yaw = 0.f;
 	yaw += 0.005f;
-	//mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
 	mTerrain->UpdateGameObjectAboveTerrain();
+	mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
 	
 	
 	auto pos = mGameObjects[49]->GetTransform().GetPosition();
@@ -108,8 +107,9 @@ void GameScene::Update()
 	mMainCamera->GetTransform().SetPosition({ pos + offset });
 	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
-
 	GameScene::UpdateShaderVariables();
+
+
 }
 
 void GameScene::UpdateShaderVariables()

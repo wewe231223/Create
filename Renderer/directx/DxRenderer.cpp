@@ -19,7 +19,7 @@ DxRenderer::DxRenderer(std::shared_ptr<Window> window)
 	DxRenderer::Initialize();
 
 	Time.AddEvent(1s, []() {
-		Console.InfoLog("FrameRate : {:.5f}", 1.f / Time.GetSmoothDeltaTime<float>());
+		Console.InfoLog("FrameRate : {:.5f}", 1.f / Time.GetDeltaTime<float>());
 		return true;
 		});
 	Console.InfoLog("이제 로그 메세지는 한글 문자도 지원합니다.");
@@ -134,7 +134,9 @@ void DxRenderer::EndRender()
 
 void DxRenderer::Initialize()
 {
+#ifdef _DEBUG
 	DxRenderer::InitDebugCtrl();
+#endif
 	DxRenderer::InitFactory();
 	DxRenderer::InitDevice();
 	DxRenderer::InitCommandQueue();
@@ -150,9 +152,11 @@ void DxRenderer::Initialize()
 
 void DxRenderer::InitDebugCtrl()
 {
+#ifdef _DUBUG
 	CheckHR(D3D12GetDebugInterface(IID_PPV_ARGS(&mDebugController)));
 	mDebugController->EnableDebugLayer();
 	CheckHR(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&mDxgiDebug)));
+#endif
 }
 
 void DxRenderer::InitFactory()

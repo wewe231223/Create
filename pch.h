@@ -17,6 +17,7 @@
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
 #else 
+#pragma comment(lib,"Out/release/Renderer.lib")
 #endif 
 
 #include "Renderer/external/Include/DirectXTK12/Keyboard.h"

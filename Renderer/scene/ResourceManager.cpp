@@ -1,7 +1,5 @@
-#include "ResourceManager.h"
-#include "ResourceManager.h"
 #include "pch.h"
-#include "scene/ResourceManager.h"
+#include "ResourceManager.h"
 #include "buffer/DefaultBuffer.h"
 #include "resource/Mesh.h"
 #include "resource/Model.h"
@@ -216,7 +214,7 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		for (; cur != mModelContainer->end(); ++prev, ++cur) {
 			if (cur->get()->CompareShader(*prev)) {
 				cur->get()->SetShader(commandList);
-				ResourceManager::SetGlobals(commandList);
+				// ResourceManager::SetGlobals(commandList);
 			}
 
 			cur->get()->Render(commandList);
