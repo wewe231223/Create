@@ -23,7 +23,7 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
         auto& transform = object->GetTransform();
         float height = mTerrainHeightMap->GetHeight(transform.GetPosition().x / mScale.x, transform.GetPosition().z / mScale.z);
         if (true) {
-            transform.SetPosition(DirectX::SimpleMath::Vector3(transform.GetPosition().x, height + 1.f, transform.GetPosition().z));
+            transform.SetPosition(DirectX::SimpleMath::Vector3(transform.GetPosition().x, height, transform.GetPosition().z));
 
 
             // Rotate transform's up to match terrain normal
@@ -131,8 +131,8 @@ TerrainObject::TerrainObject(std::shared_ptr<ResourceManager> resourceMgr, std::
 	mModel = resourceMgr->GetModel("Terrain");
 
     Material material{};
-    material.DiffuseTexIndex_1 = resourceMgr->GetTexture("TerrainBaseTexture");
-	material.DiffuseTexIndex_2 = resourceMgr->GetTexture("TerrainDetailTexture");
+    material.Textures[0] = resourceMgr->GetTexture("TerrainBaseTexture");
+	material.Textures[1] = resourceMgr->GetTexture("TerrainDetailTexture");
 	resourceMgr->CreateMaterial("TerrainMaterial", material);
 
     GameObject::SetMaterial({ resourceMgr->GetMaterial("TerrainMaterial") });

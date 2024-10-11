@@ -3,15 +3,7 @@ struct Material {
     float4 SpecularColor;           // 반사 색상
     float4 AmbientColor;            // 주변광 색상
     float4 EmissiveColor;           // 자체 발광 색상
-    uint DiffuseTexIndex_1;         // 확산 반사 텍스쳐 1
-    uint DiffuseTexIndex_2;         // 확산 반사 텍스쳐 2
-    uint SpecularTexIndex_1;        // 반사 텍스쳐 1
-    uint SpecularTexIndex_2;        // 반사 텍스쳐 2
-    uint NormalTexIndex;            // 노말맵 텍스쳐
-    uint HeightTexIndex;            // 높이맵 텍스쳐
-    uint RoughnessTexIndex;         // 거칠기 텍스쳐
-    uint MetalicTexIndex;           // 금속성 텍스쳐
-    uint AmbientOcclusionTexIndex;  // 주변광 폐색 텍스쳐
+    uint    Textures[32];
     float SpecularPower;            // 반사광 세기
     float Shininess;                // 광택
     float Opacity;                  // 불투명도

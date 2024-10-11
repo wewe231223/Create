@@ -22,6 +22,7 @@ public:
 	void LookAt(const DirectX::SimpleMath::Vector3& worldPosition);
 
 	void SetParent(Transform* parent);
+	void SetChild(Transform* child);
 
 	void SetOrientedBoundingBox(DirectX::BoundingOrientedBox box);
 
@@ -38,17 +39,17 @@ public:
 	DirectX::SimpleMath::Matrix& CreateWorldMatrix();
 	DirectX::SimpleMath::Matrix GetWorldMatrix();
 private:
-	DirectX::SimpleMath::Vector3 mPosition{ DirectX::SimpleMath::Vector3::Zero };
+	DirectX::SimpleMath::Vector3	mPosition{ DirectX::SimpleMath::Vector3::Zero };
 	DirectX::SimpleMath::Quaternion mRotation{ DirectX::SimpleMath::Quaternion::Identity };
-	DirectX::SimpleMath::Vector3 mScale{ DirectX::SimpleMath::Vector3::One };
+	DirectX::SimpleMath::Vector3	mScale{ DirectX::SimpleMath::Vector3::One };
 
-	DirectX::SimpleMath::Matrix mWorldMatrix{ DirectX::SimpleMath::Matrix::Identity };
+	DirectX::SimpleMath::Matrix		mWorldMatrix{ DirectX::SimpleMath::Matrix::Identity };
 
-	DirectX::BoundingOrientedBox mOrientedBoundingBox{};
-	DirectX::BoundingOrientedBox mWorldBoundingBox{};
+	DirectX::BoundingOrientedBox	mOrientedBoundingBox{};
+	DirectX::BoundingOrientedBox	mWorldBoundingBox{};
 
-	Transform* mParent{ nullptr };
+	Transform*						mParent{ nullptr };
 
 	// 나중에 애니매이션에 쓰자.. 
-	std::vector<Transform*> mChildren{};
+	std::vector<Transform*>			mChildren{};
 };

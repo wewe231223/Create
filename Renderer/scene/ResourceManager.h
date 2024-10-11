@@ -1,6 +1,7 @@
 #pragma once 
 // 모델 컨테이너가 현재 존재하는 모델이 없는지 검사합니다.
 #define MODEL_CONT_CHECK_EMPTY 
+#define NULL_INDEX 0xFFFFFFFF
 
 // 씬에서 사용할 모든 리소스 저장. ( 모델, 텍스쳐 등등 )  
 class ResourceManager {

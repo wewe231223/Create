@@ -134,6 +134,13 @@ void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
 
 void Transform::SetParent(Transform* parent)
 {
+	mParent = parent;
+	parent->SetChild(this);
+}
+
+void Transform::SetChild(Transform* child)
+{
+	mChildren.push_back(child);
 }
 
 void Transform::SetOrientedBoundingBox(DirectX::BoundingOrientedBox box)

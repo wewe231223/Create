@@ -36,6 +36,6 @@ TexturedObject_VS_OUT TexturedObjectVS(TexturedObject_VS_IN input)
 
 float4 TexturedObjectPS(TexturedObject_VS_OUT input) : SV_Target
 {
-    float4 baseColor = gTextures[gMaterials[input.MaterialID].DiffuseTexIndex_1].Sample(linearWrapSampler, input.Tex1);
+    float4 baseColor = gTextures[gMaterials[input.MaterialID].Textures[0]].Sample(linearWrapSampler, input.Tex1);
     return baseColor;
 }

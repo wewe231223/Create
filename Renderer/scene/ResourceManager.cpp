@@ -169,11 +169,17 @@ std::shared_ptr<IGraphicsShader> ResourceManager::GetShader(const std::string& n
 
 MaterialIndex ResourceManager::GetMaterial(const std::string& name)
 {
+	if (mMaterialMap.find(name) == mMaterialMap.end()) {
+		return NULL_INDEX;
+	}
 	return mMaterialMap[name];
 }
 
 TextureIndex ResourceManager::GetTexture(const std::string& name)
 {
+	if (mTextureMap.find(name) == mTextureMap.end()) {
+		return NULL_INDEX;
+	}
 	return mTextureMap[name];
 }
 
@@ -214,7 +220,6 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		for (; cur != mModelContainer->end(); ++prev, ++cur) {
 			if (cur->get()->CompareShader(*prev)) {
 				cur->get()->SetShader(commandList);
-				// ResourceManager::SetGlobals(commandList);
 			}
 
 			cur->get()->Render(commandList);

@@ -147,7 +147,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Game\asset\AssetImporter.h" />
     <ClInclude Include="Game\defines.h" />
+    <ClInclude Include="Game\gameobject\BinObject.h" />
     <ClInclude Include="Game\gameobject\CubeObject.h" />
     <ClInclude Include="Game\gameobject\GameObject.h" />
     <ClInclude Include="Game\gameobject\TerrainObject.h" />
@@ -163,7 +165,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Game\asset\AssetImporter.cpp" />
     <ClCompile Include="Game\defines.cpp" />
+    <ClCompile Include="Game\gameobject\BinObject.cpp" />
     <ClCompile Include="Game\gameobject\CubeObject.cpp" />
     <ClCompile Include="Game\gameobject\GameObject.cpp" />
     <ClCompile Include="Game\gameobject\TerrainObject.cpp" />

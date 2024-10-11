@@ -277,6 +277,29 @@ TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 	Model::CreateBBFromMeshes(positions);
 }
 
+TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader, std::vector<DirectX::XMFLOAT3>& positions, std::vector<DirectX::XMFLOAT3>& norms, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<UINT>& indices)
+{
+	mShader = shader;
+	mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1;
+	assert(!mShader->CheckAttribute(mAttribute));
+
+	mVertexBuffers[0] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(positions.data()), sizeof(DirectX::XMFLOAT3) * positions.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[0]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * positions.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
+
+	mVertexBuffers[1] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(norms.data()), sizeof(DirectX::XMFLOAT3) * norms.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[1]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * norms.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
+
+	mVertexBuffers[2] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(uvs.data()), sizeof(DirectX::XMFLOAT2) * uvs.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[2]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * uvs.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
+
+	mIndexBuffer = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
+	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
+
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0, static_cast<UINT>(indices.size())));
+
+	Model::CreateBBFromMeshes(positions);
+}
+
 TexturedModel::~TexturedModel()
 {
 }

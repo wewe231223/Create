@@ -55,15 +55,7 @@ struct Material {
 	DirectX::XMFLOAT4 SpecularColor				{ 0.f,0.f,0.f,0.f };
 	DirectX::XMFLOAT4 AmbientColor				{ 0.f,0.f,0.f,0.f };
 	DirectX::XMFLOAT4 EmissiveColor				{ 0.f,0.f,0.f,0.f };
-	TextureIndex DiffuseTexIndex_1				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex DiffuseTexIndex_2				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex SpecularTexIndex_1				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex SpecularTexIndex_2				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex NormalTexIndex					{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex HeightTexIndex					{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex RoughnessTexIndex				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex MetalicTexIndex				{ std::numeric_limits<MaterialIndex>::max() };
-	TextureIndex AmbientOcclusionTexIndex		{ std::numeric_limits<MaterialIndex>::max() };
+	TextureIndex Textures[32]					{};
 	float SpecularPower							{ 32.f };
 	float Shininess								{ 32.f };
 	float Opacity								{ 1.f };

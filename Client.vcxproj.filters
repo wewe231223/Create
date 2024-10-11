@@ -28,6 +28,9 @@
     <Filter Include="Game\gameobject">
       <UniqueIdentifier>{67048a5a-0b77-4456-9cf9-b58d3f0a9fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\asset">
+      <UniqueIdentifier>{c99a12fa-9581-4bb9-a085-374132ef2d38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -72,6 +75,12 @@
     <ClInclude Include="Game\gameobject\CubeObject.h">
       <Filter>Game\gameobject</Filter>
     </ClInclude>
+    <ClInclude Include="Game\asset\AssetImporter.h">
+      <Filter>Game\asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\gameobject\BinObject.h">
+      <Filter>Game\gameobject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -108,6 +117,12 @@
       <Filter>Game\gameobject</Filter>
     </ClCompile>
     <ClCompile Include="Game\gameobject\CubeObject.cpp">
+      <Filter>Game\gameobject</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\asset\AssetImporter.cpp">
+      <Filter>Game\asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobject\BinObject.cpp">
       <Filter>Game\gameobject</Filter>
     </ClCompile>
   </ItemGroup>

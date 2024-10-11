@@ -34,7 +34,7 @@ Transform& GameObject::GetTransform()
 void GameObject::Update()
 {
 	mTransform.CreateWorldMatrix();
-	mContext.World = mTransform.GetWorldMatrix().Transpose();
+	mContext.World = ( mTransform.GetWorldMatrix() * mLocalTransform ).Transpose() ;
 }
 
 void GameObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)
