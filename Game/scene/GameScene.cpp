@@ -98,14 +98,15 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	
 	auto binObject = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	binObject->SetMaterial({ mResourceManager->GetMaterial("TankMaterialBlue") });
-	binObject->GetTransform().SetPosition({ 200.f,0.f,10.f });
-	binObject->GetTransform().Scale(0.3f, 0.5f, 0.5f);
+	binObject->GetTransform().SetPosition({ 10.f,0.f,10.f });
+	// binObject->GetTransform().Scale(100.f, 100.f, 100.f);
 	mTerrain->MakeObjectOnTerrain(binObject);
 	mGameObjects.emplace_back(binObject);
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
+// TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
 	
@@ -114,23 +115,38 @@ void GameScene::Update()
 	
 	static float yaw = 0.f;
 	yaw += 0.001f;
-	mTerrain->UpdateGameObjectAboveTerrain();
+	//mTerrain->UpdateGameObjectAboveTerrain();
 	mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
+
 
 	auto child = mGameObjects[101]->GetChild(1);
 	child->GetTransform().Rotate(yaw, 0.f, 0.f);
-	
+
+	child = mGameObjects[101]->GetChild(2);
+	child->GetTransform().Rotate(0.f, yaw, 0.f);
+
+	child = mGameObjects[101]->GetChild(3);
+	child->GetTransform().Rotate(0.f, yaw, 0.f);
+
+	child = mGameObjects[101]->GetChild(4);
+	child->GetTransform().Rotate(0.f, yaw, 0.f);
+
+	child = mGameObjects[101]->GetChild(5);
+	child->GetTransform().Rotate(0.f, yaw, 0.f);
+
+	mGameObjects[101]->GetTransform().SetPosition({ -100.f,200.f,-100.f });
+
 	auto pos = mGameObjects[101]->GetTransform().GetPosition();
 	auto right = mGameObjects[101]->GetTransform().GetRight();
 	auto up = mGameObjects[101]->GetTransform().GetUp();
 
-	auto offset = right * 10.f + up * 5.f;
-	
+	auto offset = right * 30.f + up * 15.f;
 
-	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
-	mMainCamera->GetTransform().SetPosition({ pos + offset });
-	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
+
+	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
+	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
+	//mMainCamera->GetTransform().SetPosition({ pos + offset });
+	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
 	GameScene::UpdateShaderVariables();
 

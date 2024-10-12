@@ -52,19 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};
     
-    ::ShowCursor(false);
 
-    RECT r{};
-    ::GetClientRect(hWnd, &r);
-	POINT lt = { r.left, r.top };
-	POINT rb = { r.right, r.bottom };
-    
-	::ClientToScreen(hWnd, &lt);
-	::ClientToScreen(hWnd, &rb);
-
-    r = { lt.x, lt.y, rb.x, rb.y };
-
-    ::ClipCursor(&r);
 
     int endCallbackSign = NrSampler.Sample();
 
