@@ -14,7 +14,7 @@ public:
 	void WriteContext(MaterialIndex mat);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
-	D3D12_PRIMITIVE_TOPOLOGY mTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP };
+	D3D12_PRIMITIVE_TOPOLOGY mTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST };
 	UINT mIndexBegin{ 0 };
 	UINT mIndexCount{ 0 };
 

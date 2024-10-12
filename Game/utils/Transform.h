@@ -9,6 +9,7 @@ public:
 	// 월드 내 위치이기도 하지만, 자식 노드의 경우, 오프셋 위치이기도 하다. 
 	void SetPosition(const DirectX::SimpleMath::Vector3& position);
 	void SetRotate(const DirectX::SimpleMath::Quaternion& rotation);
+	void SetLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
 
 	void ResetRotation();
 	void RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, float lerpFactor = 0.5f);
@@ -43,6 +44,7 @@ private:
 	DirectX::SimpleMath::Quaternion mRotation{ DirectX::SimpleMath::Quaternion::Identity };
 	DirectX::SimpleMath::Vector3	mScale{ DirectX::SimpleMath::Vector3::One };
 
+	DirectX::SimpleMath::Matrix		mLocalTransform{ DirectX::SimpleMath::Matrix::Identity };
 	DirectX::SimpleMath::Matrix		mWorldMatrix{ DirectX::SimpleMath::Matrix::Identity };
 
 	DirectX::BoundingOrientedBox	mOrientedBoundingBox{};

@@ -5,6 +5,7 @@
 #include "Game/gameobject/TerrainObject.h"
 #include "Game/gameobject/CubeObject.h"
 
+#include "Game/gameobject/BinObject.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -37,35 +38,49 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
 
 
+	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
+	mResourceManager->CreateTexture("TankTextureGreen", "./Resources/textures/CTF_TankFree_Base_Color_G.png");
+	mResourceManager->CreateTexture("TankTextureBlue", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
+
+	Material tankMaterial;
+	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureRed");
+
+	mResourceManager->CreateMaterial("TankMaterialRed", tankMaterial);
+
+	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureGreen");
+	mResourceManager->CreateMaterial("TankMaterialGreen", tankMaterial);
+
+	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureBlue");
+	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
 
 
 
-	//int mCallBackSign = NrSampler.Sample();
+	int mCallBackSign = NrSampler.Sample();
 
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);
+		});
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * -0.1f );
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * -0.1f );
+		});
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * 0.1f);
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * 0.1f);
+		});
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * -0.1f);
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * -0.1f);
+		});
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -0.1f);
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -0.1f);
+		});
 
-	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mCallBackSign, [this]() {
-	//	mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
-	//	});
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mCallBackSign, [this]() {
+		mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
+		});
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::Cube);
@@ -80,8 +95,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		}
 	}
 
-
-
+	
+	auto binObject = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+	binObject->SetMaterial({ mResourceManager->GetMaterial("TankMaterialBlue") });
+	binObject->GetTransform().SetPosition({ 200.f,0.f,10.f });
+	binObject->GetTransform().Scale(0.3f, 0.5f, 0.5f);
+	mTerrain->MakeObjectOnTerrain(binObject);
+	mGameObjects.emplace_back(binObject);
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -90,20 +110,25 @@ void GameScene::Update()
 {
 	
 
-	mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
+	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
 	static float yaw = 0.f;
-	yaw += 0.005f;
+	yaw += 0.001f;
 	mTerrain->UpdateGameObjectAboveTerrain();
-	// mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
+	mGameObjects[49]->GetTransform().Rotate(yaw,0.f,0.f);
+
+	auto child = mGameObjects[101]->GetChild(1);
+	child->GetTransform().Rotate(yaw, 0.f, 0.f);
 	
-	
-	auto pos = mGameObjects[49]->GetTransform().GetPosition();
-	auto offset = mGameObjects[49]->GetTransform().GetRight() * 10.f + mGameObjects[50]->GetTransform().GetUp() * 5.f;
+	auto pos = mGameObjects[101]->GetTransform().GetPosition();
+	auto right = mGameObjects[101]->GetTransform().GetRight();
+	auto up = mGameObjects[101]->GetTransform().GetUp();
+
+	auto offset = right * 10.f + up * 5.f;
 	
 
 	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	mMainCamera->GetTransform().LookAt(mGameObjects[49]->GetTransform());
+	mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
 	mMainCamera->GetTransform().SetPosition({ pos + offset });
 	mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 

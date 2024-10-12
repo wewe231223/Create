@@ -8,7 +8,7 @@ CubeObject::CubeObject(std::shared_ptr<ResourceManager> resourceMgr)
 	GameObject::SetMaterial({ resourceMgr->GetMaterial("TerrainMaterial") });
 
 	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
-	mLocalTransform.Translation({ 0.f,1.f,0.f });
+	mTransform.SetLocalTransform(DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 1.f, 0.f));
 }
 
 CubeObject::~CubeObject()

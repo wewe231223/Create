@@ -278,6 +278,7 @@ TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 }
 
 TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader, std::vector<DirectX::XMFLOAT3>& positions, std::vector<DirectX::XMFLOAT3>& norms, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<UINT>& indices)
+	: Model(device, shader)
 {
 	mShader = shader;
 	mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1;

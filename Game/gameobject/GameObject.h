@@ -8,7 +8,10 @@ public:
 	virtual ~GameObject();
 public:
 	// 서브메쉬 순서대로 된 벡터 입력할것... 
-	void SetMaterial(const std::vector<MaterialIndex>& materials);
+	virtual void SetMaterial(const std::vector<MaterialIndex>& materials);
+
+	void SetChild(GameObject& child);
+	GameObject* GetChild(UINT dfsIndex);
 
 	Transform& GetTransform();
 	// 할거 다하고 콜, 업데이트 다음 충돌 처리 다음 렌더링 
@@ -17,14 +20,16 @@ public:
 	virtual void Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList);
 protected:
 	bool IsInFrustum(std::shared_ptr<Camera> camera);
+
+	GameObject* GetChildInternal(UINT& dfsIndex);
 protected:
-	DirectX::SimpleMath::Matrix mLocalTransform{ DirectX::SimpleMath::Matrix::Identity };
 	Transform mTransform{};
 	
 	ModelContext mContext{};
 	std::vector<MaterialIndex> mMaterials{};
 	std::shared_ptr<IRendererEntity> mModel{ nullptr };
 
+	std::vector<std::shared_ptr<GameObject>> mChildObjects{};
 };
 
 

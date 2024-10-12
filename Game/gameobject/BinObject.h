@@ -7,9 +7,6 @@ public:
 	BinObject(std::shared_ptr<ResourceManager> resourceMgr, std::ifstream& file);
 	virtual ~BinObject();
 public:
-	BinObject* GetChild(UINT dfsIndex);
-private:
-	BinObject* GetChildInternal(UINT& dfsIndex);
-private:
-	std::vector<BinObject> mChildObjects{};
+	virtual void Update() override;
+	virtual void Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 };
