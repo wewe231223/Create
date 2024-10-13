@@ -6,6 +6,7 @@
 #include "Game/gameobject/CubeObject.h"
 
 #include "Game/gameobject/BinObject.h"
+#include "Game/utils/Math2D.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -117,10 +118,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
+	// ui 렌더 파트 
+	// 이미지가 NDC 를 기준으로 그려진다. 어떻게 하면 스크린을 기준으로 그릴 수 있을 까? 
 	ModelContext2D context{};
 	context.ImageIndex = mUIRenderer->GetUIImage("TankTextureRed");
-	context.Transform = Create2DScaleMatrix(0.5f, 0.5f);
-
+	auto tr = CreateScreenTransformMatrix(1920.f, 1080.f);
+	context.Transform = Transpose(tr);
+	
 	mUIRenderer->WriteContext(&context);
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });

@@ -49,11 +49,3 @@ private:
 	std::unordered_map<std::string, TextureIndex> mTextureMap{};
 };
 
-
-inline DirectX::XMFLOAT3X3 Create2DScaleMatrix(float scaleX, float scaleY) {
-	return DirectX::XMFLOAT3X3{
-		scaleX, 0.0f,   0.0f,
-		0.0f,   scaleY, 0.0f,
-		0.0f,   0.0f,   1.0f
-	};
-}

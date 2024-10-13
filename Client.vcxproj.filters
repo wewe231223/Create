@@ -81,7 +81,7 @@
     <ClInclude Include="Game\gameobject\BinObject.h">
       <Filter>Game\gameobject</Filter>
     </ClInclude>
-    <ClInclude Include="Game\utils\BinaryReader.h">
+    <ClInclude Include="Game\utils\Math2D.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -128,7 +128,7 @@
     <ClCompile Include="Game\gameobject\BinObject.cpp">
       <Filter>Game\gameobject</Filter>
     </ClCompile>
-    <ClCompile Include="Game\utils\BinaryReader.cpp">
+    <ClCompile Include="Game\utils\Math2D.cpp">
       <Filter>Game\utils</Filter>
     </ClCompile>
   </ItemGroup>
