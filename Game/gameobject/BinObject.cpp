@@ -20,13 +20,13 @@ BinObject::BinObject(std::shared_ptr<ResourceManager> resourceMgr, const fs::pat
 	if (resourceMgr->GetModel(name) != nullptr)
 	{
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT3) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT3) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT2) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(UINT) * size, std::ios::cur);
 	}
 	else {
 		std::vector<DirectX::XMFLOAT3> positions;
@@ -93,13 +93,13 @@ BinObject::BinObject(std::shared_ptr<ResourceManager> resourceMgr, std::ifstream
 	if (resourceMgr->GetModel(name) != nullptr)
 	{
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT3) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT3) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(DirectX::XMFLOAT2) * size, std::ios::cur);
 		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-		file.seekg(size, std::ios::cur);
+		file.seekg(sizeof(UINT) * size, std::ios::cur);
 	}
 	else {
 		std::vector<DirectX::XMFLOAT3> positions;

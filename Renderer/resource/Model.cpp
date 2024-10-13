@@ -304,3 +304,21 @@ TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 TexturedModel::~TexturedModel()
 {
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Textured Model								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+UIModel::UIModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader)
+{
+	
+}
+
+UIModel::~UIModel()
+{
+}

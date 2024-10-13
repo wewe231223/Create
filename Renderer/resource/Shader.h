@@ -119,3 +119,19 @@ public:
 	TexturedObjectShader(ComPtr<ID3D12Device>& device);
 	~TexturedObjectShader();
 };
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							UI Shader									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class UIShader : public GraphicsShaderBase {
+public:
+	UIShader(ComPtr<ID3D12Device>& device);
+	~UIShader();
+};

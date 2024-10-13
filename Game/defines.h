@@ -12,6 +12,6 @@ enum ECameraType : UINT {
 };
 
 struct ModelInfo {
-	std::shared_ptr<IRendererEntity> model{ nullptr };
+	std::shared_ptr<I3DRenderable> model{ nullptr };
 	std::vector<MaterialIndex> material{};
 };

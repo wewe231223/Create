@@ -7,9 +7,13 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-__interface IRendererEntity {
+__interface I3DRenderable {
 	virtual DirectX::BoundingOrientedBox GetBoundingBox() const PURE;
 	virtual void WriteContext(ModelContext* data,const std::span<MaterialIndex>& materials) PURE;
+};
+
+__interface I2DRenderable {
+	virtual void WriteContext(ModelContext2D* data) PURE;
 };
 
 __interface IGraphicsShader {

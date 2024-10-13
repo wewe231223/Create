@@ -39,9 +39,6 @@
     <ClInclude Include="core\Utility.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="core\window.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="directx\DxRenderer.h">
       <Filter>directx</Filter>
     </ClInclude>
@@ -115,6 +112,12 @@
       <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="core\Interface.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIRenderer.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="core\window.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -200,6 +203,9 @@
     <ClCompile Include="core\Interface.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="ui\UIRenderer.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSLs\Standard.hlsl">
@@ -212,6 +218,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSLs\TexturedObject.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\UI.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

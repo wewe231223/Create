@@ -11,7 +11,7 @@ struct TexturedObject_VS_IN
 struct TexturedObject_VS_OUT
 {
     float4  Pos      : SV_POSITION;
-    uint    MaterialID : TEXCOORD0;
+    nointerpolation uint MaterialID : TEXCOORD0;
     float2  Tex1     : TEXCOORD1;
     float3  Normal   : NORMAL;
 };

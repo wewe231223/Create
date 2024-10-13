@@ -11,7 +11,7 @@ GameObject::GameObject(const std::string& name)
 {
 }
 
-GameObject::GameObject(std::shared_ptr<IRendererEntity> model)
+GameObject::GameObject(std::shared_ptr<I3DRenderable> model)
 	: mModel(model)
 {
 	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());

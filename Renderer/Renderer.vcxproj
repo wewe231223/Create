@@ -186,6 +186,7 @@
     <ClInclude Include="scene\Scene.h" />
     <ClInclude Include="ui\Console.h" />
     <ClInclude Include="ui\HexColors.h" />
+    <ClInclude Include="ui\UIRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="buffer\DefaultBuffer.cpp" />
@@ -241,6 +242,7 @@
     <ClCompile Include="scene\Scene.cpp" />
     <ClCompile Include="ui\Console.cpp" />
     <ClCompile Include="ui\HexColors.cpp" />
+    <ClCompile Include="ui\UIRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSLs\Params.hlsl">
@@ -256,6 +258,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSLs\TexturedObject.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\UI.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

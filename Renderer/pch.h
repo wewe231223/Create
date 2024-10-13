@@ -81,3 +81,4 @@ extern GTime Time;
 #define SWAPCHAIN_ALLOW_TEARING
 #define UI_RENDER
 #define UI_DARK_THEME
+#define NULL_INDEX 0xFFFFFFFF

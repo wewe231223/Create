@@ -33,6 +33,7 @@
 #include "Renderer/resource/Model.h"
 #include "Renderer/resource/Mesh.h"
 #include "Renderer/buffer/DefaultBuffer.h"
+#include "Renderer/ui/UIRenderer.h"
 #include "Renderer/ui/Console.h"
 
 #include "Game/utils/NonReplacementSampler.h"

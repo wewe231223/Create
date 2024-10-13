@@ -7,7 +7,7 @@
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-class Model : public IRendererEntity {
+class Model : public I3DRenderable {
 	struct ModelContextBuffer {
 		ComPtr<ID3D12Resource> mBuffer{ nullptr };
 		ModelContext* mBufferPtr{ nullptr };
@@ -92,3 +92,18 @@ public:
 
 };
 
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							UI Model									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+class UIModel : public Model {
+public:
+	UIModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader);
+	~UIModel();
+};

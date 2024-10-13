@@ -24,6 +24,7 @@ GameScene::~GameScene()
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 	mResourceManager = std::make_shared<ResourceManager>(device);
+	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList());
 	mMainCamera = std::make_shared<Camera>(device,window);
 	mMainCamera->GetTransform().SetPosition({ 0.f,100.f,0.f });
 
@@ -88,7 +89,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	for (auto i = 1; i <= 10; ++i) {
 		for (auto j = 1; j <= 10; ++j) {
-			auto cube = std::make_shared<CubeObject>(mResourceManager);
+			auto cube = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+			cube->SetMaterial({ mResourceManager->GetMaterial("TankMaterialRed") });
 			cube->GetTransform().SetPosition({ i * 10.f, 0.f, j * 10.f });
 			mTerrain->MakeObjectOnTerrain(cube);
 			mGameObjects.emplace_back(cube);
@@ -98,10 +100,16 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	
 	auto binObject = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	binObject->SetMaterial({ mResourceManager->GetMaterial("TankMaterialGreen") });
-	binObject->GetTransform().SetPosition({ 100.f,0.f,100.f });
+	binObject->GetTransform().SetPosition({ 10.f,100.f,10.f });
+
 
 	mTerrain->MakeObjectOnTerrain(binObject);
 	mGameObjects.emplace_back(binObject);
+
+
+
+	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
+
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -109,7 +117,11 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
-	
+	ModelContext2D context{};
+	context.ImageIndex = mUIRenderer->GetUIImage("TankTextureRed");
+	context.Transform = Create2DScaleMatrix(0.5f, 0.5f);
+
+	mUIRenderer->WriteContext(&context);
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
@@ -119,7 +131,7 @@ void GameScene::Update()
 	mGameObjects[49]->GetTransform().RotateSmoothly(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(yaw), 0.f, 0.f));
 
 
-	mTerrain->UpdateGameObjectAboveTerrain();
+	// mTerrain->UpdateGameObjectAboveTerrain();
 	auto child = mGameObjects[101]->GetChild(1);
 
 	// child->GetTransform().Rotate(yaw, 0.f, 0.f);
@@ -146,9 +158,9 @@ void GameScene::Update()
 
 
 
-	mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
-	mMainCamera->GetTransform().SetPosition({ pos + offset });
+	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
+	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
+	//mMainCamera->GetTransform().SetPosition({ pos + offset });
 	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
 	GameScene::UpdateShaderVariables();
@@ -167,11 +179,13 @@ void GameScene::UpdateShaderVariables()
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+
 	for (auto& object : mGameObjects) {
 		object->Render(mMainCamera, commandList);
 	}
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
+	mUIRenderer->Render(commandList);
 }
 

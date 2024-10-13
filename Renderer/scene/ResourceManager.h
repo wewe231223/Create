@@ -1,7 +1,6 @@
 #pragma once 
 // 모델 컨테이너가 현재 존재하는 모델이 없는지 검사합니다.
 #define MODEL_CONT_CHECK_EMPTY 
-#define NULL_INDEX 0xFFFFFFFF
 
 // 씬에서 사용할 모든 리소스 저장. ( 모델, 텍스쳐 등등 )  
 class ResourceManager {
@@ -12,7 +11,7 @@ class ResourceManager {
 
 		bool Empty() const noexcept;
 		void Insert(const std::string& name,std::shared_ptr<class Model>&& newModel);
-		std::shared_ptr<IRendererEntity> GetModel(const std::string& name);
+		std::shared_ptr<I3DRenderable> GetModel(const std::string& name);
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
 		std::vector<std::shared_ptr<class Model>>::iterator end();
 	private:
@@ -24,7 +23,7 @@ public:
 	~ResourceManager();
 
 	ComPtr<ID3D12Device> GetDevice() const noexcept;
-	ComPtr<ID3D12GraphicsCommandList> GetLoadCommandList() const noexcept;
+	ComPtr<ID3D12GraphicsCommandList>& GetLoadCommandList();
 	// 직렬화가 필요한 부분이다...
 	template<typename T>
 	void CreateShader(const std::string& name);
@@ -40,7 +39,7 @@ public:
 	std::shared_ptr<IGraphicsShader>			GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
-	std::shared_ptr<IRendererEntity>			GetModel(const std::string& name);
+	std::shared_ptr<I3DRenderable>			GetModel(const std::string& name);
 
 	// 이 부분들은 렌더링할 때 호출된다. 로드 커맨드 리스트와 다르므로, 이 세 함수는 렌더 커맨드 리스트를 받아야 한다. 
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);

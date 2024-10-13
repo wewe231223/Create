@@ -41,7 +41,7 @@ void ResourceManager::ModelContainer::Insert(const std::string& model, std::shar
 	mModelMap[model] = newModel;
 }
 
-std::shared_ptr<IRendererEntity> ResourceManager::ModelContainer::GetModel(const std::string& name)
+std::shared_ptr<I3DRenderable> ResourceManager::ModelContainer::GetModel(const std::string& name)
 {
 	auto it = mModelMap.find(name);
 	if (it == mModelMap.end()) {
@@ -100,7 +100,7 @@ ComPtr<ID3D12Device> ResourceManager::GetDevice() const noexcept
 	return mDevice;
 }
 
-ComPtr<ID3D12GraphicsCommandList> ResourceManager::GetLoadCommandList() const noexcept
+ComPtr<ID3D12GraphicsCommandList>& ResourceManager::GetLoadCommandList() 
 {
 	return mLoadCommandList;
 }
@@ -183,7 +183,7 @@ TextureIndex ResourceManager::GetTexture(const std::string& name)
 	return mTextureMap[name];
 }
 
-std::shared_ptr<IRendererEntity> ResourceManager::GetModel(const std::string& name)
+std::shared_ptr<I3DRenderable> ResourceManager::GetModel(const std::string& name)
 {
 	return mModelContainer->GetModel(name);
 }

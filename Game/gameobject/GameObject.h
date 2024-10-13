@@ -4,7 +4,7 @@ class GameObject {
 public:
 	GameObject();
 	GameObject(const std::string& name);
-	GameObject(std::shared_ptr<IRendererEntity> model);
+	GameObject(std::shared_ptr<I3DRenderable> model);
 	virtual ~GameObject();
 public:
 	// 서브메쉬 순서대로 된 벡터 입력할것... 
@@ -27,7 +27,7 @@ protected:
 	
 	ModelContext mContext{};
 	std::vector<MaterialIndex> mMaterials{};
-	std::shared_ptr<IRendererEntity> mModel{ nullptr };
+	std::shared_ptr<I3DRenderable> mModel{ nullptr };
 
 	std::vector<std::shared_ptr<GameObject>> mChildObjects{};
 };

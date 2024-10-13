@@ -77,12 +77,22 @@ struct ModelContext {
 	DirectX::SimpleMath::Matrix World{ DirectX::SimpleMath::Matrix::Identity };
 };
 
+struct ModelContext2D {
+	DirectX::XMFLOAT3X3 Transform{ 
+		1.f,0.f,0.f,
+		0.f,1.f,0.f,
+		0.f,0.f,1.f 
+	};
+
+	UINT ImageIndex{ 0 };
+};
 
 enum EGlobalConstants : UINT {
 	GC_FrameCount			= 3,
 	GC_BackBufferCount		= 3,
 	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
 	GC_MaxTextureNumber		= 2048,
+	GC_MaxUiImageNumber		= 64,
 	GC_MaxRefPerModel		= 1024,
 };
 
@@ -94,4 +104,10 @@ enum EGraphicRootParamIndex : UINT {
 	GRP_MaterialSRV = 3,
 	GRP_Texture = 4,
 	GRP_END = 5
+};
+
+enum UIRootParamIndex : UINT {
+	URP_ObjectConstants = 0,
+	URP_Texture = 1,
+	URP_END = 2
 };
