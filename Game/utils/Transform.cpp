@@ -102,7 +102,7 @@ void Transform::LookAt(const Transform& target)
 	}
 
 	mRotation = mRotation.Concatenate(mRotation, rotation);
-	//mRotation.Normalize();
+	mRotation.Normalize();
 }
 
 void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
@@ -171,6 +171,14 @@ DirectX::SimpleMath::Vector3 Transform::GetScale() const
 
 DirectX::SimpleMath::Vector3 Transform::GetForward() const
 {
+	if (mParent != nullptr) {
+		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();
+		rotation = rotation.Concatenate(rotation, mRotation);
+		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, rotation);
+	}
+
+
+
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, mRotation);
 }
 
