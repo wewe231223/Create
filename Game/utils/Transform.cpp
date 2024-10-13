@@ -192,10 +192,10 @@ DirectX::BoundingOrientedBox& Transform::GetBB()
 DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 {
 	if (mParent != nullptr) {
-		mWorldMatrix =  DirectX::SimpleMath::Matrix::CreateScale(mScale) * DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation)  *  ( mLocalTransform * mParent->GetWorldMatrix() );
+		mWorldMatrix =  DirectX::SimpleMath::Matrix::CreateScale(mScale) * DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(mPosition) *  ( mLocalTransform * mParent->GetWorldMatrix() );
 	}
 	else {
-		mWorldMatrix =   DirectX::SimpleMath::Matrix::CreateScale(mScale) * DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(mPosition) * mLocalTransform;
+		mWorldMatrix = mLocalTransform *  DirectX::SimpleMath::Matrix::CreateScale(mScale) *  DirectX::SimpleMath::Matrix::CreateFromQuaternion(mRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(mPosition) ;
 	}
 
 	mOrientedBoundingBox.Transform(mWorldBoundingBox, mWorldMatrix);
