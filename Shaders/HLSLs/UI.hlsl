@@ -36,7 +36,7 @@ UI_VS_OUT UiVS(UI_VS_IN In)
     UI_VS_OUT Out;
 
     float3 pos = mul(float3(In.Pos, 1.f), gUIObjects[In.InstanceID].Transform);
-    Out.Pos = float4(pos, 1.f);
+    Out.Pos = float4(pos.xy,1.f, 1.f);
     Out.ImageIndex = gUIObjects[In.InstanceID].ImageIndex;
     Out.Tex = In.Pos;
     return Out;
@@ -44,5 +44,5 @@ UI_VS_OUT UiVS(UI_VS_IN In)
 
 float4 UiPS(UI_VS_OUT In) : SV_TARGET
 {
-    return gUITexture[In.ImageIndex].Sample( linearClampSampler, In.Tex);
+    return gUITexture[In.ImageIndex].Sample( linearWrapSampler, In.Tex);
 }

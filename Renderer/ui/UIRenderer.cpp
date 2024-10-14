@@ -48,8 +48,8 @@ UIRenderer::UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	};
 
 	std::vector<UINT> indices{
-		0, 3, 1,
-		1, 3, 2
+		0, 1, 3,
+		1, 2, 3
 	};
 
 

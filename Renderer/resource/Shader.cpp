@@ -583,9 +583,6 @@ UIShader::UIShader(ComPtr<ID3D12Device>& device)
 
     CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 
-
-
-
     // 파이프라인 상태 객체(PSO) 생성
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
