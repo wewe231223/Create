@@ -123,9 +123,11 @@ void GameScene::Update()
 	ModelContext2D context{};
 	context.ImageIndex = mUIRenderer->GetUIImage("TankTextureRed");
 	auto tr = CreateScreenTransformMatrix(1920.f, 1080.f);
-	auto sc = Create2DScaleMatrix(960.f, 540.f);
-	auto p = CreateTranslateMatrix(10.f, 10.f);
-	auto scp = Mul3x3(sc, p);
+	auto scp = DirectX::XMFLOAT3X3{
+		980.f, 0.f, 0.f,
+		0.f, 540.f, 0.f,
+		100.f, 100.f, 1.f
+	};
 	auto trsc = Mul3x3(scp, tr);
 	context.Transform = Transpose(trsc);
 	
