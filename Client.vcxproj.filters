@@ -84,6 +84,9 @@
     <ClInclude Include="Game\utils\Math2D.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\gameobject\UIObject.h">
+      <Filter>Game\gameobject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -130,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Game\utils\Math2D.cpp">
       <Filter>Game\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobject\UIObject.cpp">
+      <Filter>Game\gameobject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

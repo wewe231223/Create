@@ -124,8 +124,8 @@ void GameScene::Update()
 	context.ImageIndex = mUIRenderer->GetUIImage("TankTextureRed");
 	auto tr = CreateScreenTransformMatrix(1920.f, 1080.f);
 	auto scp = DirectX::XMFLOAT3X3{
-		980.f, 0.f, 0.f,
-		0.f, 540.f, 0.f,
+		300.f, 0.f, 0.f,
+		0.f, 300.f, 0.f,
 		100.f, 100.f, 1.f
 	};
 	auto trsc = Mul3x3(scp, tr);

@@ -84,6 +84,13 @@ struct ModelContext2D {
 		0.f,0.f,1.f 
 	};
 
+	DirectX::XMFLOAT3X3 UVTransform{
+		1.f,0.f,0.f,
+		0.f,1.f,0.f,
+		0.f,0.f,1.f
+	};
+
+
 	UINT ImageIndex{ 0 };
 };
 

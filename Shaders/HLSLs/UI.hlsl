@@ -1,6 +1,7 @@
 struct UIObjectCB
 {
     float3x3 Transform;
+    float3x3 UVTransform;
     uint ImageIndex;
 };
 
@@ -38,7 +39,7 @@ UI_VS_OUT UiVS(UI_VS_IN In)
     float3 pos = mul(float3(In.Pos, 1.f), gUIObjects[In.InstanceID].Transform);
     Out.Pos = float4(pos.xy,1.f, 1.f);
     Out.ImageIndex = gUIObjects[In.InstanceID].ImageIndex;
-    Out.Tex = In.Pos;
+    Out.Tex = mul(float3(In.Pos, 1.f), gUIObjects[In.InstanceID].UVTransform).xy;
     return Out;
 }
 
