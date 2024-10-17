@@ -17,7 +17,6 @@ public:
 	void ChangeImage(TextureIndex imageIndex);
 	void ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit);
 
-
 	void Disable();
 	void Enable();
 
@@ -25,6 +24,8 @@ public:
 	void Render();
 
 	void UpdateScreenTransform();
+
+	UIRect& GetUIRect() { return mUIRect; }
 private:
 	DirectX::XMFLOAT3X3 Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const;
 	DirectX::XMFLOAT3X3 Transpose(const DirectX::XMFLOAT3X3& mat) const;
@@ -39,7 +40,8 @@ private:
 	std::pair<UINT, UINT> mImageUnit{};
 
 	UIRect mUIRect{};
-	DirectX::XMFLOAT3X3 mTransform{};
+	DirectX::XMFLOAT3X3 mTransform{ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f };
+	DirectX::XMFLOAT3X3 mScreenTransform{};
 
 	bool mActive{ true };
 	bool mSpritable{ false };

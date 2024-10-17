@@ -5,12 +5,15 @@ UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex image
 	: mUIRenderer(uiRenderer), mImageIndex(imageIndex), mImageWidthHeight{ 0,0 }, mImageUnit{ 0,0 }, mSpritable{ false }
 {
 	mContext.ImageIndex = imageIndex;
+	UIObject::UpdateScreenTransform();
 }
 
 UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit)
 	: mUIRenderer(uiRenderer), mImageIndex(imageIndex), mImageWidthHeight(imageWidthHeight), mImageUnit(imageUnit), mSpritable{ true }
 {
 	mContext.ImageIndex = imageIndex;
+	UIObject::UpdateScreenTransform();
+
 }
 
 UIObject::~UIObject()
@@ -50,19 +53,38 @@ void UIObject::Update()
 
 }
 
+/*
+float _11, _12, _13;
+float _21, _22, _23;
+float _31, _32, _33;
+*/
+
 void UIObject::Render()
 {
+	mTransform._11 = mUIRect.width;
+	mTransform._22 = mUIRect.height;
+
+	mTransform._31 = mUIRect.LTx;
+	mTransform._32 = mUIRect.LTy;
+
+	// TODO : 이건 좀 나중에..
 	if (mSpritable) {
 
 	}
 	else {
 
 	}
+
+	if (mActive) {
+		mContext.Transform = Transpose(Multifly(mTransform, mScreenTransform));
+		
+		mUIRenderer->WriteContext(&mContext);
+	}
 }
 
 void UIObject::UpdateScreenTransform()
 {
-	mTransform = mUIRenderer->GetScreenTransform();
+	mScreenTransform = mUIRenderer->GetScreenTransform();
 }
 
 DirectX::XMFLOAT3X3 UIObject::Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const
@@ -84,10 +106,10 @@ DirectX::XMFLOAT3X3 UIObject::Multifly(const DirectX::XMFLOAT3X3& lhs, const Dir
 DirectX::XMFLOAT3X3 UIObject::Transpose(const DirectX::XMFLOAT3X3& mat) const
 {
 	DirectX::XMMATRIX matrix = DirectX::XMLoadFloat3x3(&mat);
-	matrix = DirectX::XMMatrixTranspose(matrix);
+	DirectX::XMMATRIX matrix1 = DirectX::XMMatrixTranspose(matrix);
 
 	DirectX::XMFLOAT3X3 result;
-	DirectX::XMStoreFloat3x3(&result, matrix);
+	DirectX::XMStoreFloat3x3(&result, matrix1);
 	
 	return result;
 }

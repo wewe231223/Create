@@ -7,6 +7,7 @@
 
 #include "Game/gameobject/BinObject.h"
 #include "Game/utils/Math2D.h"
+#include "Game/gameobject/UIObject.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -22,10 +23,13 @@ GameScene::~GameScene()
 {
 }
 
+std::shared_ptr<UIObject> ui;
+
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 	mResourceManager = std::make_shared<ResourceManager>(device);
 	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList(),window);
+
 	mMainCamera = std::make_shared<Camera>(device,window);
 	mMainCamera->GetTransform().SetPosition({ 0.f,100.f,0.f });
 
@@ -111,6 +115,11 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
 
+	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"));
+	ui->GetUIRect().LTx = 100.f;
+	ui->GetUIRect().LTy = 100.f;
+	ui->GetUIRect().width = 100.f;
+	ui->GetUIRect().height = 100.f;
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -118,20 +127,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
-	// ui 렌더 파트 
-	// 이미지가 NDC 를 기준으로 그려진다. 어떻게 하면 스크린을 기준으로 그릴 수 있을 까? 
-	ModelContext2D context{};
-	context.ImageIndex = mUIRenderer->GetUIImage("TankTextureRed");
-	auto tr = CreateScreenTransformMatrix(1920.f, 1080.f);
-	auto scp = DirectX::XMFLOAT3X3{
-		300.f, 0.f, 0.f,
-		0.f, 300.f, 0.f,
-		100.f, 100.f, 1.f
-	};
-	auto trsc = Mul3x3(scp, tr);
-	context.Transform = Transpose(trsc);
 	
-	mUIRenderer->WriteContext(&context);
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
@@ -196,6 +192,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
+
+	ui->Render();
 	mUIRenderer->Render(commandList);
 }
 
