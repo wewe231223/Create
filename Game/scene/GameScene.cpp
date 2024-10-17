@@ -120,6 +120,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	ui->GetUIRect().LTy = 100.f;
 	ui->GetUIRect().width = 500.f;
 	ui->GetUIRect().height = 500.f;
+	Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -128,7 +129,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 void GameScene::Update()
 {
 
-	Time.AddEvent(5s, []() {ui->AdvanceSprite(); return true; });
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
 	static float yaw = 0.f;

@@ -89,7 +89,6 @@ void UIObject::UpdateScreenTransform()
 
 void UIObject::AdvanceSprite()
 {
-	Console.InfoLog("AdvanceSprite");
 	if (mSpritable) {
 		mSpriteCoord.first++;
 		if (mSpriteCoord.first >= mSpriteFrameInRow) {
