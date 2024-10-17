@@ -16,9 +16,13 @@ private:
 private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
+
+	std::unique_ptr<SkyBoxModel> mSkyBox{ nullptr };
+	std::vector<MaterialIndex> mSkyBoxMaterials{};
+	
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
 
 	std::vector<std::shared_ptr<class GameObject>> mGameObjects{};
-	
+
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

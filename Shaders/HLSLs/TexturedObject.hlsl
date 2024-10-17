@@ -21,9 +21,7 @@ TexturedObject_VS_OUT TexturedObjectVS(TexturedObject_VS_IN input)
 {
     TexturedObject_VS_OUT output = (TexturedObject_VS_OUT) 0;
 
-    float4x4 world = gObjects[input.InstanceID].worldMatrix;
-    float4x4 worldviewproj = mul(world, viewProjectionMatrix);
-    output.Pos = mul(float4(input.Pos, 1.0f), worldviewproj);
+    output.Pos = mul(float4(input.Pos, 1.0f), mul(gObjects[input.InstanceID].worldMatrix, viewProjectionMatrix));
     
     // Pass through other data.
     output.Tex1 = input.Tex1;
@@ -36,6 +34,6 @@ TexturedObject_VS_OUT TexturedObjectVS(TexturedObject_VS_IN input)
 
 float4 TexturedObjectPS(TexturedObject_VS_OUT input) : SV_Target
 {
-    float4 baseColor = gTextures[gMaterials[input.MaterialID].Textures[0]].Sample(linearWrapSampler, input.Tex1);
+    float4 baseColor = gTextures[gMaterials[input.MaterialID].Textures[0]].Sample(linearClampSampler, input.Tex1);
     return baseColor;
 }

@@ -121,6 +121,22 @@ public:
 };
 
 
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							SkyBox Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class SkyBoxShader : public GraphicsShaderBase {
+public:
+	SkyBoxShader(ComPtr<ID3D12Device>& device);
+	~SkyBoxShader();
+};
+
+
+
 
 //////////////////////////////////////////////////////////////////////////
 //																		//
@@ -135,3 +151,5 @@ public:
 	UIShader(ComPtr<ID3D12Device>& device);
 	~UIShader();
 };
+
+

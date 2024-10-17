@@ -14,7 +14,7 @@ struct Terrain_VS_IN
 struct Terrain_VS_OUT
 {
     float4  Pos      : SV_POSITION;
-    uint    MateialID : TEXCOORD0;
+    nointerpolation uint MateialID : TEXCOORD0;
     float2  Tex1     : TEXCOORD1;
     float2  Tex2     : TEXCOORD2;
     float3  Normal   : NORMAL;
@@ -24,9 +24,7 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 {
     Terrain_VS_OUT output = (Terrain_VS_OUT) 0;
 
-    float4x4 world = gObjects[input.InstanceID].worldMatrix;
-    float4x4 worldviewproj = mul(world, viewProjectionMatrix);
-    output.Pos = mul(float4(input.Pos, 1.0f), worldviewproj);
+    output.Pos = mul(float4(input.Pos, 1.0f), mul(gObjects[input.InstanceID].worldMatrix, viewProjectionMatrix));
     
     // Pass through other data.
     output.Tex1 = input.Tex1;

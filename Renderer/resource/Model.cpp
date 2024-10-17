@@ -306,19 +306,141 @@ TexturedModel::~TexturedModel()
 }
 
 
+
 //////////////////////////////////////////////////////////////////////////
 //																		//
 //																		//
-//							Textured Model								//
+//							SkyBox Model								//
 //																		//
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-UIModel::UIModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader)
+constexpr float SKYBOX_SIZE = 50.f;
+
+SkyBoxModel::SkyBoxModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader)
 {
+	mShader = shader;
+	mAttribute = VertexAttrib_position | VertexAttrib_texcoord1;
+	assert(!mShader->CheckAttribute(mAttribute));
 	
+	float size = SKYBOX_SIZE / 2.f ;
+
+	std::vector<DirectX::XMFLOAT3> positions = {
+		// Front face
+		{-size, -size, -size},
+		{-size,  size, -size},
+		{ size,  size, -size},
+		{ size, -size, -size},
+
+		// Back face
+		{ size, -size,  size},
+		{ size,  size,  size},
+		{-size,  size,  size},
+		{-size, -size,  size},
+
+		// Top face
+		{-size,  size, -size},
+		{-size,  size,  size},
+		{ size,  size,  size},
+		{ size,  size, -size},
+
+		// Bottom face
+		{-size, -size,  size},
+		{-size, -size, -size},
+		{ size, -size, -size},
+		{ size, -size,  size},
+
+		// Left face
+		{-size, -size,  size},
+		{-size,  size,  size},
+		{-size,  size, -size},
+		{-size, -size, -size},
+
+		// Right face
+		{ size, -size, -size},
+		{ size,  size, -size},
+		{ size,  size,  size},
+		{ size, -size,  size},
+	};
+	 
+	std::vector<DirectX::XMFLOAT2> uvs = {
+		// Front face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		// Back face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		// Top face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		// Bottom face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		// Left face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		// Right face
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+	};
+
+	std::vector<UINT> indices = {
+		// Front face
+		0, 1, 2, 0, 2, 3,
+		// Back face
+		4, 5, 6, 4, 6, 7,
+		// Top face
+		8, 9, 10, 8, 10, 11,
+		// Bottom face
+		12, 13, 14, 12, 14, 15,
+		// Left face
+		16, 17, 18, 16, 18, 19,
+		// Right face
+		20, 21, 22, 20, 22, 23,
+	};
+
+
+	mVertexBuffers[0] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(positions.data()), sizeof(DirectX::XMFLOAT3) * positions.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[0]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)* positions.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
+
+	mVertexBuffers[1] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(uvs.data()), sizeof(DirectX::XMFLOAT2) * uvs.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[1]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)* uvs.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
+
+	mIndexBuffer = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
+	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
+
+	// Front Face
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0, 6));
+	// Back Face 
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 6, 6));
+	// Top Face 
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 12, 6));
+	// Bottom Face 
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 18, 6));
+	// Left Face
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 24, 6));
+	// Right Face 
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 30, 6));
 }
 
-UIModel::~UIModel()
+
+SkyBoxModel::~SkyBoxModel()
 {
 }

@@ -96,14 +96,13 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //																		//
 //																		//
-//							UI Model									//
+//							SkyBox Model								//
 //																		//
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-
-class UIModel : public Model {
+class SkyBoxModel : public Model {
 public:
-	UIModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader);
-	~UIModel();
+	SkyBoxModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> shader);
+	~SkyBoxModel();
 };

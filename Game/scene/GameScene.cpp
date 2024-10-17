@@ -37,6 +37,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
+	mResourceManager->CreateShader<SkyBoxShader>("SkyBoxShader");
 
 	std::shared_ptr<TerrainImage> terrainImage = std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw");
 
@@ -112,10 +113,56 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mGameObjects.emplace_back(binObject);
 
 
+	//Front Face 
+	//Back Face 
+	//Top Face
+	//Bottom Face
+	//Left Face
+	//Right Face
+
+	mResourceManager->CreateModel<SkyBoxModel>("SkyBox", mResourceManager->GetShader("SkyBoxShader"));
+	
+	mResourceManager->CreateTexture("SkyBox_Front", "./Resources/textures/SkyBox_Front_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Back", "./Resources/textures/SkyBox_Back_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Top", "./Resources/textures/SkyBox_Top_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Bottom", "./Resources/textures/SkyBox_Bottom_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Left", "./Resources/textures/SkyBox_Left_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
+
+
+	Material skyBoxMaterial{};
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Front");
+
+	mResourceManager->CreateMaterial("SkyBoxFrontMaterial", skyBoxMaterial);
+
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Back");
+	mResourceManager->CreateMaterial("SkyBoxBackMaterial", skyBoxMaterial);
+
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Top");
+	mResourceManager->CreateMaterial("SkyBoxTopMaterial", skyBoxMaterial);
+
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Bottom");
+	mResourceManager->CreateMaterial("SkyBoxBottomMaterial", skyBoxMaterial);
+
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Left");
+	mResourceManager->CreateMaterial("SkyBoxLeftMaterial", skyBoxMaterial);
+
+	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Right");
+	mResourceManager->CreateMaterial("SkyBoxRightMaterial", skyBoxMaterial);
+
+	mSkyBoxMaterials = {
+		mResourceManager->GetMaterial("SkyBoxFrontMaterial"),
+		mResourceManager->GetMaterial("SkyBoxBackMaterial"),
+		mResourceManager->GetMaterial("SkyBoxTopMaterial"),
+		mResourceManager->GetMaterial("SkyBoxBottomMaterial"),
+		mResourceManager->GetMaterial("SkyBoxLeftMaterial"),
+		mResourceManager->GetMaterial("SkyBoxRightMaterial")
+	};
+
 
 	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/noBKG_KnightRun_strip.png");
 
-	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"), std::make_pair<UINT,UINT>(768, 64 ), std::make_pair<UINT,UINT>( 96, 64 ));
+	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"), std::make_pair<UINT,UINT>( 768, 64 ), std::make_pair<UINT,UINT>( 96, 64 ));
 	ui->GetUIRect().LTx = 100.f;
 	ui->GetUIRect().LTy = 100.f;
 	ui->GetUIRect().width = 500.f;
@@ -186,12 +233,19 @@ void GameScene::UpdateShaderVariables()
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 
+	// 스카이박스도 ui 처럼 별도 렌더 라인을 마련해서 그리자. 유일한 객체이니 그렇게 해도 무관함. 
+	DirectX::SimpleMath::Matrix skybox = DirectX::SimpleMath::Matrix::CreateTranslation(mMainCamera->GetTransform().GetPosition());
+
+
+
+
 	for (auto& object : mGameObjects) {
 		object->Render(mMainCamera, commandList);
 	}
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
+
 
 	ui->Render();
 	mUIRenderer->Render(commandList);
