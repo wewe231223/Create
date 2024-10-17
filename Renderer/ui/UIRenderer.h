@@ -14,7 +14,7 @@ class UIRenderer : public I2DRenderable {
 		ModelContext2D* mContext{};
 	};
 public:
-	UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList);
+	UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList,std::shared_ptr<class Window> window);
 	~UIRenderer();
 
 public:
@@ -23,7 +23,10 @@ public:
 
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
+	virtual DirectX::XMFLOAT3X3 GetScreenTransform() override;
 	virtual void WriteContext(ModelContext2D* data) override;
+private:
+	void UpdateScreenTransform();
 private:
 	// 로드 이외에 사용하지 않는다. 
 	ComPtr<ID3D12Device> mDevice{ nullptr };
@@ -34,6 +37,9 @@ private:
 
 	D3D12_INDEX_BUFFER_VIEW mIndexBufferView{};
 	std::unique_ptr<class DefaultBuffer> mIndexBuffer{ nullptr };
+
+	std::shared_ptr<class Window> mWindow{ nullptr };
+	DirectX::XMFLOAT3X3 mScreenTransform{};
 
 	ComPtr<ID3D12DescriptorHeap> mTexHeap{ nullptr };
 

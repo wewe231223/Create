@@ -25,7 +25,7 @@ GameScene::~GameScene()
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 	mResourceManager = std::make_shared<ResourceManager>(device);
-	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList());
+	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList(),window);
 	mMainCamera = std::make_shared<Camera>(device,window);
 	mMainCamera->GetTransform().SetPosition({ 0.f,100.f,0.f });
 

@@ -13,6 +13,7 @@ __interface I3DRenderable {
 };
 
 __interface I2DRenderable {
+	virtual DirectX::XMFLOAT3X3 GetScreenTransform() PURE;
 	virtual void WriteContext(ModelContext2D* data) PURE;
 };
 

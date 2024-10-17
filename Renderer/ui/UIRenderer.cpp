@@ -2,10 +2,10 @@
 #include "ui/UIRenderer.h"
 #include "buffer/DefaultBuffer.h"
 #include "resource/Shader.h"
+#include "core/window.h"
 
-
-UIRenderer::UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList)
-	: mDevice(device), mLoadCommandList(loadCommandList)
+UIRenderer::UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList, std::shared_ptr<Window> window)
+	: mDevice(device), mLoadCommandList(loadCommandList), mWindow(window)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC desc{};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -64,6 +64,8 @@ UIRenderer::UIRenderer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	mIndexBufferView.BufferLocation = mIndexBuffer->GetBuffer()->GetGPUVirtualAddress();
 	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	mIndexBufferView.SizeInBytes = static_cast<UINT>(sizeof(UINT) * indices.size());
+
+	UIRenderer::UpdateScreenTransform();
 }
 
 UIRenderer::~UIRenderer()
@@ -116,8 +118,31 @@ void UIRenderer::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mInstanceCount = 0;
 }
 
+DirectX::XMFLOAT3X3 UIRenderer::GetScreenTransform()
+{
+	return mScreenTransform;
+}
+
 void UIRenderer::WriteContext(ModelContext2D* data)
 {
-	std::memcpy(mContexts[mMemoryIndex].mContext, data, sizeof(ModelContext2D));
+	std::memcpy(mContexts[mMemoryIndex].mContext + mInstanceCount, data, sizeof(ModelContext2D));
 	mInstanceCount += 1;
+}
+
+void UIRenderer::UpdateScreenTransform()
+{
+	mScreenTransform = DirectX::XMFLOAT3X3{
+		2.f / mWindow->GetWindowWidth<float>()			,0.0f													,0.f,
+		0.0f											,-2.f / mWindow->GetWindowHeight<float>()				,0.f,
+		-1.f											,1.f													,1.f
+	};
+
+
+	// c = a*b
+	// c -> gpu 
+
+
+	// a -> gpu
+	// b -> gpu
+	// gpu // (a * b) x
 }
