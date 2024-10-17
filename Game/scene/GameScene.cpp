@@ -113,13 +113,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 
-	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
+	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/noBKG_KnightRun_strip.png");
 
-	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"));
+	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"), std::make_pair<UINT,UINT>(768, 64 ), std::make_pair<UINT,UINT>( 96, 64 ));
 	ui->GetUIRect().LTx = 100.f;
 	ui->GetUIRect().LTy = 100.f;
-	ui->GetUIRect().width = 100.f;
-	ui->GetUIRect().height = 100.f;
+	ui->GetUIRect().width = 500.f;
+	ui->GetUIRect().height = 500.f;
 
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -127,8 +127,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
-	
 
+	Time.AddEvent(5s, []() {ui->AdvanceSprite(); return true; });
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 	
 	static float yaw = 0.f;

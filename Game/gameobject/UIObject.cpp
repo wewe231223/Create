@@ -14,6 +14,12 @@ UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex image
 	mContext.ImageIndex = imageIndex;
 	UIObject::UpdateScreenTransform();
 
+
+	mSpriteFrameInRow = imageWidthHeight.first / imageUnit.first;
+	mSpriteFrameInCol = imageWidthHeight.second / imageUnit.second;
+	// Total Sprite is mSpriteFrameInRow * mSpriteFrameInCol
+
+	mContext.UVTransform = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f };
 }
 
 UIObject::~UIObject()
@@ -53,12 +59,6 @@ void UIObject::Update()
 
 }
 
-/*
-float _11, _12, _13;
-float _21, _22, _23;
-float _31, _32, _33;
-*/
-
 void UIObject::Render()
 {
 	mTransform._11 = mUIRect.width;
@@ -69,15 +69,15 @@ void UIObject::Render()
 
 	// TODO : 이건 좀 나중에..
 	if (mSpritable) {
+		mContext.UVTransform._11 = 1.f / static_cast<float>(mSpriteFrameInRow);
+		mContext.UVTransform._22 = 1.f / static_cast<float>(mSpriteFrameInCol);
 
-	}
-	else {
-
+		mContext.UVTransform._13 = static_cast<float>(mSpriteCoord.first) * mContext.UVTransform._11;
+		mContext.UVTransform._23 = static_cast<float>(mSpriteCoord.second) * mContext.UVTransform._22;
 	}
 
 	if (mActive) {
 		mContext.Transform = Transpose(Multifly(mTransform, mScreenTransform));
-		
 		mUIRenderer->WriteContext(&mContext);
 	}
 }
@@ -85,6 +85,21 @@ void UIObject::Render()
 void UIObject::UpdateScreenTransform()
 {
 	mScreenTransform = mUIRenderer->GetScreenTransform();
+}
+
+void UIObject::AdvanceSprite()
+{
+	Console.InfoLog("AdvanceSprite");
+	if (mSpritable) {
+		mSpriteCoord.first++;
+		if (mSpriteCoord.first >= mSpriteFrameInRow) {
+			mSpriteCoord.first -= mSpriteFrameInRow;
+			mSpriteCoord.second += 1;
+			if (mSpriteCoord.second >= mSpriteFrameInCol) {
+				mSpriteCoord.second = 0;
+			}
+		}
+	}
 }
 
 DirectX::XMFLOAT3X3 UIObject::Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const
