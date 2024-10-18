@@ -9,12 +9,21 @@
 //																		//
 //																		//
 //////////////////////////////////////////////////////////////////////////
+// 셰이더 사이의 서열이 필요하다. 반드시 먼저 그려져야 하는 셰이더들은 Reserved 보다 작은 ID 를 통해 먼저 그려질 수 있도록 하자.
+// ReservedID 사용 현황 
+// 0 : SkyBoxShader
+// 1 : 
+// 2 : 
+// 3 :
+// 4 :
+
+size_t shaderIDReserved = 4;
 size_t id = 0;
 
 GraphicsShaderBase::GraphicsShaderBase(ComPtr<ID3D12Device>& device)
 {
 
-    mShaderID = id++;
+	mShaderID = shaderIDReserved + id++;
 
 
 	mStaticSamplers[0] = { 0, D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP };
@@ -531,10 +540,12 @@ TexturedObjectShader::~TexturedObjectShader()
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-
+// 현재 스카이 박스의 경우 먼저 그려야 하는 방식으로 PSO 를 정의하였다. 따라서 스카이 박스 셰이더가 모든 렌더 오브젝트 중 가장 앞에 위치해야함.
 SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
 	: GraphicsShaderBase(device)
 {
+    mShaderID = 0;
+
 	mAttribute = VertexAttrib_position | VertexAttrib_texcoord1 ;
 	MakeShader(EShaderType::VS, "SkyBox.hlsl", "SkyBoxVS", "vs_5_1", nullptr);
 	MakeShader(EShaderType::PS, "SkyBox.hlsl", "SkyBoxPS", "ps_5_1", nullptr);

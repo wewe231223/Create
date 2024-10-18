@@ -121,7 +121,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	//Right Face
 
 	mResourceManager->CreateModel<SkyBoxModel>("SkyBox", mResourceManager->GetShader("SkyBoxShader"));
-	
+	mSkyBox = mResourceManager->GetModel("SkyBox");
 	mResourceManager->CreateTexture("SkyBox_Front", "./Resources/textures/SkyBox_Front_0.dds");
 	mResourceManager->CreateTexture("SkyBox_Back", "./Resources/textures/SkyBox_Back_0.dds");
 	mResourceManager->CreateTexture("SkyBox_Top", "./Resources/textures/SkyBox_Top_0.dds");
@@ -232,16 +232,17 @@ void GameScene::UpdateShaderVariables()
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-
-	// 스카이박스도 ui 처럼 별도 렌더 라인을 마련해서 그리자. 유일한 객체이니 그렇게 해도 무관함. 
-	DirectX::SimpleMath::Matrix skybox = DirectX::SimpleMath::Matrix::CreateTranslation(mMainCamera->GetTransform().GetPosition());
-
-
-
-
 	for (auto& object : mGameObjects) {
 		object->Render(mMainCamera, commandList);
 	}
+
+	auto skybox = DirectX::SimpleMath::Matrix::CreateTranslation(mMainCamera->GetTransform().GetPosition());
+
+	ModelContext con{};
+	con.World = skybox.Transpose();
+
+	mSkyBox->WriteContext(&con,mSkyBoxMaterials);
+
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);

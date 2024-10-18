@@ -17,7 +17,7 @@ private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
 
-	std::unique_ptr<SkyBoxModel> mSkyBox{ nullptr };
+	std::shared_ptr<I3DRenderable> mSkyBox{ nullptr };
 	std::vector<MaterialIndex> mSkyBoxMaterials{};
 	
 	std::shared_ptr<Camera> mMainCamera{ nullptr };

@@ -318,6 +318,7 @@ TexturedModel::~TexturedModel()
 constexpr float SKYBOX_SIZE = 50.f;
 
 SkyBoxModel::SkyBoxModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader)
+	: Model(device, shader)
 {
 	mShader = shader;
 	mAttribute = VertexAttrib_position | VertexAttrib_texcoord1;
@@ -403,17 +404,17 @@ SkyBoxModel::SkyBoxModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComm
 
 	std::vector<UINT> indices = {
 		// Front face
-		0, 1, 2, 0, 2, 3,
+		0, 2, 1, 0, 3, 2,
 		// Back face
-		4, 5, 6, 4, 6, 7,
+		4, 6, 5, 4, 7, 6,
 		// Top face
-		8, 9, 10, 8, 10, 11,
+		8, 10, 9, 8, 11, 10,
 		// Bottom face
-		12, 13, 14, 12, 14, 15,
+		12, 14, 13, 12, 15, 14,
 		// Left face
-		16, 17, 18, 16, 18, 19,
+		16, 18, 17, 16, 19, 18,
 		// Right face
-		20, 21, 22, 20, 22, 23,
+		20, 22, 21, 20, 23, 22,
 	};
 
 
