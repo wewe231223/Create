@@ -61,10 +61,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
 
 
-	// 카메라를 좀 고쳐보자. 
 	int mCallBackSign = NrSampler.Sample();
-
-	Time.AddEvent(1s, []() {  Console.InfoLog("{} : {}",Input.GetDeltaMouseX(), Input.GetDeltaMouseY());       return true; });
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
 		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);
@@ -210,7 +207,9 @@ void GameScene::Update()
 
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
 
+	
 
+	mMainCamera->GetTransform().Rotate(DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * -0.15f), DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * 0.15f), 0.f);
 
 	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
 	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());

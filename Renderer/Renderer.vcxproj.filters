@@ -128,9 +128,6 @@
     <ClCompile Include="core\Utility.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="core\window.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="directx\DxRenderer.cpp">
       <Filter>directx</Filter>
     </ClCompile>
@@ -205,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIRenderer.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="core\window.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
