@@ -66,7 +66,7 @@ bool Camera::IsInFrustum(DirectX::BoundingOrientedBox& box)
 
 void Camera::Update()
 {
-	mViewMatrix = DirectX::XMMatrixLookAtLH(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(), DirectX::SimpleMath::Vector3::Up);
+	mViewMatrix = DirectX::XMMatrixLookAtLH(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(),DirectX::SimpleMath::Vector3::Up);
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
 }
 

@@ -53,6 +53,8 @@ FreeCameraMode::FreeCameraMode(std::shared_ptr<class Camera> camera)
 FreeCameraMode::~FreeCameraMode()
 {
 }
+constexpr float PositiveYLimit = DirectX::XMConvertToRadians(89.0f);
+constexpr float NegativeYLimit = DirectX::XMConvertToRadians(-89.0f);
 
 void FreeCameraMode::Enter()
 {
@@ -76,7 +78,7 @@ void FreeCameraMode::Enter()
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mInputCallBackSign, [this]() {
 		auto right = mCamera->GetTransform().GetRight();
 		right.y = 0.f;
-		mCamera->GetTransform().Translate(right * 0.1f);
+		mCamera->GetTransform().Translate(right * -0.1f);
 		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * 0.1f);
 		});
 
@@ -87,6 +89,9 @@ void FreeCameraMode::Enter()
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mInputCallBackSign, [this]() {
 		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
 		});
+
+	mYRotate = 0.f;
+	mCamera->GetTransform().ResetRotation();
 }
 
 void FreeCameraMode::Exit()
@@ -95,8 +100,26 @@ void FreeCameraMode::Exit()
 	NrSampler.Free(mInputCallBackSign);
 }
 
+
+
+// DeltaMouse 만큼의 회전을 했을 때, Forward 축이 +UP 이나 -UP 에 근접하면 회전을 하지 않아야 한다 
 void FreeCameraMode::Update()
 {
-	mCamera->GetTransform().Rotate(DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * -0.15f), DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * 0.15f), 0.f);
+	auto cameraRotation = mCamera->GetTransform().GetRotation();
+	auto dx = DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * 0.07f);
+	auto dy = DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * -0.07f);
+	auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(dx,dy,0.f);
+	
+	rotation.Normalize();
+	cameraRotation = cameraRotation.Concatenate(cameraRotation, rotation);
+	cameraRotation.Normalize();
+
+	auto forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, cameraRotation);
+
+	auto dot = DirectX::SimpleMath::Vector3::Up.Dot(forward);
+
+	if (dot < 0.9f and dot > -0.9f) {
+		mCamera->GetTransform().Rotate(rotation);
+	}
 
 }

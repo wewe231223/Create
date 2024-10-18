@@ -179,8 +179,6 @@ DirectX::SimpleMath::Vector3 Transform::GetForward() const
 		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, rotation);
 	}
 
-
-
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, mRotation);
 }
 
