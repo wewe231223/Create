@@ -6,9 +6,10 @@ enum EGameObjectTag : size_t {
 };
 
 enum ECameraType : UINT {
-	FreeCamera = 0,
-	FirstPersonCamera = 1,
-	ThirdPersonCamera = 2,
+	CT_FreeCamera = 0,
+	CT_FirstPersonCamera = 1,
+	CT_ThirdPersonCamera = 2,
+	CT_END,
 };
 
 struct ModelInfo {

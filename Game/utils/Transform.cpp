@@ -173,7 +173,9 @@ DirectX::SimpleMath::Vector3 Transform::GetForward() const
 {
 	if (mParent != nullptr) {
 		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();
+		rotation.Normalize();
 		rotation = rotation.Concatenate(rotation, mRotation);
+		rotation.Normalize();
 		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, rotation);
 	}
 

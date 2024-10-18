@@ -4,10 +4,10 @@
 #include "Game/gameobject/GameObject.h"
 #include "Game/gameobject/TerrainObject.h"
 #include "Game/gameobject/CubeObject.h"
-
 #include "Game/gameobject/BinObject.h"
 #include "Game/utils/Math2D.h"
 #include "Game/gameobject/UIObject.h"
+#include "Game/scene/CameraMode.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -24,6 +24,35 @@ GameScene::~GameScene()
 }
 
 std::shared_ptr<UIObject> ui;
+
+/*
+넷겜플 클라 원하는 점
+
+빌보드가 아닌 나무 (이건 가능하면, 불가능하거나 힘들면 구현 X)
+텍스트 출력 (콘솔X, 이거도 가능하면)
+
+HP바
+플레이어를 따라다니는 빌보드
+
+UI ( 0 )
+
+프리 카메라 ( 0 )
+충돌처리 ( 어떤 충돌처리? )
+
+터지는 효과 (파티클이든 아니든 상관 X, 이것도 가능하면)
+실외 지형 경계가 안보이도록 (자연스럽게 보이게)
+포탄 쏘기
+
+*/
+
+void GameScene::InitCamera()
+{
+}
+
+void GameScene::InitSkyBox()
+{
+}
+
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -51,7 +80,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	Material tankMaterial;
 	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureRed");
-
 	mResourceManager->CreateMaterial("TankMaterialRed", tankMaterial);
 
 	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureGreen");
@@ -61,31 +89,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
 
 
-	int mCallBackSign = NrSampler.Sample();
+	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
+	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
+	mCurrentCameraMode->Enter();
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * -0.1f );
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * 0.1f);
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetRight() * -0.1f);
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -0.1f);
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mCallBackSign, [this]() {
-		mMainCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
-		});
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::Cube);
@@ -209,7 +216,6 @@ void GameScene::Update()
 
 	
 
-	mMainCamera->GetTransform().Rotate(DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * -0.15f), DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * 0.15f), 0.f);
 
 	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
 	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
@@ -227,6 +233,7 @@ void GameScene::UpdateShaderVariables()
 		object->Update();
 	}
 
+	mCurrentCameraMode->Update();
 	mMainCamera->Update();
 }
 
@@ -251,4 +258,3 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	ui->Render();
 	mUIRenderer->Render(commandList);
 }
-

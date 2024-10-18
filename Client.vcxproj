@@ -155,8 +155,10 @@
     <ClInclude Include="Game\gameobject\TerrainObject.h" />
     <ClInclude Include="Game\gameobject\UIObject.h" />
     <ClInclude Include="Game\scene\Camera.h" />
+    <ClInclude Include="Game\scene\CameraMode.h" />
     <ClInclude Include="Game\scene\GameScene.h" />
     <ClInclude Include="Game\utils\Input.h" />
+    <ClInclude Include="Game\utils\Interface.h" />
     <ClInclude Include="Game\utils\Math2D.h" />
     <ClInclude Include="Game\utils\NonReplacementSampler.h" />
     <ClInclude Include="Game\utils\RandomEngine.h" />
@@ -174,8 +176,10 @@
     <ClCompile Include="Game\gameobject\TerrainObject.cpp" />
     <ClCompile Include="Game\gameobject\UIObject.cpp" />
     <ClCompile Include="Game\scene\Camera.cpp" />
+    <ClCompile Include="Game\scene\CameraMode.cpp" />
     <ClCompile Include="Game\scene\GameScene.cpp" />
     <ClCompile Include="Game\utils\Input.cpp" />
+    <ClCompile Include="Game\utils\Interface.cpp" />
     <ClCompile Include="Game\utils\Math2D.cpp" />
     <ClCompile Include="Game\utils\NonReplacementSampler.cpp" />
     <ClCompile Include="Game\utils\RandomEngine.cpp" />

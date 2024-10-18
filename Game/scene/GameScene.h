@@ -6,12 +6,14 @@ public:
 	GameScene(const std::string& name);
 	virtual ~GameScene();
 
-
 	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window) override;
 	
 	void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
+	void InitCamera();
+	void InitSkyBox();
+
 	void UpdateShaderVariables();
 private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
@@ -21,6 +23,8 @@ private:
 	std::vector<MaterialIndex> mSkyBoxMaterials{};
 	
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
+	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
+	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
 
 	std::vector<std::shared_ptr<class GameObject>> mGameObjects{};
 
