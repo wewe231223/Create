@@ -61,9 +61,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
 
 
-
+	// 카메라를 좀 고쳐보자. 
 	int mCallBackSign = NrSampler.Sample();
 
+	Time.AddEvent(1s, []() {  Console.InfoLog("{} : {}",Input.GetDeltaMouseX(), Input.GetDeltaMouseY());       return true; });
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mCallBackSign, [this]() {
 		mMainCamera->GetTransform().Translate(mMainCamera->GetTransform().GetForward() * 0.1f);

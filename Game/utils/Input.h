@@ -1,10 +1,13 @@
 #pragma once 
 
+#define VIRTUAL_MOUSE 
+
 class GInput {
 public:
 	GInput();
 	~GInput();
 
+	void Initialize(HWND hWnd);
 	void Update();
 
 	DirectX::Keyboard::State& GetKeyboardState();
@@ -26,8 +29,9 @@ private:
 
 	DirectX::Keyboard::State mKeyboardState{};
 
-	int mPrevX{ 0 };
-	int mPrevY{ 0 };
+	POINT mWindowCenter{ 0,0 };
+	int mZeroX{ 0 };
+	int mZeroY{ 0 };
 	DirectX::Mouse::State mMouseState{};
 
 	DirectX::Keyboard::KeyboardStateTracker mKeyboardTracker{};

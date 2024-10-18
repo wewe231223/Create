@@ -41,8 +41,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
+
 	std::shared_ptr<Window> window = std::make_shared<Window>(hWnd);
 	window->ChangeWindowStyle(EWindowStyle::Windowed);
+    Input.Initialize(hWnd);
     DxRenderer dxrenderer{ window };
 
 	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
@@ -195,6 +197,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // 여기에는 Alt + Enter 과 같은 경우에 대한 처리를 추가하면 됩니다. 
 
         }
+        break;
+    case WM_KILLFOCUS:
+		// 포커스를 잃었을 때 처리하는 부분입니다.
+        Console.InfoLog("Focus Lost");
+        break;
+	case WM_SETFOCUS:
+		// 포커스를 얻었을 때 처리하는 부분입니다.
+		Console.InfoLog("Focus Gained");
         break;
 
         // 아래는 모든 입력을 Keyboard 에게 넘기는 부분입니다. 

@@ -10,13 +10,37 @@ GInput::GInput()
 
 GInput::~GInput()
 {
+#ifdef VIRTUAL_MOUSE
+	ShowCursor(true);
+#endif // VIRTUAL_MOUSE
+}
+
+void GInput::Initialize(HWND hWnd)
+{
+	RECT r{};
+	GetClientRect(hWnd, &r);
+	
+	mZeroX = (r.right + r.left) / 2;
+	mZeroY = (r.bottom + r.top) / 2;
+	POINT p{ 0,0 };
+	mWindowCenter = { 0,0 };
+	ClientToScreen(hWnd, &mWindowCenter);
+
+	mWindowCenter.x += 960;
+	mWindowCenter.y += 540;
+
+	SetCursorPos(mWindowCenter.x,mWindowCenter.y);
+#ifdef VIRTUAL_MOUSE
+	ShowCursor(false);
+#endif // VIRTUAL_MOUSE
 }
 
 void GInput::Update()
 {
-	mPrevX = mMouseState.x;
-	mPrevY = mMouseState.y;
-
+	mMouseState = mMouse->GetState();
+#ifdef VIRTUAL_MOUSE
+	SetCursorPos(mWindowCenter.x , mWindowCenter.y);
+#endif // VIRTUAL_MOUSE
 
 	mKeyboardState = mKeyboard->GetState();
 	mMouseState = mMouse->GetState();
@@ -84,12 +108,20 @@ void GInput::RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys key, int sign, s
 
 float GInput::GetDeltaMouseX() const
 {
-	return static_cast<float>(mMouseState.x - mPrevX);
+#ifdef VIRTUAL_MOUSE
+	return static_cast<float>(mMouseState.x - 960);
+#else
+	return static_cast<float>(mMouseState.x);
+#endif // VIRTUAL_MOUSE
 }
 
 float GInput::GetDeltaMouseY() const
 {
-	return static_cast<float>(mMouseState.y - mPrevY);
+#ifdef VIRTUAL_MOUSE
+	return static_cast<float>(mMouseState.y - 540);
+#else
+	return static_cast<float>(mMouseState.y);
+#endif // VIRTUAL_MOUSE
 }
 
 void GInput::EraseCallBack(int sign)
