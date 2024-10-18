@@ -7,8 +7,13 @@ public:
 	GInput();
 	~GInput();
 
-	void Initialize(HWND hWnd);
+	void Initialize(std::shared_ptr<Window> window);
 	void Update();
+
+	void DisableVirtualMouse();
+	void EnableVirtualMouse();
+	void UpdateFocus(UINT msg);
+	void UpdateWindowCenter();
 
 	DirectX::Keyboard::State& GetKeyboardState();
 	DirectX::Mouse::State& GetMouseState();
@@ -24,15 +29,17 @@ public:
 
 	void EraseCallBack(int sign);
 private:
+	std::shared_ptr<Window> mWindow{ nullptr };
+
 	std::unique_ptr<DirectX::Keyboard> mKeyboard{ std::make_unique<DirectX::Keyboard>() };
 	std::unique_ptr<DirectX::Mouse> mMouse{ std::make_unique<DirectX::Mouse>() };
 
 	DirectX::Keyboard::State mKeyboardState{};
 
 	POINT mWindowCenter{ 0,0 };
-	int mZeroX{ 0 };
-	int mZeroY{ 0 };
 	DirectX::Mouse::State mMouseState{};
+	bool mWindowFocused{ true };
+	bool mVirtualMouse{ false };
 
 	DirectX::Keyboard::KeyboardStateTracker mKeyboardTracker{};
 	DirectX::Mouse::ButtonStateTracker mMouseTracker{};

@@ -15,31 +15,21 @@ GInput::~GInput()
 #endif // VIRTUAL_MOUSE
 }
 
-void GInput::Initialize(HWND hWnd)
+void GInput::Initialize(std::shared_ptr<Window> window)
 {
-	RECT r{};
-	GetClientRect(hWnd, &r);
-	
-	mZeroX = (r.right + r.left) / 2;
-	mZeroY = (r.bottom + r.top) / 2;
-	POINT p{ 0,0 };
-	mWindowCenter = { 0,0 };
-	ClientToScreen(hWnd, &mWindowCenter);
+	mWindow = window;
 
-	mWindowCenter.x += 960;
-	mWindowCenter.y += 540;
+	GInput::EnableVirtualMouse();
 
-	SetCursorPos(mWindowCenter.x,mWindowCenter.y);
-#ifdef VIRTUAL_MOUSE
-	ShowCursor(false);
-#endif // VIRTUAL_MOUSE
 }
 
 void GInput::Update()
 {
 	mMouseState = mMouse->GetState();
 #ifdef VIRTUAL_MOUSE
-	SetCursorPos(mWindowCenter.x , mWindowCenter.y);
+	if (mWindowFocused and mVirtualMouse) {
+		SetCursorPos(mWindowCenter.x, mWindowCenter.y);
+	}
 #endif // VIRTUAL_MOUSE
 
 	mKeyboardState = mKeyboard->GetState();
@@ -67,6 +57,49 @@ void GInput::Update()
 		}
 	}
 
+
+}
+
+void GInput::DisableVirtualMouse()
+{
+#ifdef VIRTUAL_MOUSE
+	if (mVirtualMouse) {
+		ShowCursor(true);
+		mVirtualMouse = false;
+	}
+#endif // VIRTUAL_MOUSE
+}
+
+void GInput::EnableVirtualMouse()
+{
+#ifdef VIRTUAL_MOUSE
+	if (not mVirtualMouse) {
+		ShowCursor(false);
+		mVirtualMouse = true;
+		GInput::UpdateWindowCenter();
+	}
+#endif // VIRTUAL_MOUSE
+}
+
+
+
+void GInput::UpdateFocus(UINT msg)
+{
+	if (msg == WM_KILLFOCUS) {
+		mWindowFocused = false;
+	}
+	else {
+		mWindowFocused = true;
+	}
+}
+
+void GInput::UpdateWindowCenter()
+{
+	mWindowCenter = { 0,0 };
+	ClientToScreen(mWindow->GetWindowHandle(), &mWindowCenter);
+
+	mWindowCenter.x += mWindow->GetWindowWidth<int>() / 2;
+	mWindowCenter.y += mWindow->GetWindowHeight<int>() / 2;
 
 }
 
@@ -109,18 +142,24 @@ void GInput::RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys key, int sign, s
 float GInput::GetDeltaMouseX() const
 {
 #ifdef VIRTUAL_MOUSE
-	return static_cast<float>(mMouseState.x - 960);
+	if ((not mWindowFocused) or (not mVirtualMouse)) {
+		return 0.f;
+	}
+	return static_cast<float>(mMouseState.x - (mWindow->GetWindowWidth<int>() / 2));
 #else
-	return static_cast<float>(mMouseState.x);
+	return static_cast<float>(0);
 #endif // VIRTUAL_MOUSE
 }
 
 float GInput::GetDeltaMouseY() const
 {
 #ifdef VIRTUAL_MOUSE
-	return static_cast<float>(mMouseState.y - 540);
+	if ((not mWindowFocused) or (not mVirtualMouse)) {
+		return 0.f;
+	}
+	return static_cast<float>(mMouseState.y - (mWindow->GetWindowHeight<int>() / 2));
 #else
-	return static_cast<float>(mMouseState.y);
+	return static_cast<float>(0);
 #endif // VIRTUAL_MOUSE
 }
 

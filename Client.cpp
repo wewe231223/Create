@@ -44,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	std::shared_ptr<Window> window = std::make_shared<Window>(hWnd);
 	window->ChangeWindowStyle(EWindowStyle::Windowed);
-    Input.Initialize(hWnd);
+    Input.Initialize(window);
     DxRenderer dxrenderer{ window };
 
 	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
@@ -59,6 +59,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     int endCallbackSign = NrSampler.Sample();
 
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Escape, endCallbackSign, []() {PostQuitMessage(0); });
+    Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F4, endCallbackSign, []() {Input.DisableVirtualMouse(); });
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F5, endCallbackSign, []() {Input.EnableVirtualMouse(); });
 
     // 기본 메시지 루프입니다:
     while (msg.message != WM_QUIT)
@@ -199,12 +201,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_KILLFOCUS:
-		// 포커스를 잃었을 때 처리하는 부분입니다.
-        Console.InfoLog("Focus Lost");
-        break;
 	case WM_SETFOCUS:
-		// 포커스를 얻었을 때 처리하는 부분입니다.
-		Console.InfoLog("Focus Gained");
+        Input.UpdateFocus(message);
         break;
 
         // 아래는 모든 입력을 Keyboard 에게 넘기는 부분입니다. 
