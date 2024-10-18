@@ -67,13 +67,17 @@ void FreeCameraMode::Enter()
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mInputCallBackSign, [this]() {
-		//mCamera->GetTransform().Translate(mCamera->GetTransform().GetRight() * -0.1f);
-		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * -0.1f);
+		auto right = mCamera->GetTransform().GetRight();
+		right.y = 0.f;
+		mCamera->GetTransform().Translate(right * -0.1f);
+		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * -0.1f);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mInputCallBackSign, [this]() {
-		//mCamera->GetTransform().Translate(mCamera->GetTransform().GetRight() * 0.1f);
-		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * 0.1f);
+		auto right = mCamera->GetTransform().GetRight();
+		right.y = 0.f;
+		mCamera->GetTransform().Translate(right * 0.1f);
+		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * 0.1f);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mInputCallBackSign, [this]() {
