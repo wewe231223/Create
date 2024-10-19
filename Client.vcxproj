@@ -162,6 +162,7 @@
     <ClInclude Include="Game\utils\Interface.h" />
     <ClInclude Include="Game\utils\Math2D.h" />
     <ClInclude Include="Game\utils\NonReplacementSampler.h" />
+    <ClInclude Include="Game\utils\ObjectPool.h" />
     <ClInclude Include="Game\utils\RandomEngine.h" />
     <ClInclude Include="Game\utils\Transform.h" />
     <ClInclude Include="pch.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Game\utils\Interface.cpp" />
     <ClCompile Include="Game\utils\Math2D.cpp" />
     <ClCompile Include="Game\utils\NonReplacementSampler.cpp" />
+    <ClCompile Include="Game\utils\ObjectPool.cpp" />
     <ClCompile Include="Game\utils\RandomEngine.cpp" />
     <ClCompile Include="Game\utils\Transform.cpp" />
     <ClCompile Include="pch.cpp">

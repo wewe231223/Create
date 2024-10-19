@@ -27,8 +27,13 @@ private:
 	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
 
+
+
 	std::vector<std::shared_ptr<class GameObject>> mGameObjects{};
 	std::shared_ptr<class GameObject> mPlayer{ nullptr };
+
+	// 총알 오브젝트 만들기... 
+	ObjectPool<std::shared_ptr<class GameObject>> mBullets{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

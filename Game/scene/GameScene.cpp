@@ -177,10 +177,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
 void GameScene::Update()
 {
+	mTerrain->UpdateGameObjectAboveTerrain();
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 
-	mTerrain->UpdateGameObjectAboveTerrain();
 	mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
 
 	if (Input.GetKeyboardState().W) {
