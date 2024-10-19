@@ -90,7 +90,6 @@ void FreeCameraMode::Enter()
 		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
 		});
 
-	mYRotate = 0.f;
 	mCamera->GetTransform().ResetRotation();
 }
 
