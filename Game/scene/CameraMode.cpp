@@ -71,7 +71,7 @@ void FreeCameraMode::Enter()
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mInputCallBackSign, [this]() {
 		auto right = mCamera->GetTransform().GetRight();
 		right.y = 0.f;
-		mCamera->GetTransform().Translate(right * -0.1f);
+		mCamera->GetTransform().Translate(right * 0.1f);
 		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * -0.1f);
 		});
 
@@ -105,8 +105,8 @@ void FreeCameraMode::Exit()
 void FreeCameraMode::Update()
 {
 	auto cameraRotation = mCamera->GetTransform().GetRotation();
-	auto dx = DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * 0.07f);
-	auto dy = DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * -0.07f);
+	auto dx = DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 30.f);
+	auto dy = DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * Time.GetDeltaTime<float>() * - 30.f );
 	auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(dx,dy,0.f);
 	
 	rotation.Normalize();

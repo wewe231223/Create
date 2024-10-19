@@ -1,6 +1,24 @@
 #include "pch.h"
 #include "Game/scene/Camera.h"
 
+
+
+SkyBox::SkyBox(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex> images)
+	: mModel(model), mImages(images)
+{
+}
+
+SkyBox::~SkyBox()
+{
+}
+
+void SkyBox::Render(const DirectX::SimpleMath::Matrix& translation)
+{
+	mContext.World = translation.Transpose();
+	mModel->WriteContext(&mContext, mImages);
+}
+
+
 Camera::Camera(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window)
 {
 	D3D12_RESOURCE_DESC desc{};
@@ -54,6 +72,11 @@ void Camera::MakeProjectionMatrix()
 	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
 }
 
+void Camera::SetCameraSkyBox(std::shared_ptr<SkyBox>&& skybox)
+{
+	mSkyBox = std::move(skybox);
+}
+
 Transform& Camera::GetTransform()
 {
 	return mTransform;
@@ -70,8 +93,17 @@ void Camera::Update()
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
 }
 
+void Camera::RenderSkyBox()
+{
+	if (mSkyBox) {
+		mSkyBox->Render(DirectX::SimpleMath::Matrix::CreateTranslation(mTransform.GetPosition()));
+	}
+
+}
+
 void Camera::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+
 	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
 
 	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();

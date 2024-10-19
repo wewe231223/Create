@@ -1,5 +1,21 @@
 #pragma once 
 
+
+class SkyBox {
+public:
+	SkyBox(std::shared_ptr<I3DRenderable> model,const std::vector<MaterialIndex> images);
+	~SkyBox();
+public:
+	void Render(const DirectX::SimpleMath::Matrix& translation);
+private:
+	ModelContext mContext{};
+
+	std::shared_ptr<I3DRenderable> mModel{ nullptr };
+	std::vector<MaterialIndex> mImages{};
+};
+
+
+
 class Camera {
 	struct CameraBuffer {
 		ComPtr<ID3D12Resource> buffer{ nullptr };
@@ -17,12 +33,14 @@ public:
 	~Camera();
 public:
 	void MakeProjectionMatrix();
+	void SetCameraSkyBox(std::shared_ptr<SkyBox>&& skybox);
 
 	Transform& GetTransform();
 
 	bool IsInFrustum(DirectX::BoundingOrientedBox& box);
 
 	void Update();
+	void RenderSkyBox();
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	Transform mTransform{};
@@ -33,6 +51,8 @@ private:
 
 	DirectX::BoundingFrustum mViewFrustum{};
 	DirectX::BoundingFrustum mWorldFrustum{};
+
+	std::shared_ptr<SkyBox> mSkyBox{ nullptr };
 
 	std::array<CameraBuffer, static_cast<size_t>(GC_FrameCount)> mCameraBuffers{};
 	size_t mMemoryIndex{ 0 };

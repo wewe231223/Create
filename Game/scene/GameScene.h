@@ -11,17 +11,16 @@ public:
 	void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
-	void InitCamera();
-	void InitSkyBox();
+	void InitCamera(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	void UpdateShaderVariables();
 private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
 
-	std::shared_ptr<I3DRenderable> mSkyBox{ nullptr };
-	std::vector<MaterialIndex> mSkyBoxMaterials{};
-	
+	std::shared_ptr<Window> mWindow{ nullptr };
+
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
 	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
