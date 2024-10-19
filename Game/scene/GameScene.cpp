@@ -113,6 +113,7 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
+static float yaw = 0.f;
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -151,17 +152,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mPlayer->GetTransform().SetPosition({ 10.f,100.f,10.f });
 	mPlayer->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 
-	int sign = NrSampler.Sample();
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() {
-		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
-		});
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() {
-		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
-		});
-
-
-	
 
 
 	mTerrain->MakeObjectOnTerrain(mPlayer);
@@ -191,7 +181,25 @@ void GameScene::Update()
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 
 	mTerrain->UpdateGameObjectAboveTerrain();
+	mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
 
+	if (Input.GetKeyboardState().W) {
+		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
+	}
+
+	if (Input.GetKeyboardState().S) {
+		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
+	}
+
+	if (Input.GetKeyboardState().Q) {
+		yaw += Time.GetSmoothDeltaTime<float>();
+	}
+
+	if (Input.GetKeyboardState().E) {
+		yaw -= Time.GetSmoothDeltaTime<float>();
+	}
+
+	yaw = std::fmodf(yaw, DirectX::XM_2PI);
 
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
 
