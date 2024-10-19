@@ -34,7 +34,7 @@ void ResourceManager::ModelContainer::Insert(const std::string& model, std::shar
 	// 여기다! 
 	auto it = std::upper_bound(mModels.begin(), mModels.end(), newModel,
 		[](const std::shared_ptr<Model>& a, const std::shared_ptr<Model>& b) {
-			return a->CompareShader(b);
+			return a->CompareShaderID(b);
 		});
 
 	// 적절한 위치에 삽입
@@ -219,7 +219,7 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		++cur;
 
 		for (; cur != mModelContainer->end(); ++prev, ++cur) {
-			if (cur->get()->CompareShader(*prev)) {
+			if (cur->get()->CompareEqualShader(*prev)) {
 				cur->get()->SetShader(commandList);
 			}
 

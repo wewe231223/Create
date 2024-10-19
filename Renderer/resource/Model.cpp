@@ -83,7 +83,14 @@ void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
 	mShader->SetShader(commandList);
 }
 
-bool Model::CompareShader(const std::shared_ptr<Model>& other) const noexcept
+bool Model::CompareShaderID(const std::shared_ptr<Model>& other) const noexcept
+{
+	return mShader->GetShaderID() < other->mShader->GetShaderID();
+}
+
+
+
+bool Model::CompareEqualShader(const std::shared_ptr<Model>& other) const noexcept
 {
 	return mShader->GetShaderID() != other->mShader->GetShaderID();
 }
