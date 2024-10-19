@@ -54,3 +54,31 @@ public:
 	virtual void Exit() override;
 	virtual void Update() override;
 };
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							TPP Camera Mode								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+class TPPCameraMode : public CameraMode {
+public:
+	TPPCameraMode(std::shared_ptr<class Camera> camera, Transform& transform, const DirectX::SimpleMath::Vector3& offset);
+	virtual ~TPPCameraMode();
+public:
+	virtual void Enter() override;
+	virtual void Exit() override;
+	virtual void Update() override;
+private:
+	Transform& mTargetTransform;
+	DirectX::SimpleMath::Vector3 mOffset{ DirectX::SimpleMath::Vector3::Zero };
+};
+
+

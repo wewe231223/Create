@@ -13,6 +13,8 @@ public:
 private:
 	void InitCamera(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void InitCameraMode();
 
 	void UpdateShaderVariables();
 private:
@@ -26,6 +28,7 @@ private:
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
 
 	std::vector<std::shared_ptr<class GameObject>> mGameObjects{};
+	std::shared_ptr<class GameObject> mPlayer{ nullptr };
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

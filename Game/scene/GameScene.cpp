@@ -50,11 +50,6 @@ void GameScene::InitCamera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	mMainCamera = std::make_shared<Camera>(device,mWindow);
 	mMainCamera->GetTransform().SetPosition({ 0.f,100.f,0.f });
 	mMainCamera->GetTransform().LookAt({ 10.f,10.f,10.f });
-
-	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
-	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
-	mCurrentCameraMode->Enter();
-
 }
 
 void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -101,6 +96,24 @@ void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 
 }
 
+void GameScene::InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	std::shared_ptr<TerrainImage> terrainImage = std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw");
+
+	mTerrain = std::make_shared<TerrainCollider>(terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f));
+	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
+}
+
+void GameScene::InitCameraMode()
+{
+	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
+	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 2.f, -5.f));
+
+
+	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
+	mCurrentCameraMode->Enter();
+}
+
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 	mWindow = window;
@@ -112,13 +125,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateShader<SkyBoxShader>("SkyBoxShader");
 
 
-	InitCamera(device, mResourceManager->GetLoadCommandList());
-
-
-	std::shared_ptr<TerrainImage> terrainImage = std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw");
-
-	mTerrain = std::make_shared<TerrainCollider>(terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f));
-	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
+	GameScene::InitCamera(device, mResourceManager->GetLoadCommandList());
+	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
+	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 
 
 	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
@@ -135,32 +144,28 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureBlue");
 	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
 
-	InitSkyBox(device, mResourceManager->GetLoadCommandList());
-
-
-
-
-	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::Cube);
-
-
-	for (auto i = 1; i <= 10; ++i) {
-		for (auto j = 1; j <= 10; ++j) {
-			auto cube = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
-			cube->SetMaterial({ mResourceManager->GetMaterial("TankMaterialRed") });
-			cube->GetTransform().SetPosition({ i * 10.f, 0.f, j * 10.f });
-			mTerrain->MakeObjectOnTerrain(cube);
-			mGameObjects.emplace_back(cube);
-		}
-	}
 
 	
-	auto binObject = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
-	binObject->SetMaterial({ mResourceManager->GetMaterial("TankMaterialGreen") });
-	binObject->GetTransform().SetPosition({ 10.f,100.f,10.f });
+	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+	mPlayer->SetMaterial({ mResourceManager->GetMaterial("TankMaterialGreen") });
+	mPlayer->GetTransform().SetPosition({ 10.f,100.f,10.f });
+	mPlayer->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+
+	int sign = NrSampler.Sample();
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() {
+		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
+		});
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() {
+		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
+		});
 
 
-	mTerrain->MakeObjectOnTerrain(binObject);
-	mGameObjects.emplace_back(binObject);
+	
+
+
+	mTerrain->MakeObjectOnTerrain(mPlayer);
+	mGameObjects.emplace_back(mPlayer);
 
 
 	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/noBKG_KnightRun_strip.png");
@@ -172,7 +177,11 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	ui->GetUIRect().height = 500.f;
 	Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
 
+
+
+	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
+
 }
 
 // TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
@@ -180,35 +189,9 @@ void GameScene::Update()
 {
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
-	
-	static float yaw = 0.f;
-	yaw = std::fmodf(yaw, DirectX::XM_2PI);
-	yaw += 0.001f;
-	mGameObjects[49]->GetTransform().RotateSmoothly(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(yaw), 0.f, 0.f));
 
+	mTerrain->UpdateGameObjectAboveTerrain();
 
-	// mTerrain->UpdateGameObjectAboveTerrain();
-	auto child = mGameObjects[101]->GetChild(1);
-
-	// child->GetTransform().Rotate(yaw, 0.f, 0.f);
-
-	auto pos = mGameObjects[101]->GetTransform().GetPosition();
-	auto right = child->GetTransform().GetForward();
-	//auto up =child->GetTransform().GetUp();
-
-	auto offset = right * 100.f ;
-
-	child = mGameObjects[101]->GetChild(2);
-	child->GetTransform().Rotate(0.f, yaw, 0.f);
-
-	child = mGameObjects[101]->GetChild(3);
-	child->GetTransform().Rotate(0.f, yaw, 0.f);
-
-	child = mGameObjects[101]->GetChild(4);
-	child->GetTransform().Rotate(0.f, yaw, 0.f);
-
-	child = mGameObjects[101]->GetChild(5);
-	child->GetTransform().Rotate(0.f, yaw, 0.f);
 
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
 

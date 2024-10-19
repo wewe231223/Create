@@ -18,7 +18,7 @@ CameraMode::CameraMode(std::shared_ptr<class Camera> camera)
 
 CameraMode::~CameraMode()
 {
-	NrSampler.Free(mInputCallBackSign);
+
 }
 
 std::shared_ptr<CameraMode> CameraMode::ChangeCameraMode(std::shared_ptr<CameraMode>& mode)
@@ -53,8 +53,6 @@ FreeCameraMode::FreeCameraMode(std::shared_ptr<class Camera> camera)
 FreeCameraMode::~FreeCameraMode()
 {
 }
-constexpr float PositiveYLimit = DirectX::XMConvertToRadians(89.0f);
-constexpr float NegativeYLimit = DirectX::XMConvertToRadians(-89.0f);
 
 void FreeCameraMode::Enter()
 {
@@ -96,7 +94,6 @@ void FreeCameraMode::Enter()
 void FreeCameraMode::Exit()
 {
 	Input.EraseCallBack(mInputCallBackSign);
-	NrSampler.Free(mInputCallBackSign);
 }
 
 
@@ -121,4 +118,46 @@ void FreeCameraMode::Update()
 		mCamera->GetTransform().Rotate(rotation);
 	}
 
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							TPP Camera Mode								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+TPPCameraMode::TPPCameraMode(std::shared_ptr<Camera> camera,Transform& transform,const DirectX::SimpleMath::Vector3& offset)
+	: CameraMode(camera), mOffset(offset), mTargetTransform(transform)
+{
+
+}
+
+TPPCameraMode::~TPPCameraMode()
+{
+}
+
+void TPPCameraMode::Enter()
+{
+	mCamera->GetTransform().ResetRotation();
+}
+
+void TPPCameraMode::Exit()
+{
+}
+
+void TPPCameraMode::Update()
+{
+	auto forward = mTargetTransform.GetForward();
+	auto right = mTargetTransform.GetRight();
+	auto up = mTargetTransform.GetUp();
+
+	mCamera->GetTransform().SetPosition(mTargetTransform.GetPosition() + mOffset.x * right + mOffset.y * up + mOffset.z * forward);
 }
