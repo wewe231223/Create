@@ -159,5 +159,7 @@ void TPPCameraMode::Update()
 	auto right = mTargetTransform.GetRight();
 	auto up = mTargetTransform.GetUp();
 
-	mCamera->GetTransform().SetPosition(mTargetTransform.GetPosition() + mOffset.x * right + mOffset.y * up + mOffset.z * forward);
+	mCamera->GetTransform().ResetRotation();
+	mCamera->GetTransform().SetPosition(mTargetTransform.GetPosition() + DirectX::SimpleMath::Vector3{ mOffset.x* right + mOffset.y * up + mOffset.z * forward });
+	mCamera->GetTransform().LookAt(mTargetTransform.GetPosition());
 }

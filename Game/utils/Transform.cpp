@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "Game/utils/Transform.h"
 
-
-// TODO : 축 둘을 받아서 a -> b 시키는 회전을 계산하는 함수를 만들자., 
-
-
 Transform::Transform()
 {
 }
@@ -77,31 +73,37 @@ void Transform::LookAt(const Transform& target)
 	DirectX::SimpleMath::Vector3 direction = target.GetPosition() - mPosition;
 	direction.Normalize();
 
-	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
-	float dot = forward.Dot(direction);
+	//DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
+	//float dot = forward.Dot(direction);
 
-	DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::Identity;
+	//DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::Identity;
 
-	if (fabs(dot - (-1.0f)) < 0.0001f)
-	{
-		rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
-		rotation.Normalize();
-	}
-	else if (fabs(dot - (1.0f)) < 0.0001f)
-	{
-		rotation = DirectX::SimpleMath::Quaternion::Identity;
-		rotation.Normalize();
-	}
-	else
-	{
-		float angle = acosf(dot);
-		DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
-		axis.Normalize();
-		rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
-		rotation.Normalize();
-	}
+	//if (fabs(dot - (-1.0f)) < 0.0001f)
+	//{
+	//	rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
+	//	rotation.Normalize();
+	//}
+	//else if (fabs(dot - (1.0f)) < 0.0001f)
+	//{
+	//	rotation = DirectX::SimpleMath::Quaternion::Identity;
+	//	rotation.Normalize();
+	//}
+	//else
+	//{
+	//	float angle = acosf(dot);
+	//	DirectX::SimpleMath::Vector3 axis = forward.Cross(direction);
+	//	axis.Normalize();
+	//	rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
+	//	rotation.Normalize();
+	//}
 
-	mRotation = mRotation.Concatenate(mRotation, rotation);
+	//mRotation = mRotation.Concatenate(mRotation, rotation);
+	//mRotation.Normalize();
+
+	auto look = DirectX::SimpleMath::Quaternion::LookRotation(DirectX::SimpleMath::Vector3::Forward, DirectX::SimpleMath::Vector3::Up);
+	look.Normalize();
+
+	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, look);
 	mRotation.Normalize();
 }
 
@@ -113,14 +115,15 @@ void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
 	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
 	float dot = forward.Dot(direction);
 
-	DirectX::SimpleMath::Quaternion quat{};
+	DirectX::SimpleMath::Quaternion quat = DirectX::SimpleMath::Quaternion::Identity;
 
-	if (fabs(dot - (-1.0f)) < 0.000001f)
+
+	if (fabs(dot - (-1.0f)) < 0.0001f)
 	{
 		quat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
 		quat.Normalize();
 	}
-	else if (fabs(dot - (1.0f)) < 0.000001f)
+	else if (fabs(dot - (1.0f)) < 0.0001f)
 	{
 		quat = DirectX::SimpleMath::Quaternion::Identity;
 		quat.Normalize();
@@ -184,11 +187,25 @@ DirectX::SimpleMath::Vector3 Transform::GetForward() const
 
 DirectX::SimpleMath::Vector3 Transform::GetRight() const
 {
+	if (mParent != nullptr) {
+		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();
+		rotation.Normalize();
+		rotation = rotation.Concatenate(rotation, mRotation);
+		rotation.Normalize();
+		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Right, rotation);
+	}
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Right, mRotation);
 }
 
 DirectX::SimpleMath::Vector3 Transform::GetUp() const
 {
+	if (mParent != nullptr) {
+		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();
+		rotation.Normalize();
+		rotation = rotation.Concatenate(rotation, mRotation);
+		rotation.Normalize();
+		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up, rotation);
+	}
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up, mRotation);
 }
 

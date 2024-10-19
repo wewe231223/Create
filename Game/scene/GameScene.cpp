@@ -204,17 +204,16 @@ void GameScene::Update()
 	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
 	GameScene::UpdateShaderVariables();
-
-
 }
 
 void GameScene::UpdateShaderVariables()
 {
+	mCurrentCameraMode->Update();
+
 	for (auto& object : mGameObjects) {
 		object->Update();
 	}
 
-	mCurrentCameraMode->Update();
 	mMainCamera->Update();
 }
 
