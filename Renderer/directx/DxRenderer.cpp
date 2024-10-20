@@ -101,52 +101,46 @@ void DxRenderer::StartRender()
 	DxRenderer::StartRenderImGui();
 
 }
-// 채팅 로그를 저장할 벡터
-std::vector<std::string> chatLog;
-
-// 채팅 메시지를 추가하는 함수
-void AddChatMessage(const std::string& message) {
-	chatLog.push_back(message);
-}
-
-
-void ShowChatWindow() {
-	ImGui::Begin("Chat Window", nullptr, 0);
-
-	ImGui::BeginChild("ChatLog", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
-	for (const auto& message : chatLog) {
-		ImGui::TextWrapped("%s", message.c_str());
-	}
-	ImGui::EndChild();
-
-	static char inputBuffer[256] = "";
-	if (ImGui::InputText("##ChatInput", inputBuffer, IM_ARRAYSIZE(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-		if (strlen(inputBuffer) > 0) {
-			AddChatMessage(inputBuffer);
-			ZeroMemory(inputBuffer, sizeof(inputBuffer));
-			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
-
-		}
-	}
-
-	// 자동 스크롤
-	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-		ImGui::SetScrollHereY(1.0f);
-	}
-
-	// ImGui 윈도우 끝
-	ImGui::End();
-}
-
-char mID[256]{};
-char mPw[256]{};
+//std::vector<std::string> chatLog;
+//
+//void AddChatMessage(const std::string& message) {
+//	chatLog.push_back(message);
+//}
+//
+//
+//void ShowChatWindow() {
+//	ImGui::Begin("Chat Window", nullptr, 0);
+//
+//	ImGui::BeginChild("ChatLog", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+//	for (const auto& message : chatLog) {
+//		ImGui::TextWrapped("%s", message.c_str());
+//	}
+//	ImGui::EndChild();
+//
+//	static char inputBuffer[256] = "";
+//	if (ImGui::InputText("##ChatInput", inputBuffer, IM_ARRAYSIZE(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+//		if (strlen(inputBuffer) > 0) {
+//			AddChatMessage(inputBuffer);
+//			ZeroMemory(inputBuffer, sizeof(inputBuffer));
+//			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
+//
+//		}
+//	}
+//	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+//		ImGui::SetScrollHereY(1.0f);
+//	}
+//	ImGui::End();
+//}
+//
+//char mID[256]{};
+//char mPw[256]{};
 
 void DxRenderer::Render()
 {
 #ifdef UI_RENDER
 	Console.Render();
 
-	
+	/*
 
 	ImGui::SetNextWindowSize(ImVec2(400, 100));
 	ImGui::SetNextWindowPos(ImVec2(500, 500));
@@ -171,6 +165,8 @@ void DxRenderer::Render()
 
 
 	ShowChatWindow();
+	
+	*/
 
 #endif 
 	if (mScene)
