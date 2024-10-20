@@ -157,7 +157,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("TankMaterialRed") } );
-	mBullets.AssignValidateCallBack([](std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
+	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
@@ -204,6 +204,14 @@ void GameScene::Update()
 		yaw -= Time.GetSmoothDeltaTime<float>();
 	}
 
+	static float tankhead = 0.f;
+
+	if (Input.GetMouseState().rightButton) {
+		tankhead += Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f;
+		tankhead = std::fmodf(tankhead, DirectX::XM_2PI);
+	}
+	mPlayer->GetChild(1)->GetTransform().Rotate(tankhead, 0.f, 0.f);
+
 	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
 		auto bullet = mBullets.Acquire();
 		if (bullet != nullptr) {
@@ -212,6 +220,7 @@ void GameScene::Update()
 			bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
 		}
 	}
+
 
 	yaw = std::fmodf(yaw, DirectX::XM_2PI);
 
@@ -280,15 +289,14 @@ void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
 	mTimeOut = 5.f;
 }
 
-
-bool Bullet::Validate()
+bool Bullet::Validate() const 
 {
-	return mTimeOut < std::numeric_limits<float>::epsilon();
+	return mTimeOut > std::numeric_limits<float>::epsilon();
 }
 
 void Bullet::Update()
 {
-	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 10.f);
+	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
 	mTimeOut -= Time.GetDeltaTime<float>();
 	GameObject::Update();
 }

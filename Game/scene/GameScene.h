@@ -16,7 +16,7 @@ public:
 	~Bullet();
 public:
 	void Reset(DirectX::SimpleMath::Vector3 dir);
-	bool Validate();
+	bool Validate() const ;
 	virtual void Update() override;
 private:
 	DirectX::SimpleMath::Vector3 mDirection{};
