@@ -156,7 +156,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
 
-	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("TankMaterialRed") });
+	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("TankMaterialRed") } );
+	mBullets.AssignValidateCallBack([](std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
@@ -205,9 +206,11 @@ void GameScene::Update()
 
 	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
 		auto bullet = mBullets.Acquire();
-		bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
-		bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
-		bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
+		if (bullet != nullptr) {
+			bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
+			bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+			bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
+		}
 	}
 
 	yaw = std::fmodf(yaw, DirectX::XM_2PI);
@@ -215,8 +218,6 @@ void GameScene::Update()
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
 
 	
-
-
 	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
 	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
 	//mMainCamera->GetTransform().SetPosition({ pos + offset });
@@ -233,6 +234,7 @@ void GameScene::UpdateShaderVariables()
 		object->Update();
 	}
 
+	mBullets.Update();
 	for (auto& bullet : mBullets) {
 		bullet->Update();
 	}
@@ -275,10 +277,18 @@ Bullet::~Bullet()
 void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
 {
 	mDirection = dir;
+	mTimeOut = 5.f;
+}
+
+
+bool Bullet::Validate()
+{
+	return mTimeOut < std::numeric_limits<float>::epsilon();
 }
 
 void Bullet::Update()
 {
 	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 10.f);
+	mTimeOut -= Time.GetDeltaTime<float>();
 	GameObject::Update();
 }

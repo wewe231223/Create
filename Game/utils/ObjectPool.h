@@ -5,6 +5,8 @@ class ObjectPool {
 public:
     ObjectPool() = default;
 
+    void AssignValidateCallBack(std::function<bool(std::shared_ptr<ObjectTy>&)>&& callBack);
+
     template<typename... Args> requires std::constructible_from<ObjectTy, Args...>
     inline void Initialize(Args&&... args) {
         mFree.resize(size);
@@ -27,14 +29,25 @@ public:
 
     void Release(ObjectTy* obj);
 
+    void Update();
+
     // 획득된 객체 순회
     auto begin() const { return mUsed.begin(); }
     auto end() const { return mUsed.end(); }
 
+	std::vector<std::shared_ptr<ObjectTy>>& GetUsed() { return mUsed; }
 private:
     std::vector<std::shared_ptr<ObjectTy>> mFree;  // 사용 가능한 객체 목록
     std::vector<std::shared_ptr<ObjectTy>> mUsed;  // 획득된 객체 목록
+
+    std::function<bool(std::shared_ptr<ObjectTy>&)> mValidateCallBack{};
 };
+
+template<typename ObjectTy, size_t size>
+inline void ObjectPool<ObjectTy, size>::AssignValidateCallBack(std::function<bool(std::shared_ptr<ObjectTy>&)>&& callBack)
+{
+	mValidateCallBack = std::move(callBack);
+}
 
 template<typename ObjectTy, size_t size>
 inline void ObjectPool<ObjectTy, size>::Release(ObjectTy* obj) {
@@ -44,5 +57,16 @@ inline void ObjectPool<ObjectTy, size>::Release(ObjectTy* obj) {
     if (it != mUsed.end()) {
         mFree.emplace_back(std::move(*it));
         mUsed.erase(it);
+    }
+}
+
+template<typename ObjectTy, size_t size>
+inline void ObjectPool<ObjectTy, size>::Update()
+{
+    if (mValidateCallBack) {
+        auto it = std::remove_if(mUsed.begin(), mUsed.end(), mValidateCallBack);
+        if (it == mUsed.end()) return;
+		std::move(it, mUsed.end(), std::back_inserter(mFree));
+        mUsed.erase(it, mUsed.end());
     }
 }
