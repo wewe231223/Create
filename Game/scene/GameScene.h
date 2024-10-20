@@ -1,5 +1,24 @@
 #pragma once 
 
+
+class Player : public GameObject{
+public:
+	Player(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
+	~Player();
+
+public:
+	virtual void Update() override;
+};
+
+class Bullet : public GameObject {
+public:
+	Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
+	~Bullet();
+public:
+	virtual void Update() override;
+};
+
+
 class GameScene : public Scene{
 public:
 	GameScene();
@@ -29,11 +48,11 @@ private:
 
 
 
-	std::vector<std::shared_ptr<class GameObject>> mGameObjects{};
-	std::shared_ptr<class GameObject> mPlayer{ nullptr };
+	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
+	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
 	// 총알 오브젝트 만들기... 
-	ObjectPool<std::shared_ptr<class GameObject>> mBullets{};
+	ObjectPool<GameObject, 64> mBullets{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

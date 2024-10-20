@@ -34,6 +34,7 @@ Mesh::Mesh(ComPtr<ID3D12Device>& device, D3D12_PRIMITIVE_TOPOLOGY topology,UINT 
 
 		ContextBuffer.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(ContextBuffer.mBufferPtr)));
 	}
+
 }
 
 Mesh::~Mesh()

@@ -17,6 +17,13 @@ GameObject::GameObject(std::shared_ptr<I3DRenderable> model)
 	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
 }
 
+GameObject::GameObject(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
+	: mModel(model) 
+{
+	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
+	GameObject::SetMaterial(materials);
+}
+
 GameObject::~GameObject()
 {
 }

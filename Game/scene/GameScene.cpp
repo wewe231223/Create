@@ -153,6 +153,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mPlayer->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 
 
+	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
+
+
+	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("TankMaterialRed") });
 
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
@@ -174,7 +178,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 }
 
-// TODO : 위치가 이상하게 나온다, 이거만 해결하고 UI 로 넘어갈것. 
+// 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 void GameScene::Update()
 {
 	mTerrain->UpdateGameObjectAboveTerrain();
@@ -197,6 +201,12 @@ void GameScene::Update()
 
 	if (Input.GetKeyboardState().E) {
 		yaw -= Time.GetSmoothDeltaTime<float>();
+	}
+
+	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
+		auto bullet = mBullets.Acquire();
+		bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
+		bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 	}
 
 	yaw = std::fmodf(yaw, DirectX::XM_2PI);
@@ -222,6 +232,10 @@ void GameScene::UpdateShaderVariables()
 		object->Update();
 	}
 
+	for (auto& object : mBullets) {
+		object->Update();
+	}
+
 	mMainCamera->Update();
 }
 
@@ -229,6 +243,10 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	for (auto& object : mGameObjects) {
 		object->Render(mMainCamera, commandList);
+	}
+
+	for (auto& bullet : mBullets) {
+		bullet->Render(mMainCamera, commandList);
 	}
 
 	mMainCamera->RenderSkyBox();

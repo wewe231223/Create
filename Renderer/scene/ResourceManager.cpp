@@ -31,7 +31,6 @@ bool ResourceManager::ModelContainer::Empty() const noexcept
 void ResourceManager::ModelContainer::Insert(const std::string& model, std::shared_ptr<Model>&& newModel)
 {
 	// std::lower_bound를 사용하여 새로운 모델이 들어갈 위치를 찾음
-	// 여기다! 
 	auto it = std::upper_bound(mModels.begin(), mModels.end(), newModel,
 		[](const std::shared_ptr<Model>& a, const std::shared_ptr<Model>& b) {
 			return a->CompareShaderID(b);

@@ -159,6 +159,13 @@ void Transform::SetOrientedBoundingBox(DirectX::BoundingOrientedBox box)
 
 DirectX::SimpleMath::Vector3 Transform::GetPosition() const 
 {
+	if (mParent != nullptr) {
+		auto parentPos = mParent->GetPosition();
+		auto parentScale = mParent->GetScale();
+		auto localPos = DirectX::SimpleMath::Vector3{ mLocalTransform._41 * parentScale.x ,mLocalTransform._42 * parentScale.y,mLocalTransform._43 * parentScale.z };
+		
+		return mPosition + parentPos + localPos;
+	}
 	return mPosition;
 }
 

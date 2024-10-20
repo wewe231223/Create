@@ -5,6 +5,7 @@ public:
 	GameObject();
 	GameObject(const std::string& name);
 	GameObject(std::shared_ptr<I3DRenderable> model);
+	GameObject(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
 	virtual ~GameObject();
 public:
 	// 서브메쉬 순서대로 된 벡터 입력할것... 
