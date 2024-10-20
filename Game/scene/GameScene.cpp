@@ -207,6 +207,7 @@ void GameScene::Update()
 		auto bullet = mBullets.Acquire();
 		bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
 		bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+		bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
 	}
 
 	yaw = std::fmodf(yaw, DirectX::XM_2PI);
@@ -232,8 +233,8 @@ void GameScene::UpdateShaderVariables()
 		object->Update();
 	}
 
-	for (auto& object : mBullets) {
-		object->Update();
+	for (auto& bullet : mBullets) {
+		bullet->Update();
 	}
 
 	mMainCamera->Update();
@@ -261,3 +262,23 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 }
 
 
+
+Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
+	: GameObject(model, materials)
+{
+}
+
+Bullet::~Bullet()
+{
+}
+
+void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
+{
+	mDirection = dir;
+}
+
+void Bullet::Update()
+{
+	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 10.f);
+	GameObject::Update();
+}

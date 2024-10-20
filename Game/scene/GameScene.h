@@ -15,7 +15,10 @@ public:
 	Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
 	~Bullet();
 public:
+	void Reset(DirectX::SimpleMath::Vector3 dir);
 	virtual void Update() override;
+private:
+	DirectX::SimpleMath::Vector3 mDirection{};
 };
 
 
@@ -52,7 +55,7 @@ private:
 	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
 	// 총알 오브젝트 만들기... 
-	ObjectPool<GameObject, 64> mBullets{};
+	ObjectPool<Bullet, 64> mBullets{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

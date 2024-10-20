@@ -87,10 +87,10 @@
     <ClInclude Include="Game\scene\CameraMode.h">
       <Filter>Game\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Game\utils\Enumerate.h">
-      <Filter>Game\scene</Filter>
-    </ClInclude>
     <ClInclude Include="Game\utils\ObjectPool.h">
+      <Filter>Game\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\utils\Enumerate.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,10 +146,10 @@
     <ClCompile Include="Game\scene\CameraMode.cpp">
       <Filter>Game\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Game\utils\Enumerate.cpp">
-      <Filter>Game\scene</Filter>
-    </ClCompile>
     <ClCompile Include="Game\utils\ObjectPool.cpp">
+      <Filter>Game\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\utils\Enumerate.cpp">
       <Filter>Game\utils</Filter>
     </ClCompile>
   </ItemGroup>
