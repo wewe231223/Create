@@ -107,7 +107,7 @@ void GameScene::InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsC
 void GameScene::InitCameraMode()
 {
 	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
-	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 2.f, -5.f));
+	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 0.5f, -3.f));
 
 
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
