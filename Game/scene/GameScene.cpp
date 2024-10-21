@@ -180,16 +180,17 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	auto& uirect = healthBarBase->GetUIRect();
 	uirect.LTx = 10.f;
 	uirect.LTy = 10.f;
-	uirect.width = 1000.f;
-	uirect.height = 100.f;
+	uirect.width = 500.f;
+	uirect.height = 50.f;
 
 
+	float HP = 79.f;
 	healthBar = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
 	auto& uirect1 = healthBar->GetUIRect();
 	uirect1.LTx = 10.f;
 	uirect1.LTy = 10.f;
-	uirect1.width = 500.f;
-	uirect1.height = 100.f;
+	uirect1.width = HP * 5.f;
+	uirect1.height = 50.f;
 
 
 
