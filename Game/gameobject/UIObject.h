@@ -17,8 +17,9 @@ public:
 	void ChangeImage(TextureIndex imageIndex);
 	void ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit);
 
-	void Disable();
-	void Enable();
+	
+	void SetActiveState(bool state);
+	void ToggleActiveState();
 
 	void Update();
 	void Render();

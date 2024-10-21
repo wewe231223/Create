@@ -163,14 +163,18 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mGameObjects.emplace_back(mPlayer);
 
 
-	mUIRenderer->CreateUIImage("TankTextureRed", "./Resources/textures/noBKG_KnightRun_strip.png");
+	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
 
-	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("TankTextureRed"), std::make_pair<UINT,UINT>( 768, 64 ), std::make_pair<UINT,UINT>( 96, 64 ));
-	ui->GetUIRect().LTx = 100.f;
-	ui->GetUIRect().LTy = 100.f;
-	ui->GetUIRect().width = 500.f;
-	ui->GetUIRect().height = 500.f;
-	Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
+	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
+	ui->GetUIRect().LTx = 0.f;
+	ui->GetUIRect().LTy = 0.f;
+	ui->GetUIRect().width = 1920.f;
+	ui->GetUIRect().height = 1080.f;
+	//Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
+
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
+	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
+	ui->SetActiveState(false);
 
 
 

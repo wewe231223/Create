@@ -42,16 +42,14 @@ void UIObject::ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>&
 	mSpritable = true;
 }
 
-
-
-void UIObject::Disable()
+void UIObject::SetActiveState(bool state)
 {
-	mActive = false;
+	mActive = state;
 }
 
-void UIObject::Enable()
+void UIObject::ToggleActiveState()
 {
-	mActive = true;
+	mActive ? mActive = false : mActive = true;
 }
 
 void UIObject::Update()
@@ -61,24 +59,25 @@ void UIObject::Update()
 
 void UIObject::Render()
 {
-	mTransform._11 = mUIRect.width;
-	mTransform._22 = mUIRect.height;
-
-	mTransform._31 = mUIRect.LTx;
-	mTransform._32 = mUIRect.LTy;
-
-	// TODO : 이건 좀 나중에..
-	if (mSpritable) {
-		mContext.UVTransform._11 = 1.f / static_cast<float>(mSpriteFrameInRow);
-		mContext.UVTransform._22 = 1.f / static_cast<float>(mSpriteFrameInCol);
-
-		mContext.UVTransform._13 = static_cast<float>(mSpriteCoord.first) * mContext.UVTransform._11;
-		mContext.UVTransform._23 = static_cast<float>(mSpriteCoord.second) * mContext.UVTransform._22;
-	}
-
 	if (mActive) {
+		mTransform._11 = mUIRect.width;
+		mTransform._22 = mUIRect.height;
+
+		mTransform._31 = mUIRect.LTx;
+		mTransform._32 = mUIRect.LTy;
+
+		if (mSpritable) {
+			mContext.UVTransform._11 = 1.f / static_cast<float>(mSpriteFrameInRow);
+			mContext.UVTransform._22 = 1.f / static_cast<float>(mSpriteFrameInCol);
+
+			mContext.UVTransform._13 = static_cast<float>(mSpriteCoord.first) * mContext.UVTransform._11;
+			mContext.UVTransform._23 = static_cast<float>(mSpriteCoord.second) * mContext.UVTransform._22;
+		}
+
+		
 		mContext.Transform = Transpose(Multifly(mTransform, mScreenTransform));
 		mUIRenderer->WriteContext(&mContext);
+		
 	}
 }
 
