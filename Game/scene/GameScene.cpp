@@ -157,9 +157,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
+	
+	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
+	Material mat{};
+	mat.Textures[0] = mResourceManager->GetTexture("Bullet");
+	mResourceManager->CreateMaterial("BulletMaterial", mat);
 
-
-	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("TankMaterialRed") } );
+	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 	mTerrain->MakeObjectOnTerrain(mPlayer);
