@@ -116,6 +116,7 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode->Enter();
 }
 static float yaw = 0.f;
+static float HP = 0.f;
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -184,7 +185,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	uirect.height = 50.f;
 
 
-	float HP = 79.f;
 	healthBar = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
 	auto& uirect1 = healthBar->GetUIRect();
 	uirect1.LTx = 10.f;
@@ -247,7 +247,11 @@ void GameScene::Update()
 		}
 	}
 
-
+	if (HP < 100.f) {
+		HP += Time.GetSmoothDeltaTime<float>() * 5.f;
+		auto& uirect = healthBar->GetUIRect();
+		uirect.width = HP * 5.f;
+	}
 	yaw = std::fmodf(yaw, DirectX::XM_2PI);
 
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
