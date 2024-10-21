@@ -24,6 +24,8 @@ GameScene::~GameScene()
 }
 
 std::shared_ptr<UIObject> ui;
+std::shared_ptr<UIObject> healthBarBase;
+std::shared_ptr<UIObject> healthBar;
 
 /*
 넷겜플 클라 원하는 점
@@ -164,6 +166,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
+	mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
+	mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
 
 	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	ui->GetUIRect().LTx = 0.f;
@@ -171,6 +175,23 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	ui->GetUIRect().width = 1920.f;
 	ui->GetUIRect().height = 1080.f;
 	//Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
+
+	healthBarBase = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
+	auto& uirect = healthBarBase->GetUIRect();
+	uirect.LTx = 10.f;
+	uirect.LTy = 10.f;
+	uirect.width = 1000.f;
+	uirect.height = 100.f;
+
+
+	healthBar = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
+	auto& uirect1 = healthBar->GetUIRect();
+	uirect1.LTx = 10.f;
+	uirect1.LTy = 10.f;
+	uirect1.width = 500.f;
+	uirect1.height = 100.f;
+
+
 
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
 	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
@@ -273,6 +294,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 
 	ui->Render();
+	healthBarBase->Render();
+	healthBar->Render();
 	mUIRenderer->Render(commandList);
 }
 
