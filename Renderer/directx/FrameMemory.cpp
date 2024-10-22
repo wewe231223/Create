@@ -5,11 +5,6 @@ FrameMemory::FrameMemory(ComPtr<ID3D12Device>& device)
 {
 	CheckHR(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator)));
 	mCommandAllocator->Reset();
-
-	D3D12_RESOURCE_DESC desc{};
-	desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	desc.Alignment = 0;
-	desc.Width = sizeof(ModelContext) * 1024;
 }
 
 void FrameMemory::CheckCommandCompleted(ComPtr<ID3D12Fence>& fence)

@@ -49,6 +49,8 @@ enum : WORD {
 
 /// <summary>
 /// 각 값의 의미는 정의부 주석 참고.
+/// 
+/// 재질은 좀 고치자
 /// </summary>
 struct Material {
 	DirectX::XMFLOAT4 DiffuseColor				{ 0.f,0.f,0.f,0.f };
@@ -65,6 +67,14 @@ struct Material {
 	float RefractionIndex						{ 1.f };
 	float FresnelEffect							{ 0.f };
 	float SubsurfaceScattering					{ 0.f };
+
+public:
+	Material() = default;
+	Material(TextureIndex tex) { Textures[0] = tex; }
+	Material(TextureIndex tex1, TextureIndex tex2) { Textures[0] = tex1; Textures[1] = tex2; }
+	Material(TextureIndex tex1, TextureIndex tex2, TextureIndex tex3) { Textures[0] = tex1; Textures[1] = tex2; Textures[2] = tex3; }
+	Material(TextureIndex tex1, TextureIndex tex2, TextureIndex tex3, TextureIndex tex4) { Textures[0] = tex1; Textures[1] = tex2; Textures[2] = tex3; Textures[3] = tex4; }
+	Material(TextureIndex tex1, TextureIndex tex2, TextureIndex tex3, TextureIndex tex4, TextureIndex tex5) { Textures[0] = tex1; Textures[1] = tex2; Textures[2] = tex3; Textures[3] = tex4; Textures[4] = tex5; }
 };
 
 struct CameraContext {

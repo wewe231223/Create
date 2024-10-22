@@ -13,6 +13,7 @@
 #include <numeric>
 #include <bitset>
 #include <concepts>
+#include <ranges>
 
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")

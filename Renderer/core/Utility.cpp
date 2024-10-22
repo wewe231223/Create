@@ -17,7 +17,7 @@ std::optional<std::wstring> CheckHR(const HRESULT& hr, const std::source_locatio
 	{
 		_com_error err{ hr };
 		result = std::format(L"오류 위치 : {}\n{} \n\n Error : \n{}", to_wstring(location.file_name()), to_wstring(location.function_name()), err.ErrorMessage());
-		::MessageBoxW(nullptr, result.value().c_str(), L"Error", MB_OK | MB_ICONERROR);
+		::MessageBoxW(nullptr, result.value().c_str(), L"Error", ErrorMessageBoxOpt);
 		PostQuitMessage(0);
 	}
 	return result;
