@@ -179,7 +179,7 @@ DirectX::SimpleMath::Vector3 Transform::GetScale() const
 	return mScale;
 }
 
-DirectX::SimpleMath::Vector3 Transform::GetForward() const
+DirectX::SimpleMath::Vector3 Transform::GetForward() const 
 {
 	if (mParent != nullptr) {
 		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();

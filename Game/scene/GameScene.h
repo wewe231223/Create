@@ -25,7 +25,7 @@ private:
 };
 
 
-class GameScene : public Scene{
+class GameScene : public Scene {
 public:
 	GameScene();
 	GameScene(const std::string& name);

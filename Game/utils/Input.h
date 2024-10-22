@@ -20,7 +20,7 @@ public:
 	DirectX::Keyboard::KeyboardStateTracker& GetKeyboardTracker();
 	DirectX::Mouse::ButtonStateTracker& GetMouseTracker();
 
-	void RegisterKeyPressCallBack	(DirectX::Keyboard::Keys key,int sign,std::function<void()>&& callback);
+	void RegisterKeyPressCallBack	(DirectX::Keyboard::Keys key,int sign, std::function<void()>&& callback);
 	void RegisterKeyDownCallBack	(DirectX::Keyboard::Keys key,int sign, std::function<void()>&& callback);
 	void RegisterKeyReleaseCallBack	(DirectX::Keyboard::Keys key,int sign, std::function<void()>&& callback);
 

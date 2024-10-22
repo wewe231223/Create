@@ -204,12 +204,27 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 
+	int sign{ NrSampler.Sample() };
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [=]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [=]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { yaw += Time.GetSmoothDeltaTime<float>(); });
+
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { yaw -= Time.GetSmoothDeltaTime<float>(); });
+
+
+
+
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 
 }
 
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
+// 회전 문제를 해결해야 할 때가 왔다. 
+// 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
 void GameScene::Update()
 {
 	mTerrain->UpdateGameObjectAboveTerrain();
@@ -218,21 +233,24 @@ void GameScene::Update()
 
 	mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
 
-	if (Input.GetKeyboardState().W) {
-		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
-	}
+	//if (Input.GetKeyboardState().W) {
+	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
+	//}
 
-	if (Input.GetKeyboardState().S) {
-		mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
-	}
+	//if (Input.GetKeyboardState().S) {
+	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
+	//}
 
-	if (Input.GetKeyboardState().Q) {
-		yaw += Time.GetSmoothDeltaTime<float>();
-	}
+	//if (Input.GetKeyboardState().Q) {
+	//	yaw += Time.GetSmoothDeltaTime<float>();
+	//}
 
-	if (Input.GetKeyboardState().E) {
-		yaw -= Time.GetSmoothDeltaTime<float>();
-	}
+	//if (Input.GetKeyboardState().E) {
+	//	yaw -= Time.GetSmoothDeltaTime<float>();
+	//}
+
+	
+
 
 	static float tankhead = 0.f;
 
