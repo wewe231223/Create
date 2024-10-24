@@ -16,9 +16,9 @@ CubeObject::~CubeObject()
 }
 
 
-void CubeObject::Update()
+void CubeObject::UpdateShaderVariables()
 {
-	GameObject::Update();
+	GameObject::UpdateShaderVariables();
 }
 
 

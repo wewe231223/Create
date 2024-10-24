@@ -22,6 +22,6 @@ public:
 	TerrainObject(std::shared_ptr<ResourceManager> resourceMgr,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale);
 	~TerrainObject();
 
-	void Update() override;
+	void UpdateShaderVariables() override;
 	void Render(std::shared_ptr<Camera> camera,ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 };

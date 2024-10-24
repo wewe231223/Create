@@ -28,6 +28,12 @@
     <Filter Include="Game\gameobject">
       <UniqueIdentifier>{67048a5a-0b77-4456-9cf9-b58d3f0a9fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\dummyServer">
+      <UniqueIdentifier>{cf208a1a-1a72-4194-a44a-1fd0dc8fcbfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\scripts">
+      <UniqueIdentifier>{eb829d45-2c67-4b72-8e83-f96c1ac14f94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -93,6 +99,12 @@
     <ClInclude Include="Game\utils\Enumerate.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\dummyServer\DummyServer.h">
+      <Filter>Game\dummyServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\scripts\SCRIPT_Player.h">
+      <Filter>Game\scripts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -151,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="Game\utils\Enumerate.cpp">
       <Filter>Game\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\dummyServer\DummyServer.cpp">
+      <Filter>Game\dummyServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\scripts\SCRIPT_Player.cpp">
+      <Filter>Game\scripts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -126,9 +126,9 @@ TerrainObject::~TerrainObject()
 {
 }
 
-void TerrainObject::Update()
+void TerrainObject::UpdateShaderVariables()
 {
-    GameObject::Update();
+    GameObject::UpdateShaderVariables();
 }
 
 void TerrainObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)

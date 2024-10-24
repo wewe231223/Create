@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="Game\defines.h" />
+    <ClInclude Include="Game\dummyServer\DummyServer.h" />
     <ClInclude Include="Game\gameobject\BinObject.h" />
     <ClInclude Include="Game\gameobject\CubeObject.h" />
     <ClInclude Include="Game\gameobject\GameObject.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Game\scene\Camera.h" />
     <ClInclude Include="Game\scene\CameraMode.h" />
     <ClInclude Include="Game\scene\GameScene.h" />
+    <ClInclude Include="Game\scripts\SCRIPT_Player.h" />
     <ClInclude Include="Game\utils\Enumerate.h" />
     <ClInclude Include="Game\utils\Input.h" />
     <ClInclude Include="Game\utils\Interface.h" />
@@ -172,6 +174,7 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Game\defines.cpp" />
+    <ClCompile Include="Game\dummyServer\DummyServer.cpp" />
     <ClCompile Include="Game\gameobject\BinObject.cpp" />
     <ClCompile Include="Game\gameobject\CubeObject.cpp" />
     <ClCompile Include="Game\gameobject\GameObject.cpp" />
@@ -180,6 +183,7 @@
     <ClCompile Include="Game\scene\Camera.cpp" />
     <ClCompile Include="Game\scene\CameraMode.cpp" />
     <ClCompile Include="Game\scene\GameScene.cpp" />
+    <ClCompile Include="Game\scripts\SCRIPT_Player.cpp" />
     <ClCompile Include="Game\utils\Enumerate.cpp" />
     <ClCompile Include="Game\utils\Input.cpp" />
     <ClCompile Include="Game\utils\Interface.cpp" />

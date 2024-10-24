@@ -90,13 +90,29 @@ Transform& GameObject::GetTransform()
 	return mTransform;
 }
 
+void GameObject::Awake()
+{
+	if (mScript) {
+		mScript->Awake();
+	}
+}
+
 void GameObject::Update()
+{
+	if (mScript) {
+		mScript->Update();
+	}
+}
+
+
+
+void GameObject::UpdateShaderVariables()
 {
 	mTransform.CreateWorldMatrix();
 	mContext.World = mTransform.GetWorldMatrix().Transpose();
 
 	for (auto& child : mChildObjects) {
-		child->Update();
+		child->UpdateShaderVariables();
 	}
 }
 
@@ -114,3 +130,27 @@ bool GameObject::IsInFrustum(std::shared_ptr<Camera> camera)
 	return camera->IsInFrustum(mTransform.GetBB());
 }
 
+Script::Script(std::shared_ptr<GameObject> owner)
+	: mOwner(owner)
+{
+}
+
+Script::~Script()
+{
+}
+
+void Script::Awake()
+{
+}
+
+void Script::Update()
+{
+}
+
+void Script::OnEnable()
+{
+}
+
+void Script::OnDisable()
+{
+}

@@ -1,14 +1,9 @@
 #pragma once 
 
 
-class Player : public GameObject{
-public:
-	Player(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
-	~Player();
+//	(Color Late initialize 필요)
 
-public:
-	virtual void Update() override;
-};
+
 
 class Bullet : public GameObject {
 public:
@@ -17,7 +12,7 @@ public:
 public:
 	void Reset(DirectX::SimpleMath::Vector3 dir);
 	bool Validate() const ;
-	virtual void Update() override;
+	virtual void UpdateShaderVariables() override;
 private:
 	DirectX::SimpleMath::Vector3 mDirection{};
 
@@ -52,10 +47,10 @@ private:
 	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
 
-
+	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
-	std::shared_ptr<GameObject> mPlayer{ nullptr };
+
 
 	// 총알 오브젝트 만들기... 
 	ObjectPool<Bullet, 64> mBullets{};

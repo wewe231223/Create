@@ -8,6 +8,7 @@
 #include "Game/utils/Math2D.h"
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
+#include "Game/scripts/SCRIPT_Player.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -36,14 +37,11 @@ std::shared_ptr<UIObject> healthBar;
 HP바
 플레이어를 따라다니는 빌보드
 
-UI ( 0 )
-
-프리 카메라 ( 0 )
 충돌처리 ( 어떤 충돌처리? )
 
 터지는 효과 (파티클이든 아니든 상관 X, 이것도 가능하면)
 실외 지형 경계가 안보이도록 (자연스럽게 보이게)
-포탄 쏘기
+
 
 */
 
@@ -138,26 +136,19 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->CreateTexture("TankTextureGreen", "./Resources/textures/CTF_TankFree_Base_Color_G.png");
 	mResourceManager->CreateTexture("TankTextureBlue", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
 
-	Material tankMaterial;
-	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureRed");
-	mResourceManager->CreateMaterial("TankMaterialRed", tankMaterial);
+	mResourceManager->CreateMaterial("TankMaterialRed", { mResourceManager->GetTexture("TankTextureRed") });
+	mResourceManager->CreateMaterial("TankMaterialGreen", { mResourceManager->GetTexture("TankTextureGreen") });
+	mResourceManager->CreateMaterial("TankMaterialBlue", { mResourceManager->GetTexture("TankTextureBlue") });
 
-	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureGreen");
-	mResourceManager->CreateMaterial("TankMaterialGreen", tankMaterial);
-
-	tankMaterial.Textures[0] = mResourceManager->GetTexture("TankTextureBlue");
-	mResourceManager->CreateMaterial("TankMaterialBlue", tankMaterial);
-
-
-	
-	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
-	mPlayer->SetMaterial({ mResourceManager->GetMaterial("TankMaterialGreen") });
-	mPlayer->GetTransform().SetPosition({ 10.f,100.f,10.f });
-	mPlayer->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
-	
+
+	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_R);
+	mTerrain->MakeObjectOnTerrain(mPlayer);
+	mGameObjects.emplace_back(mPlayer);
+
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
 	Material mat{};
 	mat.Textures[0] = mResourceManager->GetTexture("Bullet");
@@ -166,8 +157,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
-	mTerrain->MakeObjectOnTerrain(mPlayer);
-	mGameObjects.emplace_back(mPlayer);
+
+
+
 
 
 	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
@@ -179,7 +171,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	ui->GetUIRect().LTy = 0.f;
 	ui->GetUIRect().width = 1920.f;
 	ui->GetUIRect().height = 1080.f;
-	//Time.AddEvent(100ms, []() {ui->AdvanceSprite(); return true; });
+
 
 	healthBarBase = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
 	auto& uirect = healthBarBase->GetUIRect();
@@ -203,47 +195,21 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	ui->SetActiveState(false);
 
 
-
-	int sign{ NrSampler.Sample() };
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mPlayer->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mPlayer->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
-
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
-
-
-
-
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 
 }
 
+
+
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
+// 10.24 해결 ! 
+
+
 void GameScene::Update()
 {
-
-	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
-
-	//mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
-
-	//if (Input.GetKeyboardState().W) {
-	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
-	//}
-
-	//if (Input.GetKeyboardState().S) {
-	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
-	//}
-
-
-
-	static float tankhead = 0.f;
-
 	if (Input.GetMouseState().rightButton) {
 		mPlayer->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
@@ -264,15 +230,9 @@ void GameScene::Update()
 		uirect.width = HP * 5.f;
 	}
 
-
-	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
-
-	
-	//mMainCamera->GetTransform().SetRotate(DirectX::SimpleMath::Quaternion::Identity);
-	//mMainCamera->GetTransform().LookAt(mGameObjects[101]->GetTransform());
-	//mMainCamera->GetTransform().SetPosition({ pos + offset });
-	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
-
+	for (auto& object : mGameObjects) {
+		object->Update();
+	}
 
 	mTerrain->UpdateGameObjectAboveTerrain();
 	GameScene::UpdateShaderVariables();
@@ -283,12 +243,12 @@ void GameScene::UpdateShaderVariables()
 	mCurrentCameraMode->Update();
 
 	for (auto& object : mGameObjects) {
-		object->Update();
+		object->UpdateShaderVariables();
 	}
 
 	mBullets.Update();
 	for (auto& bullet : mBullets) {
-		bullet->Update();
+		bullet->UpdateShaderVariables();
 	}
 
 	mMainCamera->Update();
@@ -319,6 +279,10 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 
 
+
+
+
+
 Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
 	: GameObject(model, materials)
 {
@@ -339,9 +303,10 @@ bool Bullet::Validate() const
 	return mTimeOut > std::numeric_limits<float>::epsilon();
 }
 
-void Bullet::Update()
+void Bullet::UpdateShaderVariables()
 {
 	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
 	mTimeOut -= Time.GetDeltaTime<float>();
-	GameObject::Update();
+	GameObject::UpdateShaderVariables();
 }
+

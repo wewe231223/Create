@@ -3,6 +3,8 @@
 template <typename ObjectTy, size_t size>
 class ObjectPool {
 public:
+    using ObjectIndex = unsigned short;
+
     ObjectPool() = default;
 
     void AssignValidateCallBack(std::function<bool(const std::shared_ptr<ObjectTy>&)>&& callBack);
@@ -16,6 +18,19 @@ public:
         }
     }
 
+#ifdef DUMMY_SERVER_ENABLE 
+	inline ObjectIndex Acquire() {
+		if (mFree.size() == 0) {
+			return std::numeric_limits<ObjectIndex>::max();
+		}
+
+		auto ptr = mFree.back();
+		mFree.pop_back();
+		mUsed.emplace_back(ptr);
+
+        return static_cast<ObjectIndex>(mUsed.size() - 1);
+    }
+#else 
     inline ObjectTy* Acquire() {
         if (mFree.size() == 0) {
             return nullptr;
@@ -27,6 +42,25 @@ public:
 
         return ptr.get();
     }
+#endif 
+
+    inline ObjectTy* Acquire(ObjectIndex index) {
+        auto ptr = mFree.back();
+        mFree.pop_back();
+
+        mUsed.emplace(mUsed.begin() + index, ptr);
+
+        return ptr.get();
+    }
+
+    inline void Release(ObjectIndex index) {
+        auto ptr = mUsed[index];
+
+		mUsed.erase(mUsed.begin() + index);
+
+        mFree.emplace_back(ptr);
+    }
+
 
     void Release(ObjectTy* obj);
 

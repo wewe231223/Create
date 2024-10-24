@@ -1,4 +1,5 @@
 #pragma once 
+// #define DUMMY_SERVER_ENABLE
 
 enum EGameObjectTag : size_t {
 	Tag_Player,
