@@ -48,7 +48,7 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
             DirectX::SimpleMath::Vector3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
             terrainNormal.Normalize();
 
-			DirectX::SimpleMath::Vector3 up{ DirectX::SimpleMath::Vector3::Up };
+			DirectX::SimpleMath::Vector3 up{ transform.GetUp() };
       
 			
             float dot = up.Dot(terrainNormal);
@@ -71,7 +71,9 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
                 rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
                 rotation.Normalize();
             }
-			transform.RotateSmoothly(rotation);
+			rotation = DirectX::SimpleMath::Quaternion::FromToRotation(up, terrainNormal);
+            rotation.Normalize();
+			transform.Rotate(rotation);
 
         }
         

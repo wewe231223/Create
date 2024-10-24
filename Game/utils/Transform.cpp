@@ -42,13 +42,11 @@ void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, 
 	newRotation.Normalize();
 	mRotation = mRotation.Concatenate(mRotation, rotation);
 	mRotation.Normalize();
-}
+}	
 
 void Transform::Rotate(float yaw, float pitch, float roll)
 {
-	auto newRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-	newRotation.Normalize();
-	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, newRotation);
+	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(mRotation, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up,yaw));
 	mRotation.Normalize();
 }
 
@@ -112,7 +110,7 @@ void Transform::LookAt(const DirectX::SimpleMath::Vector3& worldPosition)
 	DirectX::SimpleMath::Vector3 direction = worldPosition - mPosition;
 	direction.Normalize();
 
-	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Forward;
+	DirectX::SimpleMath::Vector3 forward = Transform::GetForward();
 	float dot = forward.Dot(direction);
 
 	DirectX::SimpleMath::Quaternion quat = DirectX::SimpleMath::Quaternion::Identity;
@@ -207,11 +205,7 @@ DirectX::SimpleMath::Vector3 Transform::GetRight() const
 DirectX::SimpleMath::Vector3 Transform::GetUp() const
 {
 	if (mParent != nullptr) {
-		DirectX::SimpleMath::Quaternion rotation = mParent->GetRotation();
-		rotation.Normalize();
-		rotation = rotation.Concatenate(rotation, mRotation);
-		rotation.Normalize();
-		return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up, rotation);
+		return DirectX::SimpleMath::Vector3::Transform(mParent->GetUp(),mRotation);
 	}
 	return DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Up, mRotation);
 }
@@ -231,7 +225,7 @@ DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 	}
 
 	mOrientedBoundingBox.Transform(mWorldBoundingBox, mWorldMatrix);
-	mRotation = DirectX::SimpleMath::Quaternion::Identity;
+	// mRotation = DirectX::SimpleMath::Quaternion::Identity;
 
 	return mWorldMatrix;
 }

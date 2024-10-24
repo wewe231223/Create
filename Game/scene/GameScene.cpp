@@ -206,13 +206,13 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	int sign{ NrSampler.Sample() };
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [=]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mPlayer->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [=]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mPlayer->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { yaw += Time.GetSmoothDeltaTime<float>(); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { yaw -= Time.GetSmoothDeltaTime<float>(); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
 
 
 
@@ -231,7 +231,7 @@ void GameScene::Update()
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 
-	mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
+	//mPlayer->GetTransform().Rotate(yaw, 0.f, 0.f);
 
 	//if (Input.GetKeyboardState().W) {
 	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f);
@@ -255,10 +255,9 @@ void GameScene::Update()
 	static float tankhead = 0.f;
 
 	if (Input.GetMouseState().rightButton) {
-		tankhead += Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f;
-		tankhead = std::fmodf(tankhead, DirectX::XM_2PI);
+		mPlayer->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
-	mPlayer->GetChild(1)->GetTransform().Rotate(tankhead, 0.f, 0.f);
+
 
 	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
 		auto bullet = mBullets.Acquire();
@@ -274,7 +273,7 @@ void GameScene::Update()
 		auto& uirect = healthBar->GetUIRect();
 		uirect.width = HP * 5.f;
 	}
-	yaw = std::fmodf(yaw, DirectX::XM_2PI);
+
 
 	//mGameObjects[101]->GetTransform().SetPosition({ 100.f,200.f,100.f });
 
