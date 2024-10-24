@@ -109,7 +109,7 @@ void GameScene::InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsC
 void GameScene::InitCameraMode()
 {
 	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
-	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 0.5f, -3.f));
+	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
@@ -227,7 +227,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
 void GameScene::Update()
 {
-	mTerrain->UpdateGameObjectAboveTerrain();
 
 	// mGameObjects[49]->GetTransform().Translate({ 0.02f,0.f,0.f });
 
@@ -241,15 +240,6 @@ void GameScene::Update()
 	//	mPlayer->GetTransform().Translate(mPlayer->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f);
 	//}
 
-	//if (Input.GetKeyboardState().Q) {
-	//	yaw += Time.GetSmoothDeltaTime<float>();
-	//}
-
-	//if (Input.GetKeyboardState().E) {
-	//	yaw -= Time.GetSmoothDeltaTime<float>();
-	//}
-
-	
 
 
 	static float tankhead = 0.f;
@@ -283,6 +273,8 @@ void GameScene::Update()
 	//mMainCamera->GetTransform().SetPosition({ pos + offset });
 	//mTerrain->UpdateCameraAboveTerrain(mMainCamera);
 
+
+	mTerrain->UpdateGameObjectAboveTerrain();
 	GameScene::UpdateShaderVariables();
 }
 

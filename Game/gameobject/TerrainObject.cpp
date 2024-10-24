@@ -49,32 +49,12 @@ void TerrainCollider::UpdateGameObjectAboveTerrain()
             terrainNormal.Normalize();
 
 			DirectX::SimpleMath::Vector3 up{ transform.GetUp() };
-      
-			
-            float dot = up.Dot(terrainNormal);
-			DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::Identity;
-            if (fabs(dot - (-1.0f)) < 0.001f)
-            {
-                rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, DirectX::XM_PI);
-                rotation.Normalize();
-            }
-            else if (fabs(dot - (1.0f)) < 0.001f)
-            {
-                rotation = DirectX::SimpleMath::Quaternion::Identity;
-                rotation.Normalize();
-            }
-            else
-            {
-                float angle = acosf(dot);
-                DirectX::SimpleMath::Vector3 axis = up.Cross(terrainNormal);
-                axis.Normalize();
-                rotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, angle);
-                rotation.Normalize();
-            }
-			rotation = DirectX::SimpleMath::Quaternion::FromToRotation(up, terrainNormal);
-            rotation.Normalize();
-			transform.Rotate(rotation);
 
+
+            auto rotation = DirectX::SimpleMath::Quaternion::FromToRotation(up, terrainNormal);
+            rotation.Normalize();
+            transform.Rotate(rotation);
+            
         }
         
         //// a와 b의 외적을 사용하여 회전 축 계산
