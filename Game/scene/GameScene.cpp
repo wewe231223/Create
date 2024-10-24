@@ -45,6 +45,47 @@ HP바
 
 */
 
+void GameScene::LoadTextures()
+{
+	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
+	mResourceManager->CreateTexture("TankTextureGreen", "./Resources/textures/CTF_TankFree_Base_Color_G.png");
+	mResourceManager->CreateTexture("TankTextureBlue", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
+
+	mResourceManager->CreateTexture("SkyBox_Front", "./Resources/textures/SkyBox_Front_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Back", "./Resources/textures/SkyBox_Back_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Top", "./Resources/textures/SkyBox_Top_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Bottom", "./Resources/textures/SkyBox_Bottom_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Left", "./Resources/textures/SkyBox_Left_0.dds");
+	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
+
+	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
+
+	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
+	mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
+	mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
+
+
+}
+
+void GameScene::CreateMaterials()
+{
+	mResourceManager->CreateMaterial("SkyBoxFrontMaterial", { mResourceManager->GetTexture("SkyBox_Front") });
+	mResourceManager->CreateMaterial("SkyBoxBackMaterial", { mResourceManager->GetTexture("SkyBox_Back") });
+	mResourceManager->CreateMaterial("SkyBoxTopMaterial", { mResourceManager->GetTexture("SkyBox_Top") });
+	mResourceManager->CreateMaterial("SkyBoxBottomMaterial", { mResourceManager->GetTexture("SkyBox_Bottom") });
+	mResourceManager->CreateMaterial("SkyBoxLeftMaterial", { mResourceManager->GetTexture("SkyBox_Left") });
+	mResourceManager->CreateMaterial("SkyBoxRightMaterial", { mResourceManager->GetTexture("SkyBox_Right") });
+
+
+	mResourceManager->CreateMaterial("TankMaterialRed", { mResourceManager->GetTexture("TankTextureRed") });
+	mResourceManager->CreateMaterial("TankMaterialGreen", { mResourceManager->GetTexture("TankTextureGreen") });
+	mResourceManager->CreateMaterial("TankMaterialBlue", { mResourceManager->GetTexture("TankTextureBlue") });
+
+
+}
+
+
+
 void GameScene::InitCamera(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	mMainCamera = std::make_shared<Camera>(device,mWindow);
@@ -56,32 +97,7 @@ void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 {
 	mResourceManager->CreateModel<SkyBoxModel>("SkyBox", mResourceManager->GetShader("SkyBoxShader"));
 
-	mResourceManager->CreateTexture("SkyBox_Front", "./Resources/textures/SkyBox_Front_0.dds");
-	mResourceManager->CreateTexture("SkyBox_Back", "./Resources/textures/SkyBox_Back_0.dds");
-	mResourceManager->CreateTexture("SkyBox_Top", "./Resources/textures/SkyBox_Top_0.dds");
-	mResourceManager->CreateTexture("SkyBox_Bottom", "./Resources/textures/SkyBox_Bottom_0.dds");
-	mResourceManager->CreateTexture("SkyBox_Left", "./Resources/textures/SkyBox_Left_0.dds");
-	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
 
-	Material skyBoxMaterial{};
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Front");
-
-	mResourceManager->CreateMaterial("SkyBoxFrontMaterial", skyBoxMaterial);
-
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Back");
-	mResourceManager->CreateMaterial("SkyBoxBackMaterial", skyBoxMaterial);
-
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Top");
-	mResourceManager->CreateMaterial("SkyBoxTopMaterial", skyBoxMaterial);
-
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Bottom");
-	mResourceManager->CreateMaterial("SkyBoxBottomMaterial", skyBoxMaterial);
-
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Left");
-	mResourceManager->CreateMaterial("SkyBoxLeftMaterial", skyBoxMaterial);
-
-	skyBoxMaterial.Textures[0] = mResourceManager->GetTexture("SkyBox_Right");
-	mResourceManager->CreateMaterial("SkyBoxRightMaterial", skyBoxMaterial);
 
 
 	mMainCamera->SetCameraSkyBox(std::make_shared<SkyBox>(mResourceManager->GetModel("SkyBox"), std::vector<MaterialIndex>{
@@ -120,51 +136,35 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 {
 	mWindow = window;
 	mResourceManager = std::make_shared<ResourceManager>(device);
-	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList(),window);
+	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList(), window);
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
 	mResourceManager->CreateShader<SkyBoxShader>("SkyBoxShader");
 
-
+	GameScene::LoadTextures();
+	GameScene::CreateMaterials();
 	GameScene::InitCamera(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 
-
-	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
-	mResourceManager->CreateTexture("TankTextureGreen", "./Resources/textures/CTF_TankFree_Base_Color_G.png");
-	mResourceManager->CreateTexture("TankTextureBlue", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
-
-	mResourceManager->CreateMaterial("TankMaterialRed", { mResourceManager->GetTexture("TankTextureRed") });
-	mResourceManager->CreateMaterial("TankMaterialGreen", { mResourceManager->GetTexture("TankTextureGreen") });
-	mResourceManager->CreateMaterial("TankMaterialBlue", { mResourceManager->GetTexture("TankTextureBlue") });
 
 
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
 	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
-	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_R);
+	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
 
-	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
-	Material mat{};
-	mat.Textures[0] = mResourceManager->GetTexture("Bullet");
-	mResourceManager->CreateMaterial("BulletMaterial", mat);
+	mResourceManager->CreateMaterial("BulletMaterial", { mResourceManager->GetTexture("Bullet") });
 
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 
 
-
-
-
-	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
-	mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
-	mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
 
 	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	ui->GetUIRect().LTx = 0.f;
@@ -276,6 +276,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	healthBar->Render();
 	mUIRenderer->Render(commandList);
 }
+
 
 
 
