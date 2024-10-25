@@ -38,6 +38,9 @@ public:
 	GameObject* GetChild(UINT dfsIndex);
 
 	Transform& GetTransform();
+	
+	// 스크립트는 따로 복사할 것. 
+	virtual std::shared_ptr<GameObject> Clone();
 
 	void Awake();
 

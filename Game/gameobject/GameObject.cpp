@@ -90,6 +90,26 @@ Transform& GameObject::GetTransform()
 	return mTransform;
 }
 
+
+
+std::shared_ptr<GameObject> GameObject::Clone()
+{
+	auto ptr = std::make_shared<GameObject>();
+
+	ptr->mModel = mModel;
+	std::copy(mMaterials.begin(), mMaterials.end(), std::back_inserter(ptr->mMaterials));
+	
+	ptr->mTransform = Transform{ mTransform };
+
+	for (auto& child : mChildObjects) {
+		auto childClone = child->Clone();
+		ptr->mTransform.SetChild(&childClone->mTransform);
+		ptr->mChildObjects.emplace_back(child->Clone());
+	}
+
+	return ptr;
+}
+
 void GameObject::Awake()
 {
 	if (mScript) {

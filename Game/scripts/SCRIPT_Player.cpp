@@ -22,8 +22,8 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 
 	int sign{ NrSampler.Sample() };
 
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mOwner->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mOwner->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mOwner->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mOwner->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() { mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
 

@@ -1,10 +1,5 @@
 #pragma once 
 
-
-//	(Color Late initialize 필요)
-
-
-
 class Bullet : public GameObject {
 public:
 	Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);

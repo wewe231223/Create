@@ -126,7 +126,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
+	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
 static float yaw = 0.f;
@@ -156,10 +156,56 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
 
+	auto originCliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
 
-	auto cliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
-	cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
-	mGameObjects.emplace_back(cliff);
+	for (auto i = 0; i < 130; ++i) {
+		auto cliff = originCliff->Clone();
+		cliff->GetTransform().SetPosition({ 0.f,0.f,i * 10.f });
+		cliff->GetTransform().Rotate(DirectX::XMConvertToRadians(90.f), 0.f, 0.f);
+		cliff->GetTransform().Scale({ 0.3f,0.3f,0.3f });
+		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
+		mTerrain->OnTerrain(cliff);
+		mGameObjects.emplace_back(cliff);
+
+	}
+
+
+	for (auto i = 0; i < 130; ++i) {
+		auto cliff = originCliff->Clone();
+		cliff->GetTransform().SetPosition({ i* 10.f,0.f,1270.f });
+		cliff->GetTransform().Scale({ 0.3f,0.3f,0.3f });
+		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
+		mTerrain->OnTerrain(cliff);
+		mGameObjects.emplace_back(cliff);
+
+	}
+
+
+	for (auto i = 0; i < 130; ++i) {
+		auto cliff = originCliff->Clone();
+		cliff->GetTransform().SetPosition({ i * 10.f,0.f, 0.f });
+		cliff->GetTransform().Scale({ 0.3f,0.3f,0.3f });
+		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
+		mTerrain->OnTerrain(cliff);
+		mGameObjects.emplace_back(cliff);
+
+	}
+
+
+	for (auto i = 0; i < 130; ++i) {
+		auto cliff = originCliff->Clone();
+		cliff->GetTransform().SetPosition({ 1270.f,0.f,i * 10.f });
+		cliff->GetTransform().Rotate(DirectX::XMConvertToRadians(90.f), 0.f, 0.f);
+		cliff->GetTransform().Scale({ 0.3f,0.3f,0.3f });
+		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
+		mTerrain->OnTerrain(cliff);
+		mGameObjects.emplace_back(cliff);
+
+	}
+
+
+
+	
 
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });

@@ -17,45 +17,54 @@ void TerrainCollider::MakeObjectOnTerrain(std::shared_ptr<GameObject> object)
 	mOnTerrainObject.emplace_back(object);
 }
 
+void TerrainCollider::OnTerrain(std::shared_ptr<class GameObject> object)
+{
+    auto& transform = object->GetTransform();
+    float height = mTerrainHeightMap->GetHeight(transform.GetPosition().x / mScale.x, transform.GetPosition().z / mScale.z);
+    transform.SetPosition(DirectX::SimpleMath::Vector3(transform.GetPosition().x, height, transform.GetPosition().z));
+
+}
+
 void TerrainCollider::UpdateGameObjectAboveTerrain()
 {
     for (auto& object : mOnTerrainObject){
         auto& transform = object->GetTransform();
-        float height = mTerrainHeightMap->GetHeight(transform.GetPosition().x / mScale.x, transform.GetPosition().z / mScale.z);
-        if (true) {
-            transform.SetPosition(DirectX::SimpleMath::Vector3(transform.GetPosition().x, height, transform.GetPosition().z));
+		OnTerrain(object);
+
+		auto pos = transform.GetPosition();
+
+		pos.x = std::clamp(pos.x, 5.f, mTerrainHeightMap->GetWidth() * mScale.x);
+		pos.z = std::clamp(pos.z, 5.f, mTerrainHeightMap->GetHeight() * mScale.z);
+
+        transform.SetPosition(pos);
+
+        int ix = static_cast<int>(transform.GetPosition().x / mScale.x);
+        int iz = static_cast<int>(transform.GetPosition().z / mScale.z);
+
+        float fx = transform.GetPosition().x / mScale.x - ix;
+        float fz = transform.GetPosition().z / mScale.z - iz;
 
 
-            // Rotate transform's up to match terrain normal
+        DirectX::XMFLOAT3 LT{ mTerrainHeightMap->GetNormal(ix,iz + 1,mScale) };
+        DirectX::XMFLOAT3 LB{ mTerrainHeightMap->GetNormal(ix, iz, mScale) };
+        DirectX::XMFLOAT3 RT{ mTerrainHeightMap->GetNormal(ix + 1, iz + 1, mScale) };
+        DirectX::XMFLOAT3 RB{ mTerrainHeightMap->GetNormal(ix + 1, iz, mScale) };
 
 
-            int ix = static_cast<int>(transform.GetPosition().x / mScale.x);
-            int iz = static_cast<int>(transform.GetPosition().z / mScale.z);
+        DirectX::XMFLOAT3 Bot{ DirectX::SimpleMath::Vector3::Lerp(LB, RB, fx) };
+        DirectX::XMFLOAT3 Top{ DirectX::SimpleMath::Vector3::Lerp(LT, RT, fx) };
 
-            float fx = transform.GetPosition().x / mScale.x - ix;
-            float fz = transform.GetPosition().z / mScale.z - iz;
+        DirectX::SimpleMath::Vector3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
+        terrainNormal.Normalize();
 
-
-            DirectX::XMFLOAT3 LT{ mTerrainHeightMap->GetNormal(ix,iz + 1,mScale) };
-            DirectX::XMFLOAT3 LB{ mTerrainHeightMap->GetNormal(ix, iz, mScale) };
-            DirectX::XMFLOAT3 RT{ mTerrainHeightMap->GetNormal(ix + 1, iz + 1, mScale) };
-            DirectX::XMFLOAT3 RB{ mTerrainHeightMap->GetNormal(ix + 1, iz, mScale) };
+		DirectX::SimpleMath::Vector3 up{ transform.GetUp() };
 
 
-            DirectX::XMFLOAT3 Bot{ DirectX::SimpleMath::Vector3::Lerp(LB, RB, fx) };
-            DirectX::XMFLOAT3 Top{ DirectX::SimpleMath::Vector3::Lerp(LT, RT, fx) };
-
-            DirectX::SimpleMath::Vector3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
-            terrainNormal.Normalize();
-
-			DirectX::SimpleMath::Vector3 up{ transform.GetUp() };
-
-
-            auto rotation = DirectX::SimpleMath::Quaternion::FromToRotation(up, terrainNormal);
-            rotation.Normalize();
-            transform.Rotate(rotation);
+        auto rotation = DirectX::SimpleMath::Quaternion::FromToRotation(up, terrainNormal);
+        rotation.Normalize();
+        transform.Rotate(rotation);
             
-        }
+        
         
         //// a와 b의 외적을 사용하여 회전 축 계산
         //Vector3 rotationAxis = a.Cross(b);
@@ -102,6 +111,7 @@ void TerrainCollider::UpdateCameraAboveTerrain(std::shared_ptr<Camera> camera)
     }
 
 }
+
 
 
 

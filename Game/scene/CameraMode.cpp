@@ -54,38 +54,39 @@ FreeCameraMode::~FreeCameraMode()
 {
 }
 
+constexpr float FREE_CAMERA_SPEED = 0.5f;
 void FreeCameraMode::Enter()
 {
 	mInputCallBackSign = NrSampler.Sample();
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, mInputCallBackSign, [this]() {
-		mCamera->GetTransform().Translate(mCamera->GetTransform().GetForward() * 0.1f);
+		mCamera->GetTransform().Translate(mCamera->GetTransform().GetForward() * FREE_CAMERA_SPEED);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, mInputCallBackSign, [this]() {
-		mCamera->GetTransform().Translate(mCamera->GetTransform().GetForward() * -0.1f);
+		mCamera->GetTransform().Translate(mCamera->GetTransform().GetForward() * -FREE_CAMERA_SPEED);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::A, mInputCallBackSign, [this]() {
 		auto right = mCamera->GetTransform().GetRight();
 		right.y = 0.f;
-		mCamera->GetTransform().Translate(right * 0.1f);
+		mCamera->GetTransform().Translate(right * FREE_CAMERA_SPEED);
 		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * -0.1f);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::D, mInputCallBackSign, [this]() {
 		auto right = mCamera->GetTransform().GetRight();
 		right.y = 0.f;
-		mCamera->GetTransform().Translate(right * -0.1f);
+		mCamera->GetTransform().Translate(right * -FREE_CAMERA_SPEED);
 		//mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Right * 0.1f);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, mInputCallBackSign, [this]() {
-		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -0.1f);
+		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * -FREE_CAMERA_SPEED);
 		});
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, mInputCallBackSign, [this]() {
-		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * 0.1f);
+		mCamera->GetTransform().Translate(DirectX::SimpleMath::Vector3::Up * FREE_CAMERA_SPEED);
 		});
 
 	mCamera->GetTransform().ResetRotation();
@@ -107,7 +108,7 @@ void FreeCameraMode::Update()
 	static float pitch = 0.f;
 
 	yaw += Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.2f ;
-	pitch += Input.GetDeltaMouseY() * Time.GetSmoothDeltaTime<float>() * 0.2f;
+	pitch += Input.GetDeltaMouseY() * Time.GetSmoothDeltaTime<float>() * -0.2f;
 
 	if (pitch > DirectX::XMConvertToRadians(80.f)) {
 		pitch = DirectX::XMConvertToRadians(80.f);

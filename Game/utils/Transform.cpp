@@ -9,6 +9,13 @@ Transform::~Transform()
 {
 }
 
+Transform::Transform(const Transform& other)
+{
+	mLocalTransform = other.mLocalTransform;
+	mOrientedBoundingBox = other.mOrientedBoundingBox;
+	mParent = other.mParent;
+}
+
 void Transform::Translate(const DirectX::SimpleMath::Vector3& translation)
 {
 	mPosition += translation;

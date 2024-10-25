@@ -4,6 +4,7 @@ class Transform {
 public:
 	Transform();
 	~Transform();
+	Transform(const Transform& other);
 public:
 	void Translate(const DirectX::SimpleMath::Vector3& translation);
 	// 월드 내 위치이기도 하지만, 자식 노드의 경우, 오프셋 위치이기도 하다. 
