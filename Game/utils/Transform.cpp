@@ -46,7 +46,7 @@ void Transform::RotateSmoothly(const DirectX::SimpleMath::Quaternion& rotation, 
 
 void Transform::Rotate(float yaw, float pitch, float roll)
 {
-	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up,yaw), mRotation);
+	mRotation = DirectX::SimpleMath::Quaternion::Concatenate(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll), mRotation);
 	mRotation.Normalize();
 }
 

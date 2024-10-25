@@ -101,22 +101,22 @@ void FreeCameraMode::Exit()
 // DeltaMouse 만큼의 회전을 했을 때, Forward 축이 +UP 이나 -UP 에 근접하면 회전을 하지 않아야 한다 
 void FreeCameraMode::Update()
 {
-	auto cameraRotation = mCamera->GetTransform().GetRotation();
-	auto dx = DirectX::XMConvertToRadians(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 30.f);
-	auto dy = DirectX::XMConvertToRadians(Input.GetDeltaMouseY() * Time.GetDeltaTime<float>() * - 30.f );
-	auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(dx,dy,0.f);
-	
-	rotation.Normalize();
-	cameraRotation = cameraRotation.Concatenate(cameraRotation, rotation);
-	cameraRotation.Normalize();
+	mCamera->GetTransform().ResetRotation();
 
-	auto forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::Forward, cameraRotation);
+	static float yaw = 0.f;
+	static float pitch = 0.f;
 
-	auto dot = DirectX::SimpleMath::Vector3::Up.Dot(forward);
+	yaw += Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.2f ;
+	pitch += Input.GetDeltaMouseY() * Time.GetSmoothDeltaTime<float>() * 0.2f;
 
-	if (dot < 0.9f and dot > -0.9f) {
-		mCamera->GetTransform().Rotate(rotation);
+	if (pitch > DirectX::XMConvertToRadians(80.f)) {
+		pitch = DirectX::XMConvertToRadians(80.f);
+	} 
+	if (pitch < DirectX::XMConvertToRadians(-80.f)) {
+		pitch = DirectX::XMConvertToRadians(-80.f);
 	}
+	
+	mCamera->GetTransform().Rotate(yaw, pitch, 0.f);
 
 }
 
