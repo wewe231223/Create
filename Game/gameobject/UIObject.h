@@ -29,6 +29,8 @@ public:
 	UIRect& GetUIRect() { return mUIRect; }
 
 	void AdvanceSprite();
+
+
 private:
 	DirectX::XMFLOAT3X3 Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const;
 	DirectX::XMFLOAT3X3 Transpose(const DirectX::XMFLOAT3X3& mat) const;
