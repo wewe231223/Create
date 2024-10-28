@@ -124,7 +124,7 @@ Terrain_DS_OUT TerrainDS(HSC_OUTPUT input, float2 location : SV_DomainLocation, 
     output.Tex1 = lerp(lerp(patch[0].Tex1, patch[1].Tex1, location.x), lerp(patch[2].Tex1, patch[3].Tex1, location.x), location.y);
     output.Tex2 = lerp(lerp(patch[0].Tex2, patch[1].Tex2, location.x), lerp(patch[2].Tex2, patch[3].Tex2, location.x), location.y);
     
-    float height = gTextures[gMaterials[patch[0].MaterialID].Textures[2]].SampleLevel(linearWrapSampler, output.Tex1, 0).r * 255.f;
+    float height = gTextures[gMaterials[patch[0].MaterialID].Textures[2]].SampleLevel(pointClampSampler, output.Tex1, 0).r * 255.f;
     
     output.Pos = mul(mul(float4(posw.x, height, posw.z, 1.0f), gObjects[0].worldMatrix), viewProjectionMatrix);
     output.MaterialID = patch[0].MaterialID;
