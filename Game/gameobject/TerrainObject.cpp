@@ -119,16 +119,19 @@ TerrainObject::TerrainObject(std::shared_ptr<ResourceManager> resourceMgr, std::
 {
 	resourceMgr->CreateTexture("TerrainBaseTexture", "./Resources/terrain/Base_Texture.dds");
 	resourceMgr->CreateTexture("TerrainDetailTexture", "./Resources/terrain/Detail_Texture_7.dds");
+	resourceMgr->CreateTexture("TerrainHeightMap", "./Resources/terrain/HeightMap.png");
     resourceMgr->CreateModel<TerrainModel>("Terrain", resourceMgr->GetShader("TerrainShader"), terrainImage, scale);
 	mModel = resourceMgr->GetModel("Terrain");
 
     Material material{};
     material.Textures[0] = resourceMgr->GetTexture("TerrainBaseTexture");
 	material.Textures[1] = resourceMgr->GetTexture("TerrainDetailTexture");
+	material.Textures[2] = resourceMgr->GetTexture("TerrainHeightMap");
 	resourceMgr->CreateMaterial("TerrainMaterial", material);
 
     GameObject::SetMaterial({ resourceMgr->GetMaterial("TerrainMaterial") });
 
+ //   mTransform.SetPosition({ 0.f,-100.f,0.f});
 	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
 }
 

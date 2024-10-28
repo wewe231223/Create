@@ -42,13 +42,13 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 };
 
 
-[domain("tri")]
+[domain("quad")]
 [partitioning("fractional_even")]
-[outputtopology("triangle_cw")]
-[outputcontrolpoints(3)]
+[outputtopology("triangle_ccw")]
+[outputcontrolpoints(4)]
 [patchconstantfunc("ConstantHS")]
 [maxtessfactor(64.f)]
-Terrain_HS_OUT TerrainHS(InputPatch<Terrain_VS_OUT, 3> input, uint i : SV_OutputControlPointID)
+Terrain_HS_OUT TerrainHS(InputPatch<Terrain_VS_OUT, 4> input, uint i : SV_OutputControlPointID)
 {
     Terrain_HS_OUT output = (Terrain_HS_OUT) 0;
     output.Pos = input[i].Pos;
@@ -72,8 +72,8 @@ struct Terrain_DS_OUT {
 
 struct HSC_OUTPUT
 {
-    float fTessEdges[3] : SV_TessFactor;
-    float fTessInsides : SV_InsideTessFactor;
+    float fTessEdges[4] : SV_TessFactor;
+    float fTessInsides[2] : SV_InsideTessFactor;
 };
 
 
@@ -85,36 +85,48 @@ float CalculateTessFactor(float3 p)
 {
     float DistanceToCamera = distance(p, cameraPos);
     // 거리에 따라 테셀레이션 팩터 보간
-    float factor = lerp(tessellationNear, tessellationFar, saturate((DistanceToCamera - tessellationNear) / tessellationDistance));
-    return factor;
+    // float factor = lerp(tessellationNear, tessellationFar, saturate((DistanceToCamera - tessellationNear) / tessellationDistance));
+    float factor = saturate((DistanceToCamera - tessellationNear) / (tessellationDistance - tessellationNear));
+    return pow(2, lerp(6.f, 0.f, factor));
+   
 }
 
-HSC_OUTPUT ConstantHS(InputPatch<Terrain_VS_OUT, 3> input, uint nPatchID : SV_PrimitiveID)
+HSC_OUTPUT ConstantHS(InputPatch<Terrain_VS_OUT, 4> input, uint nPatchID : SV_PrimitiveID)
 {
     HSC_OUTPUT output = (HSC_OUTPUT) 0;
+    
+    float3 e0 = 0.5f * (input[0].Pos + input[2].Pos);
+    float3 e1 = 0.5f * (input[0].Pos + input[1].Pos);
+    float3 e2 = 0.5f * (input[1].Pos + input[3].Pos);
+    float3 e3 = 0.5f * (input[2].Pos + input[3].Pos);
+    
 
-    output.fTessEdges[0] = CalculateTessFactor(input[0].Pos);
-    output.fTessEdges[1] = CalculateTessFactor(input[1].Pos);
-    output.fTessEdges[2] = CalculateTessFactor(input[2].Pos);
+    output.fTessEdges[0] = CalculateTessFactor(e0);
+    output.fTessEdges[1] = CalculateTessFactor(e1);
+    output.fTessEdges[2] = CalculateTessFactor(e2);
+    output.fTessEdges[3] = CalculateTessFactor(e3);
 
-    float3 c = (input[0].Pos + input[1].Pos + input[2].Pos ) / 3.0f;
-    output.fTessInsides = CalculateTessFactor(c);
+    float3 c = (input[0].Pos + input[1].Pos + input[2].Pos * input[3].Pos) * 0.25f;
+    output.fTessInsides[0] = CalculateTessFactor(c);
+    output.fTessInsides[1] = output.fTessInsides[0];
 
     
     return (output);
 }
 
-[domain("tri")]
-Terrain_DS_OUT TerrainDS(HSC_OUTPUT input, float3 location : SV_DomainLocation, OutputPatch<Terrain_HS_OUT, 3> patch)
+[domain("quad")]
+Terrain_DS_OUT TerrainDS(HSC_OUTPUT input, float2 location : SV_DomainLocation, OutputPatch<Terrain_HS_OUT, 4> patch)
 {
     Terrain_DS_OUT output = (Terrain_DS_OUT) 0;
     
-    float3 pos = patch[0].Pos * location[0] + patch[1].Pos * location[1] + patch[2].Pos * location[2];
+    float3 posw = lerp(lerp(patch[0].Pos, patch[1].Pos, location.x), lerp(patch[2].Pos, patch[3].Pos, location.x), location.y);
+   
+    output.Tex1 = lerp(lerp(patch[0].Tex1, patch[1].Tex1, location.x), lerp(patch[2].Tex1, patch[3].Tex1, location.x), location.y);
+    output.Tex2 = lerp(lerp(patch[0].Tex2, patch[1].Tex2, location.x), lerp(patch[2].Tex2, patch[3].Tex2, location.x), location.y);
     
-
-    output.Pos = mul(float4(pos, 1.0f), viewProjectionMatrix);
-    output.Tex1 = patch[0].Tex1 * location[0] + patch[1].Tex1 * location[1] + patch[2].Tex1 * location[2];
-    output.Tex2 = patch[0].Tex2 * location[0] + patch[1].Tex2 * location[1] + patch[2].Tex2 * location[2];
+    float height = gTextures[gMaterials[patch[0].MaterialID].Textures[2]].SampleLevel(linearWrapSampler, output.Tex1, 0).r * 255.f;
+    
+    output.Pos = mul(mul(float4(posw.x, height, posw.z, 1.0f), gObjects[0].worldMatrix), viewProjectionMatrix);
     output.MaterialID = patch[0].MaterialID;
     
     return output;

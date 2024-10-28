@@ -380,13 +380,12 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
     psoDesc.pRootSignature = mRootSignature.Get();
-    // psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
     psoDesc.PS = GetShaderByteCode(EShaderType::PS);
 	psoDesc.HS = GetShaderByteCode(EShaderType::HS);
 	psoDesc.DS = GetShaderByteCode(EShaderType::DS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
-  //  psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+ //   psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
     psoDesc.SampleMask = UINT_MAX;
