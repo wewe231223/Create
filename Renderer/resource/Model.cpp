@@ -101,12 +101,16 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		return;
 	}
 
+	if (mIndexBuffer == nullptr) {
+
+	}
+
 	commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
 	commandList->IASetIndexBuffer(&mIndexBufferView);
 	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 
 	for (auto& mesh : mMeshes) {
-		mesh->Render(commandList);
+		mesh->RenderIndexed(commandList);
 	}
 	
 	mInstanceCount = 0;
@@ -145,7 +149,7 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	for (float z = 0.f; z < static_cast<float>(mTerrainImage->GetHeight()); z += 1.f) {
 		for (float x = 0.f; x < static_cast<float>(mTerrainImage->GetWidth()); x += 1.f)
 		{
-			positions.emplace_back(x * mScale.x, mTerrainImage->GetHeight(x, z) * mScale.y, z * mScale.z);
+			positions.emplace_back(x , mTerrainImage->GetHeight(x, z) , z );
 			normals.emplace_back(mTerrainImage->GetNormal(static_cast<int>(x), static_cast<int>(z), mScale));
 			texcoords1.emplace_back(x / static_cast<float>(mTerrainImage->GetWidth() - 1), static_cast<float>(mTerrainImage->GetHeight() - 1 - z) / static_cast<float>(mTerrainImage->GetHeight() - 1));
 			texcoords2.emplace_back(x / mScale.x * 50.f, z / mScale.z * 50.f);

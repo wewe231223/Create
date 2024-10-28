@@ -9,14 +9,18 @@ class Mesh {
 public:
 	// 경계값 포함. 
 	Mesh(ComPtr<ID3D12Device>& device,D3D12_PRIMITIVE_TOPOLOGY topology,UINT indexBegin,UINT indexCount);
+	Mesh(ComPtr<ID3D12Device>& device, D3D12_PRIMITIVE_TOPOLOGY topology, UINT vertexCount);
 	~Mesh();
 
 	void WriteContext(MaterialIndex mat);
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void RenderIndexed(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void RenderNonIndexed(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	D3D12_PRIMITIVE_TOPOLOGY mTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST };
 	UINT mIndexBegin{ 0 };
 	UINT mIndexCount{ 0 };
+
+	UINT mVertexCount{ 0 };
 
 	std::array<MeshContext, static_cast<size_t>(GC_FrameCount)> mMeshContexts{};
 	UINT mMemoryIndex{ 0 };
