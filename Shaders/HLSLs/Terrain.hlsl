@@ -43,7 +43,7 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 
 
 [domain("tri")]
-[partitioning("integer")]
+[partitioning("fractional_even")]
 [outputtopology("triangle_cw")]
 [outputcontrolpoints(3)]
 [patchconstantfunc("ConstantHS")]
@@ -77,20 +77,16 @@ struct HSC_OUTPUT
 };
 
 
-static const float tessellationNear = 8.f; // 근접 거리에서의 최대 테셀레이션 팩터
+static const float tessellationNear = 16.f; // 근접 거리에서의 최대 테셀레이션 팩터
 static const float tessellationFar = 1.f; // 원거리에서의 최소 테셀레이션 팩터
 static const float tessellationDistance = 200.f; // 테셀레이션을 보간할 거리 범위
 
 float CalculateTessFactor(float3 p)
 {
     float DistanceToCamera = distance(p, cameraPos);
-        
-    
     // 거리에 따라 테셀레이션 팩터 보간
     float factor = lerp(tessellationNear, tessellationFar, saturate((DistanceToCamera - tessellationNear) / tessellationDistance));
-
     return factor;
-    
 }
 
 HSC_OUTPUT ConstantHS(InputPatch<Terrain_VS_OUT, 3> input, uint nPatchID : SV_PrimitiveID)
