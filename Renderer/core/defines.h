@@ -81,6 +81,7 @@ struct CameraContext {
 	DirectX::SimpleMath::Matrix View{ DirectX::SimpleMath::Matrix::Identity };
 	DirectX::SimpleMath::Matrix Projection{ DirectX::SimpleMath::Matrix::Identity };
 	DirectX::SimpleMath::Matrix ViewProjection{ DirectX::SimpleMath::Matrix::Identity };
+	DirectX::SimpleMath::Vector3 CameraPosition{ 0.f,0.f,0.f };
 };
 
 struct ModelContext {

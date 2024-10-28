@@ -157,27 +157,24 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	UINT width = static_cast<UINT>(mTerrainImage->GetWidth());
 	UINT height = static_cast<UINT>(mTerrainImage->GetHeight());
 
-	for (UINT z = 0; z < height - 1; ++z)
+	for (auto z = 0; z < height; z++)
 	{
-		// 홀수 번째 줄 ( 왼쪽 --> 오른쪽 )
-		if (z % 2 == 0)
-			for (UINT x = 0; x < width; ++x)
-			{
-				if (x == 0 && z > 0) indices.emplace_back(x + (z * width));
-				indices.emplace_back(x + (z * width));
-				indices.emplace_back(x + (z * width) + width);
-			}
-		// 짝수 번째 줄 ( 오른쪽 --> 왼쪽 ) 
-		else
-			for (int x = static_cast<int>(width - 1); x >= 0; --x)
-			{
-				UINT ux = static_cast<UINT>(x);
-				if (ux == width - 1) indices.emplace_back(ux + (z * width));
-				indices.emplace_back(ux + (z * width));
-				indices.emplace_back(ux + (z * width) + width);
-			}
+		for (auto x = 0; x < width; x++)
+		{
+			//  [0]
+			//   |	\
+			//  [2] - [1]
+			indices.push_back((width + 1) * (z + 1) + (x));
+			indices.push_back((width + 1) * (z)+(x + 1));
+			indices.push_back((width + 1) * (z)+(x));
+			//  [1] - [2]
+			//   	\  |
+			//		  [0]
+			indices.push_back((width + 1) * (z)+(x + 1));
+			indices.push_back((width + 1) * (z + 1) + (x));
+			indices.push_back((width + 1) * (z + 1) + (x + 1));
+		}
 	}
-
 
 	mVertexBuffers[0] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(positions.data()), sizeof(DirectX::XMFLOAT3) * positions.size());
 	mVertexBufferViews.emplace_back(mVertexBuffers[0]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * positions.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
@@ -194,7 +191,7 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	mIndexBuffer = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
 	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
 
-	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, static_cast<UINT>(indices.size())));
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST, 0, static_cast<UINT>(indices.size())));
 
 	Model::CreateBBFromMeshes(positions);
 }

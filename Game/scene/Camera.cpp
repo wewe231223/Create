@@ -106,6 +106,7 @@ void Camera::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
 
+	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
 	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
 	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
 	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();

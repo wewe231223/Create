@@ -297,7 +297,8 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
     MakeShader(EShaderType::VS, "Terrain.hlsl", "TerrainVS", "vs_5_1", nullptr);
 	MakeShader(EShaderType::PS, "Terrain.hlsl", "TerrainPS", "ps_5_1", nullptr);
-
+	MakeShader(EShaderType::HS, "Terrain.hlsl", "TerrainHS", "hs_5_1", nullptr);
+	MakeShader(EShaderType::DS, "Terrain.hlsl", "TerrainDS", "ds_5_1", nullptr);
 
     D3D12_INPUT_ELEMENT_DESC inputDescs[4]{};
 
@@ -379,13 +380,17 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
     psoDesc.pRootSignature = mRootSignature.Get();
+    // psoDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
     psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+	psoDesc.HS = GetShaderByteCode(EShaderType::HS);
+	psoDesc.DS = GetShaderByteCode(EShaderType::DS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
+    psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
     psoDesc.SampleMask = UINT_MAX;
-    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
     psoDesc.NumRenderTargets = 1;
     psoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat);
     psoDesc.SampleDesc.Count = 1;
@@ -395,7 +400,6 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
 
 
     CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
-
     Console.InfoLog("Terrain Shader 가 성공적으로 로딩되었습니다.");
 
 }
