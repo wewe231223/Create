@@ -157,24 +157,47 @@ TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 	UINT width = static_cast<UINT>(mTerrainImage->GetWidth());
 	UINT height = static_cast<UINT>(mTerrainImage->GetHeight());
 
-	for (auto z = 0; z < height; z++)
+	for (UINT z = 0; z < height - 1; z++)
 	{
-		for (auto x = 0; x < width; x++)
+		for (UINT x = 0; x < width - 1; x++)
 		{
-			//  [0]
-			//   |	\
-			//  [2] - [1]
-			indices.push_back((width + 1) * (z + 1) + (x));
-			indices.push_back((width + 1) * (z)+(x + 1));
-			indices.push_back((width + 1) * (z)+(x));
-			//  [1] - [2]
-			//   	\  |
-			//		  [0]
-			indices.push_back((width + 1) * (z)+(x + 1));
-			indices.push_back((width + 1) * (z + 1) + (x));
-			indices.push_back((width + 1) * (z + 1) + (x + 1));
+			UINT topLeft = z * width + x;
+			UINT topRight = topLeft + 1;
+			UINT bottomLeft = (z + 1) * width + x;
+			UINT bottomRight = bottomLeft + 1;
+
+			indices.push_back(topLeft);
+			indices.push_back(bottomLeft);
+			indices.push_back(topRight);
+
+			indices.push_back(topRight);
+			indices.push_back(bottomLeft);
+			indices.push_back(bottomRight);
 		}
 	}
+
+	/*
+	 for (int i = 0; i < rows - 1; ++i) {
+        for (int j = 0; j < cols - 1; ++j) {
+            // 현재 사각형의 네 개의 정점 인덱스 계산
+            int topLeft = i * cols + j;
+            int topRight = topLeft + 1;
+            int bottomLeft = (i + 1) * cols + j;
+            int bottomRight = bottomLeft + 1;
+
+            // 삼각형 1: 왼쪽 위, 오른쪽 위, 왼쪽 아래
+            indices.push_back(topLeft);
+            indices.push_back(topRight);
+            indices.push_back(bottomLeft);
+
+            // 삼각형 2: 오른쪽 위, 오른쪽 아래, 왼쪽 아래
+            indices.push_back(topRight);
+            indices.push_back(bottomRight);
+            indices.push_back(bottomLeft);
+        }
+    }
+	
+	*/
 
 	mVertexBuffers[0] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(positions.data()), sizeof(DirectX::XMFLOAT3) * positions.size());
 	mVertexBufferViews.emplace_back(mVertexBuffers[0]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * positions.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));

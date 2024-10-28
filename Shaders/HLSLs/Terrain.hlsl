@@ -77,7 +77,7 @@ struct HSC_OUTPUT
 };
 
 
-static const float tessellationNear = 16.f; // 근접 거리에서의 최대 테셀레이션 팩터
+static const float tessellationNear = 8.f; // 근접 거리에서의 최대 테셀레이션 팩터
 static const float tessellationFar = 1.f; // 원거리에서의 최소 테셀레이션 팩터
 static const float tessellationDistance = 200.f; // 테셀레이션을 보간할 거리 범위
 
@@ -97,18 +97,13 @@ HSC_OUTPUT ConstantHS(InputPatch<Terrain_VS_OUT, 3> input, uint nPatchID : SV_Pr
 {
     HSC_OUTPUT output = (HSC_OUTPUT) 0;
 
-    
- //  float3 e3 = 0.5f * (input[2].Pos + input[3].Pos);
-    
-    
     output.fTessEdges[0] = CalculateTessFactor(input[0].Pos);
     output.fTessEdges[1] = CalculateTessFactor(input[1].Pos);
     output.fTessEdges[2] = CalculateTessFactor(input[2].Pos);
- //   output.fTessEdges[3] = CalculateTessFactor(e3);
-    
+
     float3 c = (input[0].Pos + input[1].Pos + input[2].Pos ) / 3.0f;
     output.fTessInsides = CalculateTessFactor(c);
- //   output.fTessInsides[1] = output.fTessInsides[0];
+
     
     return (output);
 }
