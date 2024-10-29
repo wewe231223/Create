@@ -95,6 +95,9 @@ void Mesh::RenderNonIndexed(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	commandList->SetGraphicsRootShaderResourceView(GRP_MeshConstants, mMeshContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 	commandList->IASetPrimitiveTopology(mTopology);
-	commandList->DrawInstanced(mIndexCount, mInstanceCount, 0, 0);
+	commandList->DrawInstanced(mVertexCount, mInstanceCount, 0, 0);
+
+	mMemoryIndex = (mMemoryIndex + 1) % static_cast<UINT>(GC_FrameCount);
+	mInstanceCount = 0;
 }
 

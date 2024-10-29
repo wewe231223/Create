@@ -31,15 +31,7 @@ TerrainImage::TerrainImage(const fs::path& path)
 	file.read(reinterpret_cast<char*>(buffer.get()), size);
 	file.close();
 
-	// 상하대칭 
-	for (int y = 0; y < mHeight; ++y) {
-		for (int x = 0; x < mWidth; ++x) {
-			mPixels[x + (y * mWidth)] = buffer[x + ((mHeight - y - 1) * mWidth)];
-		}
-	}
-
-
-	//memcpy(mPixels.get(), buffer.get(), sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
+	memcpy(mPixels.get(), buffer.get(), sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
 
 	Console.InfoLog("{} 파일을 성공적으로 로드했습니다.", path.string().c_str());
 }
@@ -70,6 +62,25 @@ TerrainImage::TerrainImage(const fs::path& path, int width, int height)
 
 TerrainImage::~TerrainImage()
 {
+}
+
+void TerrainImage::CreatePatch(std::vector<DirectX::XMFLOAT3>& positions, std::vector<DirectX::XMFLOAT2>& uv1, std::vector<DirectX::XMFLOAT2>& uv2, int zStart, int zEnd, int xStart, int xEnd, int patchLength)
+{
+	int length = TerrainImage::GetHeight();
+
+	for (int z : std::views::iota(zEnd, zStart + 1) | std::views::reverse) {
+		for (int x : std::views::iota(xStart, xEnd + 1)) {
+
+
+			uv1.emplace_back(static_cast<float>(x) / (length - 1), 1.f - static_cast<float>(z) / (length - 1) );
+			uv2.emplace_back(static_cast<float>(x - xStart) / patchLength, static_cast<float>(zStart - z) / patchLength);
+
+			float nx = static_cast<float>(x - length / 2);
+			float nz = static_cast<float>(z - length / 2);
+
+			positions.emplace_back(nx,mPixels[z* length + x], nz);
+		}
+	}
 }
 
 DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::SimpleMath::Vector3 scale) const

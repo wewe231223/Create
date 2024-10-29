@@ -62,11 +62,11 @@ protected:
 
 class TerrainModel : public Model {
 public:
-	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader,std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale);
+	TerrainModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader,std::shared_ptr<class TerrainImage> terrainImage);
 	~TerrainModel();
 private:
 	std::shared_ptr<class TerrainImage> mTerrainImage{ nullptr };
-	DirectX::SimpleMath::Vector3 mScale{ 1.0f,1.0f,1.0f };
+	int mPatchLength{ 4 }; // 4X4 베지어 패치 
 };
 
 

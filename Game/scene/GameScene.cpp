@@ -117,7 +117,7 @@ void GameScene::InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsC
 	std::shared_ptr<TerrainImage> terrainImage = std::make_shared<TerrainImage>("./Resources/terrain/HeightMap.raw");
 
 	mTerrain = std::make_shared<TerrainCollider>(terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f));
-	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
+	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage));
 }
 
 void GameScene::InitCameraMode()
@@ -315,12 +315,6 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	healthBar->Render();
 	mUIRenderer->Render(commandList);
 }
-
-
-
-
-
-
 
 
 Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)

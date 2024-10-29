@@ -102,17 +102,25 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	}
 
 	if (mIndexBuffer == nullptr) {
+		commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
+		commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
+
+		for (auto& mesh : mMeshes) {
+			mesh->RenderNonIndexed(commandList);
+		}
 
 	}
+	else {
 
-	commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
-	commandList->IASetIndexBuffer(&mIndexBufferView);
-	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
+		commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
+		commandList->IASetIndexBuffer(&mIndexBufferView);
+		commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 
-	for (auto& mesh : mMeshes) {
-		mesh->RenderIndexed(commandList);
+		for (auto& mesh : mMeshes) {
+			mesh->RenderIndexed(commandList);
+		}
 	}
-	
+
 	mInstanceCount = 0;
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
 }
@@ -135,95 +143,45 @@ void Model::CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions)
 //////////////////////////////////////////////////////////////////////////
 #include "resource/TerrainImage.h"
 
-TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader, std::shared_ptr<TerrainImage> terrainImage,DirectX::SimpleMath::Vector3 scale)
-	: Model(device,terrainShader), mTerrainImage(terrainImage), mScale(scale)
+TerrainModel::TerrainModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList,std::shared_ptr<IGraphicsShader> terrainShader, std::shared_ptr<TerrainImage> terrainImage)
+	: Model(device, terrainShader), mTerrainImage(terrainImage)
 {
-	mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
+	mAttribute = VertexAttrib_position | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
 	assert(!mShader->CheckAttribute(mAttribute));
 
 	std::vector<DirectX::XMFLOAT3> positions{};
-	std::vector<DirectX::XMFLOAT3> normals{};
 	std::vector<DirectX::XMFLOAT2> texcoords1{};
 	std::vector<DirectX::XMFLOAT2> texcoords2{};
 
-	for (float z = 0.f; z < static_cast<float>(mTerrainImage->GetHeight()); z += 1.f) {
-		for (float x = 0.f; x < static_cast<float>(mTerrainImage->GetWidth()); x += 1.f)
-		{
-			positions.emplace_back(x , mTerrainImage->GetHeight(x, z) , z );
-			normals.emplace_back(mTerrainImage->GetNormal(static_cast<int>(x), static_cast<int>(z), mScale));
-			texcoords1.emplace_back(x / static_cast<float>(mTerrainImage->GetWidth() - 1), static_cast<float>(mTerrainImage->GetHeight() - 1 - z) / static_cast<float>(mTerrainImage->GetHeight() - 1));
-			texcoords2.emplace_back(x / mScale.x * 50.f, z / mScale.z * 50.f);
+	int length = mTerrainImage->GetHeight();
+
+	for (int pz = length - 1; pz >= mPatchLength; pz -= mPatchLength) {
+		for (int px = 0; px < length - mPatchLength; px += mPatchLength) {
+			mTerrainImage->CreatePatch(positions, texcoords1, texcoords2, pz, pz - mPatchLength, px, px + mPatchLength);
 		}
 	}
 
-
-	std::vector<UINT> indices{};
-	UINT width = static_cast<UINT>(mTerrainImage->GetWidth());
-	UINT height = static_cast<UINT>(mTerrainImage->GetHeight());
-
-	for (UINT z = 0; z < height - 1; z++)
-	{
-		for (UINT x = 0; x < width - 1; x++)
-		{
-			UINT topLeft = z * width + x;
-			UINT topRight = topLeft + 1;
-			UINT bottomLeft = (z + 1) * width + x;
-			UINT bottomRight = bottomLeft + 1;
-
-			indices.push_back(topLeft);
-			indices.push_back(topRight);
-			indices.push_back(bottomLeft);
-			indices.push_back(bottomRight);
-		}
-	}
-
-	/*
-	 for (int i = 0; i < rows - 1; ++i) {
-        for (int j = 0; j < cols - 1; ++j) {
-            // 현재 사각형의 네 개의 정점 인덱스 계산
-            int topLeft = i * cols + j;
-            int topRight = topLeft + 1;
-            int bottomLeft = (i + 1) * cols + j;
-            int bottomRight = bottomLeft + 1;
-
-            // 삼각형 1: 왼쪽 위, 오른쪽 위, 왼쪽 아래
-            indices.push_back(topLeft);
-            indices.push_back(topRight);
-            indices.push_back(bottomLeft);
-
-            // 삼각형 2: 오른쪽 위, 오른쪽 아래, 왼쪽 아래
-            indices.push_back(topRight);
-            indices.push_back(bottomRight);
-            indices.push_back(bottomLeft);
-        }
-    }
-	
-	*/
 
 	mVertexBuffers[0] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(positions.data()), sizeof(DirectX::XMFLOAT3) * positions.size());
 	mVertexBufferViews.emplace_back(mVertexBuffers[0]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * positions.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
 
-	mVertexBuffers[1] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(normals.data()), sizeof(DirectX::XMFLOAT3) * normals.size());
-	mVertexBufferViews.emplace_back(mVertexBuffers[1]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * normals.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
+	mVertexBuffers[1] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(texcoords1.data()), sizeof(DirectX::XMFLOAT2) * texcoords1.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[1]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * texcoords1.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
 
-	mVertexBuffers[2] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(texcoords1.data()), sizeof(DirectX::XMFLOAT2) * texcoords1.size());
-	mVertexBufferViews.emplace_back(mVertexBuffers[2]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * texcoords1.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
+	mVertexBuffers[2] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(texcoords2.data()), sizeof(DirectX::XMFLOAT2) * texcoords2.size());
+	mVertexBufferViews.emplace_back(mVertexBuffers[2]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * texcoords2.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
 
-	mVertexBuffers[3] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(texcoords2.data()), sizeof(DirectX::XMFLOAT2) * texcoords2.size());
-	mVertexBufferViews.emplace_back(mVertexBuffers[3]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * texcoords2.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));
 
-	mIndexBuffer = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(indices.data()), sizeof(UINT) * indices.size());
-	mIndexBufferView = { mIndexBuffer->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(UINT) * indices.size()), DXGI_FORMAT_R32_UINT };
-
-	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST, 0, static_cast<UINT>(indices.size())));
+	mMeshes.emplace_back(std::make_unique<Mesh>(device, D3D_PRIMITIVE_TOPOLOGY_25_CONTROL_POINT_PATCHLIST,static_cast<UINT>(positions.size())));
 
 	Model::CreateBBFromMeshes(positions);
 }
 
-TerrainModel::~TerrainModel()
+TerrainModel::~TerrainModel()	
 {
 
 }
+
 
 
 

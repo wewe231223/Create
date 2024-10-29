@@ -115,12 +115,12 @@ void TerrainCollider::UpdateCameraAboveTerrain(std::shared_ptr<Camera> camera)
 
 
 
-TerrainObject::TerrainObject(std::shared_ptr<ResourceManager> resourceMgr, std::shared_ptr<class TerrainImage> terrainImage, DirectX::SimpleMath::Vector3 scale)
+TerrainObject::TerrainObject(std::shared_ptr<ResourceManager> resourceMgr, std::shared_ptr<class TerrainImage> terrainImage)
 {
 	resourceMgr->CreateTexture("TerrainBaseTexture", "./Resources/terrain/Base_Texture.dds");
 	resourceMgr->CreateTexture("TerrainDetailTexture", "./Resources/terrain/Detail_Texture_7.dds");
 	resourceMgr->CreateTexture("TerrainHeightMap", "./Resources/terrain/HeightMap.png");
-    resourceMgr->CreateModel<TerrainModel>("Terrain", resourceMgr->GetShader("TerrainShader"), terrainImage, scale);
+    resourceMgr->CreateModel<TerrainModel>("Terrain", resourceMgr->GetShader("TerrainShader"), terrainImage);
 	mModel = resourceMgr->GetModel("Terrain");
 
     Material material{};

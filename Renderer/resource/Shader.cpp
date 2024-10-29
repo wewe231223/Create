@@ -294,18 +294,17 @@ StandardShader::~StandardShader()
 TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     : GraphicsShaderBase(device)
 {
-    mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
+    mAttribute = VertexAttrib_position | VertexAttrib_texcoord1 | VertexAttrib_texcoord2;
     MakeShader(EShaderType::VS, "Terrain.hlsl", "TerrainVS", "vs_5_1", nullptr);
 	MakeShader(EShaderType::PS, "Terrain.hlsl", "TerrainPS", "ps_5_1", nullptr);
 	MakeShader(EShaderType::HS, "Terrain.hlsl", "TerrainHS", "hs_5_1", nullptr);
 	MakeShader(EShaderType::DS, "Terrain.hlsl", "TerrainDS", "ds_5_1", nullptr);
 
-    D3D12_INPUT_ELEMENT_DESC inputDescs[4]{};
+    D3D12_INPUT_ELEMENT_DESC inputDescs[3]{};
 
     inputDescs[0] = { "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
-    inputDescs[1] = { "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,1,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
-    inputDescs[2] = { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,2,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
-    inputDescs[3] = { "TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,3,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+    inputDescs[1] = { "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,1,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+    inputDescs[2] = { "TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,2,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
 
     // 애는 하나만씀. 
 	D3D12_DESCRIPTOR_RANGE texRange[3];
@@ -385,7 +384,7 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
 	psoDesc.HS = GetShaderByteCode(EShaderType::HS);
 	psoDesc.DS = GetShaderByteCode(EShaderType::DS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
- //   psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+    //   psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
     psoDesc.SampleMask = UINT_MAX;

@@ -65,6 +65,8 @@
 #include <fstream>
 #include <filesystem>
 #include <span>
+#include <ranges>
+
 using namespace Microsoft::WRL;
 using namespace std::chrono_literals;
 namespace fs = std::filesystem;
