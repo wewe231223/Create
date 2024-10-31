@@ -108,6 +108,7 @@ void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 		mResourceManager->GetMaterial("SkyBoxLeftMaterial"),
 		mResourceManager->GetMaterial("SkyBoxRightMaterial")
 		}
+	// 정리... 
 	));
 
 }
