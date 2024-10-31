@@ -112,7 +112,7 @@ void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 
 
 
-	//ㅇㄴㄹㄴㅇ
+	//ㅇㄴㄹㄴㅇㅇㅇㅇㅇ
 	));
 
 }
