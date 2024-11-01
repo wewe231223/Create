@@ -226,5 +226,8 @@
     <FxCompile Include="..\Shaders\HLSLs\SkyBox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\Common.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

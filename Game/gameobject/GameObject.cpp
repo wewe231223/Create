@@ -80,8 +80,6 @@ GameObject* GameObject::GetChildInternal(UINT& dfsIndex)
 			break;
 		}
 	}
-
-
 	return ret;
 }
 

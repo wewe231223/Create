@@ -16,4 +16,7 @@ public:
 	virtual void Update() override;
 	virtual void OnEnable() override;
 	virtual void OnDisable() override;
+private:
+	bool mIsMovingForward{ false };
+	bool mIsMovingBackward{ false };
 };

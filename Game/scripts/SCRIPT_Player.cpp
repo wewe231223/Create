@@ -24,8 +24,11 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mOwner->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mOwner->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() { mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() {  mIsMovingForward = true;   mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mIsMovingBackward = true; mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
+
+	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::W, sign, [this]() { mIsMovingForward = false; });
+	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::S, sign, [this]() { mIsMovingBackward = false; });
 
 	mOwner->GetTransform().SetPosition({ 10.f,100.f,10.f });
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
@@ -46,6 +49,22 @@ void SCRIPT_Player::Update()
 	if (Input.GetMouseState().rightButton) {
 		mOwner->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
+
+
+	if (mIsMovingForward) {
+		mOwner->GetChild(2)->GetTransform().Rotate(0.f, Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(3)->GetTransform().Rotate(0.f, Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(4)->GetTransform().Rotate(0.f, Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(5)->GetTransform().Rotate(0.f, Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+	}
+
+	if (mIsMovingBackward) {
+		mOwner->GetChild(2)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(3)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(4)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
+	}
+
 }
 
 void SCRIPT_Player::OnEnable()

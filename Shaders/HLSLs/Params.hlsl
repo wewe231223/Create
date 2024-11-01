@@ -26,6 +26,7 @@ cbuffer CameraCB : register(b1)
     matrix viewMatrix;
     matrix projectionMatrix;
     matrix viewProjectionMatrix;
+    float3 cameraPosition;
 };
 
 // t0 : Root Descriptor Static SRV ( CB )
