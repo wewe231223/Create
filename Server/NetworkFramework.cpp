@@ -1,7 +1,16 @@
+
 #include "pch.h"
 #include "NetworkFramework.h"
 
 #define SERVERPORT 9000
+
+NetworkFramework::NetworkFramework()
+{
+}
+
+NetworkFramework::~NetworkFramework()
+{
+}
 
 void NetworkFramework::InitializeNetwork()
 {

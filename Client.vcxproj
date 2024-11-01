@@ -155,6 +155,8 @@
     <ClInclude Include="Game\gameobject\GameObject.h" />
     <ClInclude Include="Game\gameobject\TerrainObject.h" />
     <ClInclude Include="Game\gameobject\UIObject.h" />
+    <ClInclude Include="Game\network\ErrorHandler.h" />
+    <ClInclude Include="Game\network\NetworkFramework.h" />
     <ClInclude Include="Game\scene\Camera.h" />
     <ClInclude Include="Game\scene\CameraMode.h" />
     <ClInclude Include="Game\scene\GameScene.h" />
@@ -181,6 +183,8 @@
     <ClCompile Include="Game\gameobject\GameObject.cpp" />
     <ClCompile Include="Game\gameobject\TerrainObject.cpp" />
     <ClCompile Include="Game\gameobject\UIObject.cpp" />
+    <ClCompile Include="Game\network\ErrorHandler.cpp" />
+    <ClCompile Include="Game\network\NetworkFramework.cpp" />
     <ClCompile Include="Game\scene\Camera.cpp" />
     <ClCompile Include="Game\scene\CameraMode.cpp" />
     <ClCompile Include="Game\scene\GameScene.cpp" />

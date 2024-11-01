@@ -1,6 +1,8 @@
 #pragma once
-class NetworkFramework
-{
+class NetworkFramework {
+public:
+	NetworkFramework();
+	~NetworkFramework();
 public:
 	void InitializeNetwork();
 	void AcceptWorker();

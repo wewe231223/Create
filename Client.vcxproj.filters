@@ -37,6 +37,9 @@
     <Filter Include="Game\ui">
       <UniqueIdentifier>{2851e1fc-09f1-4de7-a6aa-ba5b9f8fc1fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{c424c8da-ce52-4592-b18d-8757662679bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -111,6 +114,12 @@
     <ClInclude Include="Game\ui\Slider.h">
       <Filter>Game\ui</Filter>
     </ClInclude>
+    <ClInclude Include="Game\network\NetworkFramework.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\network\ErrorHandler.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -178,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="Game\ui\Slider.cpp">
       <Filter>Game\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\network\NetworkFramework.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\network\ErrorHandler.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
