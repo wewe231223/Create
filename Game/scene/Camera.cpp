@@ -53,7 +53,7 @@ Camera::Camera(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window)
 	mParam.FOV = DirectX::XMConvertToRadians(60.f);
 	mParam.aspectRatio = window->GetWindowWidth<float>() / window->GetWindowHeight<float>();
 	mParam.nearPlane = 0.1f;
-	mParam.farPlane = 1000.f;
+	mParam.farPlane = 2000.f;
 
 	Camera::MakeProjectionMatrix();
 }
@@ -68,7 +68,7 @@ Camera::~Camera()
 
 void Camera::MakeProjectionMatrix()
 {
-	mProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(mParam.FOV, mParam.aspectRatio, mParam.nearPlane, mParam.farPlane);
+	mProjectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(mParam.FOV, mParam.aspectRatio, mParam.nearPlane, mParam.farPlane);
 	DirectX::BoundingFrustum::CreateFromMatrix(mViewFrustum, mProjectionMatrix);
 }
 
@@ -89,7 +89,7 @@ bool Camera::IsInFrustum(DirectX::BoundingOrientedBox& box)
 
 void Camera::Update()
 {
-	mViewMatrix = DirectX::XMMatrixLookAtLH(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(),DirectX::SimpleMath::Vector3::Up);
+	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(),DirectX::SimpleMath::Vector3::Up);
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
 }
 
@@ -109,6 +109,7 @@ void Camera::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
 	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
 	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
+	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
 
 	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, CameraBuffer.buffer->GetGPUVirtualAddress());
 

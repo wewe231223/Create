@@ -322,7 +322,7 @@ TexturedModel::~TexturedModel()
 //																		//
 //////////////////////////////////////////////////////////////////////////
 
-constexpr float SKYBOX_SIZE = 10.f;
+constexpr float SKYBOX_SIZE = 200.f;
 
 SkyBoxModel::SkyBoxModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader)
 	: Model(device, shader)
