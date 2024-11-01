@@ -15,10 +15,6 @@
 #include <concepts>
 #include <ranges>
 
-#include <winsock2.h>
-#include <thread>
-
-#pragma comment(lib, "Ws2_32.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")

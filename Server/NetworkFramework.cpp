@@ -32,16 +32,7 @@ void NetworkFramework::InitializeNetwork()
 		exit(0);
 	}
 
-
-	try {
-		mAcceptThread = std::thread(&NetworkFramework::AcceptWorker, this);
-		mAcceptThread.join();
-	}
-	catch (const std::system_error& err) {
-		std::cerr << "Failed to create thread : " << err.what() << std::endl;
-	}
-
-
+	std::thread mAcceptThread { [this]() { AcceptWorker(); } };
 
 
 
