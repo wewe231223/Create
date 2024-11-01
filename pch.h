@@ -8,7 +8,8 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <random>
 #include <numeric>
 #include <bitset>
@@ -21,6 +22,7 @@
 #else 
 #pragma comment(lib,"Out/release/Renderer.lib")
 #endif 
+#pragma comment(lib,"ws2_32.lib")
 
 #include "Renderer/external/Include/DirectXTK12/Keyboard.h"
 #include "Renderer/external/Include/DirectXTK12/Mouse.h"
