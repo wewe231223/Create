@@ -13,10 +13,12 @@ NetworkManager::NetworkManager()
 
 NetworkManager::~NetworkManager()
 {
-    // JoinThreads 함수를 실행하지 않거나 모종의 이유로 쓰레드가 종료되었을 때 소멸자에서 소켓 및 라이브러리 정리s
+    // JoinThreads 함수를 실행하지 않거나 모종의 이유로 쓰레드가 종료되었을 때 소멸자에서 소켓 및 라이브러리 정리
     if (INVALID_SOCKET != mSocket) {
         ::shutdown(mSocket, SD_BOTH);
         ::closesocket(mSocket);
+
+        JoinThreads();
 
         mSocket = INVALID_SOCKET;
         WSACleanup();
@@ -67,11 +69,17 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     }
 
     // connect 후 ID를 통지받을때까지 대기함
+    INT32 recvTimeOut = 1000; // ms
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
     int len = ::recv(mSocket, reinterpret_cast<char*>(&mId), 1, 0);
     if (len < 1) {
         ErrorHandle::WSAErrorMessageBox("ID recv failure");
         return false;
     }
+
+    // 받은 후에는 다시 타임아웃 옵션을 풀어준다.
+    recvTimeOut = INFINITE;
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
 
     std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
