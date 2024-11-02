@@ -23,6 +23,7 @@ public:
 
 	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window) override;
 	
+	void ProcessPackets();
 	void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
@@ -33,9 +34,13 @@ private:
 	void InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitCameraMode();
+	void InitNetwork(const fs::path& ipFilePath);
 
 	void UpdateShaderVariables();
 private:
+	// 11-02 김성준 추가 - 네트워크 매니저
+	std::unique_ptr<class NetworkManager> mNetworkManager{ nullptr };
+
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<class Canvas> mCanvas{ nullptr };
 
