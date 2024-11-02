@@ -30,9 +30,6 @@ GameScene::~GameScene()
 {
 }
 
-std::shared_ptr<UIModel> ui;
-std::shared_ptr<UIModel> healthBarBase;
-std::shared_ptr<UIModel> healthBar;
 
 /*
 넷겜플 클라 원하는 점
@@ -165,8 +162,6 @@ void GameScene::InitNetwork(const fs::path& ipFilePath)
 	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
 }
 
-static float yaw = 0.f;
-static float HP = 0.f;
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -289,7 +284,10 @@ void GameScene::ProcessPackets()
 	while (false == recvBuffer.Empty()) {
 		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
 			std::string clientName{ std::format("Client {}", chatPacket.id) };
-			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName, chatPacket.chatBuffer);
+			
+
+
+			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
 		}
 	}
 	recvBuffer.Clean();
@@ -356,6 +354,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->Render(commandList);
 
 	mChatWindow->Render();
+
+
 	mCanvas->Render(commandList);
 }
 

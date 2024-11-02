@@ -47,8 +47,11 @@ bool NetworkManager::InitializeNetwork()
     return true;
 }
 
+
 bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
 {
+    
+    
     std::ifstream ipFile{ ipFilePath };
     if (not ipFile) {
         ErrorHandle::CommonErrorMessageBox("ipFile loading failure", "ip file not exists");
