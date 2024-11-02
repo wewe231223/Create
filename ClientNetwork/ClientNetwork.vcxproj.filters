@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="pch">
+      <UniqueIdentifier>{58b272f2-e811-4568-a2be-f4d922232de3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{4dfa9cee-968f-47e9-b00a-be1578e5c8de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{7e431552-f86e-4b13-927d-b05a3d7c7879}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="core\NetworkManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Constants.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="core\RecvBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\SendBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="core\NetworkManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Constants.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="core\RecvBuffer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SendBuffer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol.h" />
+  </ItemGroup>
+</Project>
