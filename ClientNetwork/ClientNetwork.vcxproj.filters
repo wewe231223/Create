@@ -24,6 +24,7 @@
     <ClCompile Include="utils\Constants.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="SendBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -38,5 +39,6 @@
     <ClInclude Include="utils\Constants.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="SendBuffer.h" />
   </ItemGroup>
 </Project>
