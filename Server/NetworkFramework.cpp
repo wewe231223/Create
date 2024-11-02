@@ -51,5 +51,28 @@ void NetworkFramework::InitializeNetwork()
 
 void NetworkFramework::AcceptWorker()
 {
-	std::cout << "working..." << std::endl;
+	sockaddr_in clientAddr;
+	int addrLen{ sizeof(clientAddr) };
+
+	while (true) {
+		memset(&clientAddr, 0, sizeof(clientAddr));
+		SOCKET clientSocket = ::accept(mListenSocket, reinterpret_cast<sockaddr*>(&clientAddr), &addrLen);
+		if (INVALID_SOCKET == clientSocket) {
+			std::cerr << "client accept failure" << std::endl;
+			break;
+		}
+
+		// ip, port
+		char ipaddr[INET_ADDRSTRLEN]{ };
+		UINT16 port;
+		::inet_ntop(AF_INET, &clientAddr.sin_addr, ipaddr, INET_ADDRSTRLEN);
+		port = ::ntohs(clientAddr.sin_port);
+
+		/* TODO... ClientManager 작성 후 주석 제거할 것 */
+		//bool createSuccess = ClientManager::CreateManager(clientSocket);
+		//if (not createSuccess) {
+		//	::shutdown(clientSocket, SD_BOTH);
+		//	::closesocket(clientSocket);
+		//}
+	}
 }
