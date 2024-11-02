@@ -69,7 +69,7 @@ void Client::SendGameEnd(bool win)
 {
 }
 
-void Client::SendPlayerInfo(float hp, const  DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion rotationParent, const DirectX::SimpleMath::Quaternion rotationChild)
+void Client::SendPlayerInfo(float hp, const  DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion& rotationParent, const DirectX::SimpleMath::Quaternion& rotationChild)
 {
 }
 

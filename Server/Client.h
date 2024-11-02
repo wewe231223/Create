@@ -25,13 +25,13 @@ public:
 	void SendPlayerEntered();
 	void SendPlayerReady(BYTE color);
 	void SendGameEnd(bool win);
-	void SendPlayerInfo(float hp, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion rotationParent, const DirectX::SimpleMath::Quaternion rotationChild);
+	void SendPlayerInfo(float hp, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion& rotationParent, const DirectX::SimpleMath::Quaternion& rotationChild);
 	void SendBulletInfo(short bulletIndex, const DirectX::SimpleMath::Vector3& position);
 
 
 private:
 	SOCKET					mSocket;
-	char					mIp[16];
+	char					mIp[INET_ADDRSTRLEN];
 	unsigned short			mPort;
 	std::thread				mSendThread;
 	std::thread				mRecvThread;
