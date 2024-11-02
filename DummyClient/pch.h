@@ -1,10 +1,9 @@
 #pragma once
 
-#include <WinSock2.h>
-#include <WS2tcpip.h>
+#include "ClientNetwork/pch.h"
 
-#pragma comment(lib, "ws2_32.lib")
-
-#include <Windows.h>
-
-#include <iostream>
+#ifdef _DEBUG || DEBUG
+#pragma comment(lib, "out/debug/ClientNetwork.lib")
+#else
+#pragma comment(lib, "out/release/ClientNetwork.lib")
+#endif
