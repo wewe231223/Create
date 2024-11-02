@@ -56,11 +56,6 @@ private:
 	DirectX::XMFLOAT3X3 mScreenTransform{};
 };
 
-__interface IUIObject {
-	void Update() PURE;
-};
-
-
 class Canvas {
 public:
 	Canvas(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window);
@@ -68,14 +63,14 @@ public:
 public:
 	void Load();
 
-	std::shared_ptr<UIModel>& CreateUIModel(TextureIndex imageIndex);
-	std::shared_ptr<UIModel>& CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex);
+	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
 
-	std::shared_ptr<UIModel>& CreateUIModel(const std::string& imageName);
-	std::shared_ptr<UIModel>& CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+	std::shared_ptr<UIModel> CreateUIModel(const std::string& imageName);
+	std::shared_ptr<UIModel> CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
 
 	template<typename T, typename... Args> requires std::derived_from<T, IUIObject>
-	std::shared_ptr<T>& CreateUIObject(Args&&... args);
+	std::shared_ptr<T> CreateUIObject(Args&&... args);
 
 
 	// 여기서 각 IUIObject 의 Update 도 호출하고, UIModel 의 Render 도 호출한다. 
@@ -92,7 +87,10 @@ private:
 };
 
 template<typename T, typename ...Args> requires std::derived_from<T, IUIObject>
-inline std::shared_ptr<T>& Canvas::CreateUIObject(Args && ...args)
+inline std::shared_ptr<T> Canvas::CreateUIObject(Args && ...args)
 {
-	return mUIObjects.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+	auto res = std::make_shared<T>(this, std::forward<Args>(args)...);
+	mUIObjects.emplace_back(res);
+
+	return res;
 }

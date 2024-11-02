@@ -2,9 +2,9 @@
 #include "Game/ui/Slider.h"
 #include "Game/gameobject/UIObject.h"
 
-Slider::Slider(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex image, POINT LT, UINT width, UINT height) 
-	:	mBase(std::make_unique<UIModel>(uiRenderer, image)),
-		mSlider(std::make_unique<UIModel>(uiRenderer, image))
+Slider::Slider(class Canvas* canvas, const std::string& base, const std::string& bar, POINT LT, UINT width, UINT height)
+	:	mBase(canvas->CreateUIModel(base)),
+		mSlider(canvas->CreateUIModel(bar))
 {
 	mBase->GetUIRect().LTx = static_cast<float>(LT.x);
 	mBase->GetUIRect().LTy = static_cast<float>(LT.y);
@@ -22,4 +22,9 @@ Slider::Slider(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex image, PO
 
 Slider::~Slider()
 {
+}
+
+void Slider::Update()
+{
+	mSlider->GetUIRect().width = mUnit * mValue;
 }

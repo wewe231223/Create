@@ -10,7 +10,7 @@
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
 #include "Game/ui/Slider.h"
-
+#include "Game/ui/Slider.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -122,6 +122,15 @@ void GameScene::InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsC
 	mGameObjects.emplace_back(std::make_shared<TerrainObject>(mResourceManager, terrainImage, DirectX::SimpleMath::Vector3(5.0f, 1.0f, 5.0f)));
 }
 
+void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	mCanvas->Load();
+
+	mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
+
+
+}
+
 void GameScene::InitCameraMode()
 {
 	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
@@ -139,7 +148,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mWindow = window;
 	mResourceManager = std::make_shared<ResourceManager>(device);
 	mCanvas = std::make_shared<Canvas>(device, mResourceManager->GetLoadCommandList(), window);
-	mCanvas->Load();
+
+
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
@@ -150,6 +160,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitCamera(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
+	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
@@ -267,6 +278,7 @@ void GameScene::Update()
 		object->Update();
 	}
 
+	mCanvas->Update();
 	mTerrain->UpdateGameObjectAboveTerrain();
 	GameScene::UpdateShaderVariables();
 }

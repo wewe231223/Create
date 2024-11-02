@@ -168,38 +168,32 @@ void Canvas::Load()
 	for (const auto& entry : fs::directory_iterator(folderPath)) {
 		if (fs::is_regular_file(entry.status())) {
 			mUIRenderer->CreateUIImage(entry.path().stem().string(), entry.path());
-			Console.InfoLog("{}", entry.path().stem().string());
 		}
 	}
-
-
 }
 
-std::shared_ptr<UIModel>& Canvas::CreateUIModel(TextureIndex imageIndex)
+std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex)
 {
 	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, imageIndex));
 }
 
-std::shared_ptr<UIModel>& Canvas::CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
+std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
 {
 	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, imageIndex, imageWidthHeight,imageUnit));
 }
 
-std::shared_ptr<UIModel>& Canvas::CreateUIModel(const std::string& imageName)
+std::shared_ptr<UIModel> Canvas::CreateUIModel(const std::string& imageName)
 {
-	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage(imageName)));
+	 return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage(imageName)));
 }
 
-std::shared_ptr<UIModel>& Canvas::CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
+std::shared_ptr<UIModel> Canvas::CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
 {
 	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage(imageName), imageWidthHeight, imageUnit));
 }
 
 void Canvas::Update()
 {
-	for (auto& uiObject : mUIObjects) {
-		uiObject->Update();
-	}
 
 	for (auto& uiModel : mUIModels) {
 		uiModel->Render();

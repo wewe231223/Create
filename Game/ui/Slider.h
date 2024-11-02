@@ -1,14 +1,16 @@
 #pragma once 
 
-class Slider {
+class Slider : public IUIObject {
 public:
-	Slider(std::shared_ptr<I2DRenderable> uiRenderer,TextureIndex image,POINT LT,UINT width,UINT height);
+	Slider(class Canvas* canvas, const std::string& base, const std::string& bar, POINT LT, UINT width, UINT height);
 	~Slider();
-
+public:
+	virtual void Update() override;
+public:
+	float mValue{ 0.f };
 private:
-	std::unique_ptr<class UIModel> mBase{ nullptr };
-	std::unique_ptr<class UIModel> mSlider{ nullptr };
+	std::shared_ptr<class UIModel> mBase{ nullptr };
+	std::shared_ptr<class UIModel> mSlider{ nullptr };
 
 	float mUnit{ 0.f };
-	float mValue{ 0.f };
 };
