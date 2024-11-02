@@ -73,12 +73,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             Time.AdvanceTime();
 			Input.Update();
             gameScene->Update();
+            gameScene->Send();
             dxrenderer.StartRender();
             dxrenderer.Render();
             dxrenderer.EndRender();
         }
     }
-
     ::ShowCursor(true);
     return (int) msg.wParam;
 }

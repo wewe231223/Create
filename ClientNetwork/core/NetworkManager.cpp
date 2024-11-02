@@ -16,12 +16,12 @@ NetworkManager::~NetworkManager()
     // JoinThreads 함수를 실행하지 않거나 모종의 이유로 쓰레드가 종료되었을 때 소멸자에서 소켓 및 라이브러리 정리
     if (INVALID_SOCKET != mSocket) {
         // 잠든 쓰레드를 깨우기 위해 강제로 버퍼에 데이터를 집어넣고 깨움
-        char shutdown[20]{ "shutdown sendthread" };
-        mSendConditionVar.notify_all();
-        mSendBuffer->Write(shutdown, 20);
-
         ::shutdown(mSocket, SD_BOTH);
         ::closesocket(mSocket);
+
+        char shutdown[20]{ "shutdown sendthread" };
+        mSendBuffer->Write(shutdown, 20);
+        mSendConditionVar.notify_all();
 
         JoinThreads();
 
