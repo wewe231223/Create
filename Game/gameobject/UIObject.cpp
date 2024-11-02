@@ -1,18 +1,18 @@
 #include "pch.h"
 #include "Game/gameobject/UIObject.h"
 
-UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex)
+UIModel::UIModel(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex)
 	: mUIRenderer(uiRenderer), mImageIndex(imageIndex), mImageWidthHeight{ 0,0 }, mImageUnit{ 0,0 }, mSpritable{ false }
 {
 	mContext.ImageIndex = imageIndex;
-	UIObject::UpdateScreenTransform();
+	UIModel::UpdateScreenTransform();
 }
 
-UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit)
+UIModel::UIModel(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit)
 	: mUIRenderer(uiRenderer), mImageIndex(imageIndex), mImageWidthHeight(imageWidthHeight), mImageUnit(imageUnit), mSpritable{ true }
 {
 	mContext.ImageIndex = imageIndex;
-	UIObject::UpdateScreenTransform();
+	UIModel::UpdateScreenTransform();
 
 
 	mSpriteFrameInRow = imageWidthHeight.first / imageUnit.first;
@@ -22,18 +22,18 @@ UIObject::UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex image
 	mContext.UVTransform = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f };
 }
 
-UIObject::~UIObject()
+UIModel::~UIModel()
 {
 }
 
-void UIObject::ChangeImage(TextureIndex imageIndex)
+void UIModel::ChangeImage(TextureIndex imageIndex)
 {
 	mImageIndex = imageIndex;
 	mSpritable = false;
 	mContext.ImageIndex = imageIndex;
 }
 
-void UIObject::ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit)
+void UIModel::ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit)
 {
 	mImageIndex = imageIndex;
 	mContext.ImageIndex = imageIndex;
@@ -42,22 +42,22 @@ void UIObject::ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>&
 	mSpritable = true;
 }
 
-void UIObject::SetActiveState(bool state)
+void UIModel::SetActiveState(bool state)
 {
 	mActive = state;
 }
 
-void UIObject::ToggleActiveState()
+void UIModel::ToggleActiveState()
 {
 	mActive ? mActive = false : mActive = true;
 }
 
-void UIObject::Update()
+void UIModel::Update()
 {
 
 }
 
-void UIObject::Render()
+void UIModel::Render()
 {
 	if (mActive) {
 		mTransform._11 = mUIRect.width;
@@ -81,12 +81,12 @@ void UIObject::Render()
 	}
 }
 
-void UIObject::UpdateScreenTransform()
+void UIModel::UpdateScreenTransform()
 {
 	mScreenTransform = mUIRenderer->GetScreenTransform();
 }
 
-void UIObject::AdvanceSprite()
+void UIModel::AdvanceSprite()
 {
 	if (mSpritable) {
 		mSpriteCoord.first++;
@@ -100,7 +100,7 @@ void UIObject::AdvanceSprite()
 	}
 }
 
-DirectX::XMFLOAT3X3 UIObject::Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const
+DirectX::XMFLOAT3X3 UIModel::Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const
 {
 	// XMFLOAT3X3를 XMMATRIX로 변환
 	DirectX::XMMATRIX matrix1 = DirectX::XMLoadFloat3x3(&lhs);
@@ -116,7 +116,7 @@ DirectX::XMFLOAT3X3 UIObject::Multifly(const DirectX::XMFLOAT3X3& lhs, const Dir
 	return result;
 }
 
-DirectX::XMFLOAT3X3 UIObject::Transpose(const DirectX::XMFLOAT3X3& mat) const
+DirectX::XMFLOAT3X3 UIModel::Transpose(const DirectX::XMFLOAT3X3& mat) const
 {
 	DirectX::XMMATRIX matrix = DirectX::XMLoadFloat3x3(&mat);
 	DirectX::XMMATRIX matrix1 = DirectX::XMMatrixTranspose(matrix);

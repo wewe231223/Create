@@ -24,9 +24,9 @@ GameScene::~GameScene()
 {
 }
 
-std::shared_ptr<UIObject> ui;
-std::shared_ptr<UIObject> healthBarBase;
-std::shared_ptr<UIObject> healthBar;
+std::shared_ptr<UIModel> ui;
+std::shared_ptr<UIModel> healthBarBase;
+std::shared_ptr<UIModel> healthBar;
 
 /*
 넷겜플 클라 원하는 점
@@ -212,14 +212,14 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 
-	ui = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
+	ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	ui->GetUIRect().LTx = 0.f;
 	ui->GetUIRect().LTy = 0.f;
 	ui->GetUIRect().width = 1920.f;
 	ui->GetUIRect().height = 1080.f;
 
 
-	healthBarBase = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
+	healthBarBase = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
 	auto& uirect = healthBarBase->GetUIRect();
 	uirect.LTx = 10.f;
 	uirect.LTy = 10.f;
@@ -227,7 +227,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	uirect.height = 50.f;
 
 
-	healthBar = std::make_shared<UIObject>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
+	healthBar = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
 	auto& uirect1 = healthBar->GetUIRect();
 	uirect1.LTx = 10.f;
 	uirect1.LTy = 10.f;

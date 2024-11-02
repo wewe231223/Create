@@ -1,6 +1,6 @@
 #pragma once 
 
-class UIObject {
+class UIModel {
 public:
 	struct UIRect {
 		float LTx = 0.f;
@@ -9,9 +9,9 @@ public:
 		float height = 1.f;
 	};
 public:
-	UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex);
-	UIObject(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
-	~UIObject();
+	UIModel(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex);
+	UIModel(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+	~UIModel();
 
 public:
 	void ChangeImage(TextureIndex imageIndex);
