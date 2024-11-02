@@ -8,6 +8,10 @@ int main(int argc, char* argv[])
     n.InitializeNetwork();
     n.Connect("../Common/serverip.ini");
 
+    /* TODO ... Chat Logic 작성 */
+    while (true) {
+
+    }
 
     n.JoinThreads();
 }

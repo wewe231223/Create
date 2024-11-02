@@ -6,7 +6,8 @@
 #include "core/RecvBuffer.h"
 
 NetworkManager::NetworkManager()
-    : mSocket{ INVALID_SOCKET }
+    : mSocket{ INVALID_SOCKET },
+    mId{ NULLID }
 {
 }
 
@@ -75,6 +76,26 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     return true;
 }
 
+void NetworkManager::SetId(UINT8 id)
+{
+    mId = id;
+}
+
+UINT8 NetworkManager::GetId() const
+{
+    return mId;
+}
+
+std::mutex& NetworkManager::GetSendMutex()
+{
+    return mSendLock;
+}
+
+std::mutex& NetworkManager::GetRecvMutex()
+{
+    return mRecvLock;
+}
+
 void NetworkManager::SendWorker()
 {
     int sendResult = 0;
@@ -119,6 +140,18 @@ void NetworkManager::RecvWorker()
     }
 }
 
+void NetworkManager::SendChatPacket(std::string_view str)
+{
+    PacketChatting chat{ sizeof(PacketChatting), PT_CS_PacketChatting, mId, { } };
+    if (str.size() > CHAT_PACKET_MAX_SIZE) {
+        ErrorHandle::CommonErrorMessageBox("ChatPacketSize Over MaxSize", "...");
+        return;
+    }
+    memcpy(chat.chatBuffer, str.data(), str.size());
+
+    mSendBuffer->Write(&chat, chat.size);
+}
+
 void NetworkManager::JoinThreads()
 {
     if (mSendThread.joinable()) {
@@ -134,4 +167,10 @@ void NetworkManager::JoinThreads()
 
     mSocket = INVALID_SOCKET;
     WSACleanup();
+}
+
+void NetworkManager::ReadFromRecvBuffer(RecvBuffer& buffer)
+{
+    std::lock_guard guard{ mRecvLock };
+    buffer = std::move(*mRecvBuffer);
 }

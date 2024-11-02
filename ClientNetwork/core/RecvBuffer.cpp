@@ -13,6 +13,23 @@ RecvBuffer::~RecvBuffer()
 {
 }
 
+RecvBuffer::RecvBuffer(RecvBuffer&& other) noexcept
+    : mReadCursor{ other.mReadCursor },
+    mWriteCursor{ other.mWriteCursor },
+    mBufferSize{ BUFFER_SIZE * BUFFER_COUNT }
+{
+    memcpy(mBuffer.data(), other.mBuffer.data(), other.mWriteCursor);
+    other.Clean();
+}
+
+void RecvBuffer::operator=(RecvBuffer&& other) noexcept
+{
+    mReadCursor = other.mReadCursor;
+    mWriteCursor= other.mWriteCursor;
+    memcpy(mBuffer.data(), other.mBuffer.data(), other.mWriteCursor);
+    other.Clean();
+}
+
 constexpr size_t RecvBuffer::GetBufferSize() const
 {
     return BUFFER_SIZE * BUFFER_COUNT;

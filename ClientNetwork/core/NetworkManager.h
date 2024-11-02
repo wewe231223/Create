@@ -13,10 +13,25 @@ public:
     bool InitializeNetwork();
     bool Connect(const std::filesystem::path& ipFilePath);
 
+    void SetId(UINT8 id);
+    UINT8 GetId() const;
+
+    std::mutex& GetSendMutex();
+    std::mutex& GetRecvMutex();
+
     void SendWorker();
     void RecvWorker();
 
+    /// <summary>
+    /// 이 함수에서 내부 SendBuffer에 대한 어떠한 보호도 해주지 않는다.
+    /// Thread Safe하게 사용하기 위해서 해당 함수를 호출하기 전에 lock을 걸어줄것
+    /// </summary>
+    /// <param name="str"></param>
+    void SendChatPacket(std::string_view str);
+
     void JoinThreads();
+
+    void ReadFromRecvBuffer(class RecvBuffer& buffer);
 
 private:
     SOCKET mSocket;
@@ -30,4 +45,6 @@ private:
 
     std::unique_ptr<class SendBuffer> mSendBuffer;
     std::unique_ptr<class RecvBuffer> mRecvBuffer;
+
+    UINT8 mId;
 };

@@ -24,7 +24,12 @@
     <ClCompile Include="utils\Constants.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="SendBuffer.cpp" />
+    <ClCompile Include="core\RecvBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\SendBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -39,6 +44,12 @@
     <ClInclude Include="utils\Constants.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="SendBuffer.h" />
+    <ClInclude Include="core\RecvBuffer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SendBuffer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol.h" />
   </ItemGroup>
 </Project>

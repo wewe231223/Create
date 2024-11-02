@@ -8,6 +8,9 @@ public:
     RecvBuffer();
     ~RecvBuffer();
 
+    RecvBuffer(RecvBuffer&& other) noexcept;
+    void operator=(RecvBuffer&& other) noexcept;
+
 public:
     constexpr size_t GetBufferSize() const;
 
