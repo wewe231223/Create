@@ -15,6 +15,11 @@ NetworkManager::~NetworkManager()
 {
     // JoinThreads 함수를 실행하지 않거나 모종의 이유로 쓰레드가 종료되었을 때 소멸자에서 소켓 및 라이브러리 정리
     if (INVALID_SOCKET != mSocket) {
+        // 잠든 쓰레드를 깨우기 위해 강제로 버퍼에 데이터를 집어넣고 깨움
+        char shutdown[20]{ "shutdown sendthread" };
+        mSendConditionVar.notify_all();
+        mSendBuffer->Write(shutdown, 20);
+
         ::shutdown(mSocket, SD_BOTH);
         ::closesocket(mSocket);
 
@@ -68,18 +73,18 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
         return false;
     }
 
-    // connect 후 ID를 통지받을때까지 대기함
-    INT32 recvTimeOut = 1000; // ms
-    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    //// connect 후 ID를 통지받을때까지 대기함
+    //INT32 recvTimeOut = 1000; // ms
+    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
     int len = ::recv(mSocket, reinterpret_cast<char*>(&mId), 1, 0);
     if (len < 1) {
         ErrorHandle::WSAErrorMessageBox("ID recv failure");
         return false;
     }
 
-    // 받은 후에는 다시 타임아웃 옵션을 풀어준다.
-    recvTimeOut = INFINITE;
-    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    //// 받은 후에는 다시 타임아웃 옵션을 풀어준다.
+    //recvTimeOut = INFINITE;
+    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
 
     std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
@@ -136,6 +141,10 @@ void NetworkManager::SendWorker()
             dataSize -= SEND_AT_ONCE;
         }
 
+        if (sendResult < 0) {
+            break;
+        }
+
         mSendBuffer->Clean();
     }
 }
@@ -147,7 +156,9 @@ void NetworkManager::RecvWorker()
     while (true) {
         len = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
         if (len < 0) {
+#ifdef NETWORK_DEBUG
             ErrorHandle::WSAErrorMessageBox("recv function failure");
+#endif
             break;
         }
         else if (len == 0) {
@@ -185,12 +196,6 @@ void NetworkManager::JoinThreads()
     if (mRecvThread.joinable()) {
         mRecvThread.join();
     }
-
-    ::shutdown(mSocket, SD_BOTH);
-    ::closesocket(mSocket);
-
-    mSocket = INVALID_SOCKET;
-    WSACleanup();
 }
 
 void NetworkManager::ReadFromRecvBuffer(RecvBuffer& buffer)
