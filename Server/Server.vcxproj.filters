@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NetworkFramework.h">
@@ -25,6 +28,9 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
