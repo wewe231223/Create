@@ -47,8 +47,11 @@ bool NetworkManager::InitializeNetwork()
     return true;
 }
 
+
 bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
 {
+    
+    
     std::ifstream ipFile{ ipFilePath };
     if (not ipFile) {
         ErrorHandle::CommonErrorMessageBox("ipFile loading failure", "ip file not exists");
@@ -178,7 +181,7 @@ void NetworkManager::RecvWorker()
 void NetworkManager::SendChatPacket(std::string_view str)
 {
     PacketChatting chat{ sizeof(PacketChatting), PT_CS_PacketChatting, mId, { } };
-    if (str.size() > CHAT_PACKET_MAX_SIZE) {
+    if (str.size() > CHAT_PACKET_MAX_SIZE - 2) {
         ErrorHandle::CommonErrorMessageBox("ChatPacketSize Over MaxSize", "...");
         return;
     }

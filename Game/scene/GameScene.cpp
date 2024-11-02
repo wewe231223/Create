@@ -13,6 +13,7 @@
 
 // 11-02 김성준 추가 - 네트워크 관련 헤더들
 #include "ClientNetwork/core/NetworkManager.h"
+#include "ClientNetwork/core/RecvBuffer.h"
 
 
 GameScene::GameScene()
@@ -29,9 +30,6 @@ GameScene::~GameScene()
 {
 }
 
-std::shared_ptr<UIModel> ui;
-std::shared_ptr<UIModel> healthBarBase;
-std::shared_ptr<UIModel> healthBar;
 
 /*
 넷겜플 클라 원하는 점
@@ -279,8 +277,19 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets()
 {
+	RecvBuffer recvBuffer;
+	mNetworkManager->ReadFromRecvBuffer(recvBuffer);
+	PacketChatting chatPacket;
+	while (false == recvBuffer.Empty()) {
+		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
+			std::string clientName{ std::format("Client {}", chatPacket.id) };
+			
 
-	//mChatWindow->UpdateChatLog()
+
+			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
+		}
+	}
+	recvBuffer.Clean();
 }
 
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
@@ -356,6 +365,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->Render(commandList);
 
 	mChatWindow->Render();
+
+
 	mCanvas->Render(commandList);
 }
 
