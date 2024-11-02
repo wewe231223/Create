@@ -1,66 +1,77 @@
 #pragma once
 
+#pragma once
+
 namespace ErrorHandle {
-    inline void WSAErrorMessageBox(const char* caption = nullptr)
+    inline void WSAErrorMessageBox(std::string_view caption, const std::source_location& sl = std::source_location::current())
     {
         auto errorCode = WSAGetLastError();
 
-        LPVOID lpMsgBuf;
+        LPVOID msg;
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
             NULL,
             errorCode,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            reinterpret_cast<char*>(&lpMsgBuf),
+            reinterpret_cast<char*>(&msg),
             0,
             NULL
         );
 
-        MessageBoxA(nullptr, reinterpret_cast<char*>(lpMsgBuf), caption, MB_ICONERROR);
+        auto str = std::format("Error Occurred!\n\nFILE: {}\n\nFUNCTION: {}\n\nLINE: {}\n\nError: ",
+            sl.file_name(), sl.function_name(), sl.line(), reinterpret_cast<char*>(msg));
 
-        LocalFree(lpMsgBuf);
+        MessageBoxA(nullptr, str.c_str(), caption.data(), MB_ICONERROR);
+
+        LocalFree(msg);
     }
 
-    inline void WSAErrorMessageBoxExit(const char* caption = nullptr)
+    inline void WSAErrorMessageBoxExit(std::string_view caption, const std::source_location& sl = std::source_location::current())
     {
         auto errorCode = WSAGetLastError();
 
-        LPVOID lpMsgBuf;
+        LPVOID msg;
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
             NULL,
             errorCode,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            reinterpret_cast<char*>(&lpMsgBuf),
+            reinterpret_cast<char*>(&msg),
             0,
             NULL
         );
 
-        MessageBoxA(nullptr, reinterpret_cast<char*>(lpMsgBuf), caption, MB_ICONERROR);
+        auto str = std::format("Error Occurred!\n\nFILE: {}\n\nFUNCTION: {}\n\nLINE: {}\n\nError: ",
+            sl.file_name(), sl.function_name(), sl.line(), reinterpret_cast<char*>(msg));
 
-        LocalFree(lpMsgBuf);
+        MessageBoxA(nullptr, str.c_str(), caption.data(), MB_ICONERROR);
+
+        LocalFree(msg);
 
         exit(EXIT_FAILURE);
     }
 
-    inline void WSAErrorMessageBoxAbort(const char* caption = nullptr)
+    inline void WSAErrorMessageBoxAbort(std::string_view caption, const std::source_location& sl = std::source_location::current())
     {
         auto errorCode = WSAGetLastError();
 
-        LPVOID lpMsgBuf;
+        LPVOID msg;
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
             NULL,
             errorCode,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            reinterpret_cast<char*>(&lpMsgBuf),
+            reinterpret_cast<char*>(&msg),
             0,
             NULL
         );
 
-        MessageBoxA(nullptr, reinterpret_cast<char*>(lpMsgBuf), caption, MB_ICONERROR);
+        auto str = std::format("Error Occurred!\n\nFILE: {}\n\nFUNCTION: {}\n\nLINE: {}\n\nError: ",
+            sl.file_name(), sl.function_name(), sl.line(), reinterpret_cast<char*>(msg));
 
-        LocalFree(lpMsgBuf);
+        MessageBoxA(nullptr, str.c_str(), caption.data(), MB_ICONERROR);
+
+        LocalFree(msg);
 
         abort();
     }
