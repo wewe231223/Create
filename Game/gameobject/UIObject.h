@@ -17,7 +17,6 @@ public:
 	void ChangeImage(TextureIndex imageIndex);
 	void ChangeImage(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight,const std::pair<UINT, UINT>& imageUnit);
 
-	
 	void SetActiveState(bool state);
 	void ToggleActiveState();
 
@@ -29,8 +28,6 @@ public:
 	UIRect& GetUIRect() { return mUIRect; }
 
 	void AdvanceSprite();
-
-
 private:
 	DirectX::XMFLOAT3X3 Multifly(const DirectX::XMFLOAT3X3& lhs, const DirectX::XMFLOAT3X3& rhs) const;
 	DirectX::XMFLOAT3X3 Transpose(const DirectX::XMFLOAT3X3& mat) const;
@@ -60,3 +57,18 @@ private:
 };
 
 
+class Canvas {
+public:
+	Canvas(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window);
+	~Canvas();
+public:
+	void Load();
+
+	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex);
+	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+
+private:
+	std::shared_ptr<I2DRenderable> mUIRenderer{ nullptr };
+
+	std::vector<std::shared_ptr<UIModel>> mUIModels{};
+};

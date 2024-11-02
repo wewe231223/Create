@@ -1,11 +1,11 @@
 #pragma once 
-
-
 enum PlayerColor {
 	PlayerColor_R,
 	PlayerColor_G,
 	PlayerColor_B,
 };
+
+class Slider;
 
 class SCRIPT_Player : public Script {
 public:
@@ -16,7 +16,10 @@ public:
 	virtual void Update() override;
 	virtual void OnEnable() override;
 	virtual void OnDisable() override;
+public:
+	std::shared_ptr<class Slider> mSlider{ nullptr };
 private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };
+	float mHP{ 100.f };
 };

@@ -1,6 +1,15 @@
 #include "pch.h"
 #include "Game/gameobject/UIObject.h"
 
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								UI Model								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
 UIModel::UIModel(std::shared_ptr<I2DRenderable> uiRenderer, TextureIndex imageIndex)
 	: mUIRenderer(uiRenderer), mImageIndex(imageIndex), mImageWidthHeight{ 0,0 }, mImageUnit{ 0,0 }, mSpritable{ false }
 {
@@ -125,4 +134,42 @@ DirectX::XMFLOAT3X3 UIModel::Transpose(const DirectX::XMFLOAT3X3& mat) const
 	DirectX::XMStoreFloat3x3(&result, matrix1);
 	
 	return result;
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								UI Canvas								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
+
+
+Canvas::Canvas(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window)
+{
+}
+
+Canvas::~Canvas()
+{
+}
+
+void Canvas::Load()
+{
+}
+
+std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex)
+{
+	return std::shared_ptr<UIModel>();
+}
+
+std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
+{
+	return std::shared_ptr<UIModel>();
 }

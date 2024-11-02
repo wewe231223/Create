@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Game/scripts/SCRIPT_Player.h"
-
+#include "Game/ui/Slider.h"
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)

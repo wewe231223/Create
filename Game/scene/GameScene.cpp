@@ -9,6 +9,8 @@
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
+#include "Game/ui/Slider.h"
+
 
 GameScene::GameScene()
 	: Scene()
@@ -107,8 +109,7 @@ void GameScene::InitSkyBox(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCo
 		mResourceManager->GetMaterial("SkyBoxBottomMaterial"),
 		mResourceManager->GetMaterial("SkyBoxLeftMaterial"),
 		mResourceManager->GetMaterial("SkyBoxRightMaterial")
-		}
-	// 정리... 
+		} 
 	));
 
 }
@@ -148,7 +149,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitCamera(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
-
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
@@ -204,9 +204,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	}
 
-
-
-	
 
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
