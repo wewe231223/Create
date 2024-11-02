@@ -66,6 +66,15 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
         return false;
     }
 
+    // connect 후 ID를 통지받을때까지 대기함
+    int len = ::recv(mSocket, reinterpret_cast<char*>(&mId), 1, 0);
+    if (len < 1) {
+        ErrorHandle::WSAErrorMessageBox("ID recv failure");
+        return false;
+    }
+
+    std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
+
     // 버퍼 생성 및 쓰레드 생성
     mRecvBuffer = std::make_unique<RecvBuffer>();
     mSendBuffer = std::make_unique<SendBuffer>();
@@ -101,13 +110,16 @@ void NetworkManager::SendWorker()
     int sendResult = 0;
     while (true) {
         std::unique_lock lock{ mSendLock };
-        mSendConditionVar.wait(lock, [=]() { return mSendBuffer->Empty(); });
+        mSendConditionVar.wait(lock, [=]() { return false == mSendBuffer->Empty(); });
 
         /* TODO send 기능 작성 */
         int dataSize = mSendBuffer->DataSize();
+#ifdef NETWORK_DEBUG
+        std::cout << "SendThread WakeUp DataSize is : " << dataSize << std::endl;
+#endif
         while (true) {
             if (dataSize < SEND_AT_ONCE) {
-                sendResult = ::send(mSocket, mSendBuffer->Buffer(), SEND_AT_ONCE, 0);
+                sendResult = ::send(mSocket, mSendBuffer->Buffer(), dataSize, 0);
                 dataSize = 0;
                 break;
             }
@@ -133,6 +145,10 @@ void NetworkManager::RecvWorker()
         else if (len == 0) {
             break;
         }
+
+#ifdef NETWORK_DEBUG
+        std::cout << std::format("Recv Len: {}\n", len);
+#endif
 
         /* TODO recv 기능 작성 */
         std::lock_guard lock{ mRecvLock };
@@ -173,4 +189,9 @@ void NetworkManager::ReadFromRecvBuffer(RecvBuffer& buffer)
 {
     std::lock_guard guard{ mRecvLock };
     buffer = std::move(*mRecvBuffer);
+}
+
+void NetworkManager::WakeSendThread()
+{
+    mSendConditionVar.notify_one();
 }

@@ -16,11 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루�
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyClient", "DummyClient\DummyClient.vcxproj", "{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{301609FB-4B8D-407A-9FB3-CA059117EBE7} = {301609FB-4B8D-407A-9FB3-CA059117EBE7}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientNetwork", "ClientNetwork\ClientNetwork.vcxproj", "{301609FB-4B8D-407A-9FB3-CA059117EBE7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF} = {6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

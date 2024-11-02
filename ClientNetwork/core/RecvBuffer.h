@@ -38,6 +38,8 @@ public:
     /// <returns>현재 버퍼에 쓰여진 데이터의 크기를 반환</returns>
     INT32 DataSize() const;
 
+    bool Empty() const;
+
 private:
     INT32 mReadCursor;
     INT32 mWriteCursor;

@@ -32,6 +32,7 @@ public:
     void JoinThreads();
 
     void ReadFromRecvBuffer(class RecvBuffer& buffer);
+    void WakeSendThread();
 
 private:
     SOCKET mSocket;
