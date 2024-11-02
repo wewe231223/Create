@@ -16,7 +16,8 @@ public:
 	virtual void OnEnable() override;
 	virtual void OnDisable() override;
 public:
-	static std::shared_ptr<Slider> mSlider;
+	static std::shared_ptr<Slider> HPBar;
+	static std::shared_ptr<Slider> CoolTimeBar;
 private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };

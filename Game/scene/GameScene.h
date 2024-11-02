@@ -41,6 +41,8 @@ private:
 
 	std::shared_ptr<Window> mWindow{ nullptr };
 
+	std::unique_ptr<class ChatWindow> mChatWindow{ nullptr };
+
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
 	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
@@ -48,7 +50,6 @@ private:
 	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
-
 
 	// 총알 오브젝트 만들기... 
 	ObjectPool<Bullet, 64> mBullets{};

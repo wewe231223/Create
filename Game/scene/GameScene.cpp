@@ -9,6 +9,7 @@
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
+#include "Game/subwindow/ChatWindow.h"
 
 
 GameScene::GameScene()
@@ -126,8 +127,11 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	mCanvas->Load();
 
 	auto slider = mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
-	SCRIPT_Player::mSlider = slider;	
+	SCRIPT_Player::HPBar = slider;	
 
+
+
+	mChatWindow = std::make_unique<ChatWindow>();
 }
 
 void GameScene::InitCameraMode()
@@ -219,7 +223,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
-
 	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	//ui->GetUIRect().LTx = 0.f;
 	//ui->GetUIRect().LTy = 0.f;
@@ -279,6 +282,7 @@ void GameScene::Update()
 
 	mCanvas->Update();
 	mTerrain->UpdateGameObjectAboveTerrain();
+
 	GameScene::UpdateShaderVariables();
 }
 
@@ -314,6 +318,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
 
+	mChatWindow->Render();
 	mCanvas->Render(commandList);
 }
 

@@ -34,6 +34,9 @@
     <Filter Include="Game\scripts">
       <UniqueIdentifier>{eb829d45-2c67-4b72-8e83-f96c1ac14f94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\subwindow">
+      <UniqueIdentifier>{145da48a-615f-4e1f-9683-9075a7f7d412}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -108,6 +111,9 @@
     <ClInclude Include="Game\utils\Utility.h">
       <Filter>Game\utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\subwindow\ChatWindow.h">
+      <Filter>Game\subwindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -175,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="Game\utils\Utility.cpp">
       <Filter>Game\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\subwindow\ChatWindow.cpp">
+      <Filter>Game\subwindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

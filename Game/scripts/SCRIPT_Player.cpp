@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Game/scripts/SCRIPT_Player.h"
 
-std::shared_ptr<Slider> SCRIPT_Player::mSlider = nullptr;
+std::shared_ptr<Slider> SCRIPT_Player::HPBar = nullptr;
+std::shared_ptr<Slider> SCRIPT_Player::CoolTimeBar = nullptr;
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -34,8 +35,6 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	mOwner->GetTransform().SetPosition({ 10.f,100.f,10.f });
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 
-	mHP = 0.0f;
-	Time.AddEvent(300ms, [this]() { mHP += 1.f; return true; });
 
 }
 
@@ -69,7 +68,7 @@ void SCRIPT_Player::Update()
 	}
 
 
-	mSlider->mValue = mHP;
+	HPBar->mValue = mHP;
 }
 
 void SCRIPT_Player::OnEnable()
