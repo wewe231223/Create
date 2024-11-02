@@ -2,6 +2,8 @@
 #include "core/NetworkManager.h"
 #include "utils/Utils.h"
 #include "utils/Constants.h"
+#include "core/SendBuffer.h"
+#include "core/RecvBuffer.h"
 
 NetworkManager::NetworkManager()
     : mSocket{ INVALID_SOCKET }
@@ -63,8 +65,9 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
         return false;
     }
 
-    mSendThread = std::thread{ [=]() { } };
-    mRecvThread = std::thread{ [=]() { } };
+    // 버퍼 생성 및 쓰레드 생성
+    mRecvBuffer = std::make_unique<RecvBuffer>();
+    mSendBuffer = std::make_unique<SendBuffer>();
 
     return true;
 }
@@ -73,9 +76,12 @@ void NetworkManager::SendWorker()
 {
     while (true) {
         std::unique_lock lock{ mSendLock };
-        mSendConditionVar.wait(lock, [=]() { return false; });
+        mSendConditionVar.wait(lock, [=]() { return mSendBuffer->Empty(); });
 
         /* TODO send 기능 작성 */
+
+        mSendBuffer->Clean();
+        mSendBuffer->Buffer();
     }
 }
 
@@ -94,6 +100,8 @@ void NetworkManager::RecvWorker()
         }
 
         /* TODO recv 기능 작성 */
+        std::lock_guard lock{ mRecvLock };
+        mRecvBuffer->Write(buffer, len);
     }
 }
 

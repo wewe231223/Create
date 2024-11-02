@@ -3,6 +3,7 @@
 class NetworkManager {
     static constexpr size_t BUFFER_SIZE = std::numeric_limits<unsigned short>::max();
     static constexpr size_t RECV_AT_ONCE = 1024;
+    static constexpr size_t SEND_AT_ONCE = 512;
 
 public:
     NetworkManager();
@@ -27,6 +28,6 @@ private:
     std::thread mSendThread;
     std::thread mRecvThread;
 
-    std::array<char, BUFFER_SIZE> mRecvBuffer;
-    std::array<char, BUFFER_SIZE> mSendBuffer;
+    std::unique_ptr<class SendBuffer> mSendBuffer;
+    std::unique_ptr<class RecvBuffer> mRecvBuffer;
 };
