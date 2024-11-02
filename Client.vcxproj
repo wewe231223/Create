@@ -159,7 +159,6 @@
     <ClInclude Include="Game\scene\CameraMode.h" />
     <ClInclude Include="Game\scene\GameScene.h" />
     <ClInclude Include="Game\scripts\SCRIPT_Player.h" />
-    <ClInclude Include="Game\ui\Slider.h" />
     <ClInclude Include="Game\utils\Enumerate.h" />
     <ClInclude Include="Game\utils\Input.h" />
     <ClInclude Include="Game\utils\Interface.h" />
@@ -168,6 +167,7 @@
     <ClInclude Include="Game\utils\ObjectPool.h" />
     <ClInclude Include="Game\utils\RandomEngine.h" />
     <ClInclude Include="Game\utils\Transform.h" />
+    <ClInclude Include="Game\utils\Utility.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -185,7 +185,6 @@
     <ClCompile Include="Game\scene\CameraMode.cpp" />
     <ClCompile Include="Game\scene\GameScene.cpp" />
     <ClCompile Include="Game\scripts\SCRIPT_Player.cpp" />
-    <ClCompile Include="Game\ui\Slider.cpp" />
     <ClCompile Include="Game\utils\Enumerate.cpp" />
     <ClCompile Include="Game\utils\Input.cpp" />
     <ClCompile Include="Game\utils\Interface.cpp" />
@@ -194,6 +193,7 @@
     <ClCompile Include="Game\utils\ObjectPool.cpp" />
     <ClCompile Include="Game\utils\RandomEngine.cpp" />
     <ClCompile Include="Game\utils\Transform.cpp" />
+    <ClCompile Include="Game\utils\Utility.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

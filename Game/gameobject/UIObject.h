@@ -1,4 +1,11 @@
 #pragma once 
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								UI Model								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
 
 class UIModel {
 public:
@@ -56,6 +63,16 @@ private:
 	DirectX::XMFLOAT3X3 mScreenTransform{};
 };
 
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								UI Canvas								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+
 class Canvas {
 public:
 	Canvas(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window);
@@ -79,7 +96,6 @@ public:
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
-
 	// Update 를 위해서
 	std::vector<std::shared_ptr<IUIObject>> mUIObjects{};
 	// Render 를 위해서
@@ -94,3 +110,29 @@ inline std::shared_ptr<T> Canvas::CreateUIObject(Args && ...args)
 
 	return res;
 }
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								Slider									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class Slider : public IUIObject {
+public:
+	Slider(Canvas* canvas, const std::string& base, const std::string& bar, POINT LT, UINT width, UINT height);
+	~Slider();
+public:
+	virtual void Update() override;
+public:
+	float mValue{ 0.f };
+private:
+	std::shared_ptr<UIModel> mBase{ nullptr };
+	std::shared_ptr<UIModel> mSlider{ nullptr };
+
+	float mUnit{ 0.f };
+};

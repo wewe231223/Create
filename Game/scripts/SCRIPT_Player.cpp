@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game/scripts/SCRIPT_Player.h"
-#include "Game/ui/Slider.h"
+
+std::shared_ptr<Slider> SCRIPT_Player::mSlider = nullptr;
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -33,6 +34,8 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	mOwner->GetTransform().SetPosition({ 10.f,100.f,10.f });
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 
+	mHP = 0.0f;
+	Time.AddEvent(300ms, [this]() { mHP += 1.f; return true; });
 
 }
 
@@ -65,6 +68,8 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
 	}
 
+
+	mSlider->mValue = mHP;
 }
 
 void SCRIPT_Player::OnEnable()

@@ -9,11 +9,13 @@
 #include <memory.h>
 #include <tchar.h>
 
+// C++ 런타임 헤더 파일입니다. 
 #include <random>
 #include <numeric>
 #include <bitset>
 #include <concepts>
 #include <ranges>
+#include <typeindex>
 
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
@@ -44,4 +46,5 @@
 #include "Game/utils/Input.h"
 #include "Game/utils/Transform.h"
 #include "Game/scene/Camera.h"
+#include "Game/gameobject/UIObject.h"
 #include "Game/gameobject/GameObject.h"

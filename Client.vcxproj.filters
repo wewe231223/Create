@@ -34,9 +34,6 @@
     <Filter Include="Game\scripts">
       <UniqueIdentifier>{eb829d45-2c67-4b72-8e83-f96c1ac14f94}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\ui">
-      <UniqueIdentifier>{2851e1fc-09f1-4de7-a6aa-ba5b9f8fc1fe}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -108,8 +105,8 @@
     <ClInclude Include="Game\scripts\SCRIPT_Player.h">
       <Filter>Game\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="Game\ui\Slider.h">
-      <Filter>Game\ui</Filter>
+    <ClInclude Include="Game\utils\Utility.h">
+      <Filter>Game\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,8 +173,8 @@
     <ClCompile Include="Game\scripts\SCRIPT_Player.cpp">
       <Filter>Game\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="Game\ui\Slider.cpp">
-      <Filter>Game\ui</Filter>
+    <ClCompile Include="Game\utils\Utility.cpp">
+      <Filter>Game\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

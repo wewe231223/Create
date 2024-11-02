@@ -9,8 +9,7 @@
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
-#include "Game/ui/Slider.h"
-#include "Game/ui/Slider.h"
+
 
 GameScene::GameScene()
 	: Scene()
@@ -126,8 +125,8 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 {
 	mCanvas->Load();
 
-	mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
-
+	auto slider = mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
+	SCRIPT_Player::mSlider = slider;	
 
 }
 
@@ -295,7 +294,7 @@ void GameScene::UpdateShaderVariables()
 	for (auto& bullet : mBullets) {
 		bullet->UpdateShaderVariables();
 	}
-
+	
 	mMainCamera->Update();
 }
 

@@ -5,7 +5,6 @@ enum PlayerColor {
 	PlayerColor_B,
 };
 
-class Slider;
 
 class SCRIPT_Player : public Script {
 public:
@@ -17,7 +16,7 @@ public:
 	virtual void OnEnable() override;
 	virtual void OnDisable() override;
 public:
-	std::shared_ptr<class Slider> mSlider{ nullptr };
+	static std::shared_ptr<Slider> mSlider;
 private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };
