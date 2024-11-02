@@ -242,6 +242,7 @@ Slider::~Slider()
 {
 }
 
+
 void Slider::Update()
 {
 	mValue = std::clamp(mValue, 0.f, 100.f);

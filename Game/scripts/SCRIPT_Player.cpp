@@ -67,8 +67,7 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
 	}
 
-
-	HPBar->mValue = mHP;
+	
 }
 
 void SCRIPT_Player::OnEnable()
