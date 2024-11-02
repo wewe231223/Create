@@ -25,6 +25,7 @@ public:
 	
 	void ProcessPackets();
 	void Update();
+	void Send();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
 	void LoadTextures();

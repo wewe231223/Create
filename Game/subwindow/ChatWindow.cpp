@@ -9,6 +9,11 @@ ChatWindow::~ChatWindow()
 {
 }
 
+std::vector<std::string>& ChatWindow::GetInputBuf()
+{
+	return mInputChat;
+}
+
 
 void ChatWindow::Render()
 {
@@ -23,17 +28,19 @@ void ChatWindow::Render()
 	ImGui::EndChild();
 
 
-	static char buf[256] = "";
+	static char buf[100] = "";
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 
 	if (ImGui::InputText("##ChatInput", buf, IM_ARRAYSIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
-		if (strlen(buf) > 0) {
+		size_t len = strlen(buf);
+		if (len > 0 and len < 98) {
 			
 			ChatWindow::UpdateChatLog("{:^10} : {}","Me",buf);
 
+			mInputChat.emplace_back(buf);
+
 			ZeroMemory(buf, sizeof(buf));
 			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
-
 		}
 	}
 

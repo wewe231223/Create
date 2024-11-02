@@ -162,7 +162,6 @@ void GameScene::InitNetwork(const fs::path& ipFilePath)
 	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
 }
 
-
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 
@@ -319,6 +318,18 @@ void GameScene::Update()
 	mTerrain->UpdateGameObjectAboveTerrain();
 
 	GameScene::UpdateShaderVariables();
+}
+
+void GameScene::Send()
+{
+	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
+
+	std::lock_guard lock{ mNetworkManager->GetSendMutex() };
+	for (const auto& str : inputBuf) {
+		mNetworkManager->SendChatPacket(str);
+	}
+	inputBuf.clear();
+	mNetworkManager->WakeSendThread();
 }
 
 void GameScene::UpdateShaderVariables()
