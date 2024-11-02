@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClientNetwork/pch.h"
+#include "../ClientNetwork/pch.h"
 
 #ifdef _DEBUG || DEBUG
 #pragma comment(lib, "out/debug/ClientNetwork.lib")

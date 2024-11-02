@@ -1,12 +1,17 @@
 #pragma once
 
 class NetworkManager {
+    static constexpr size_t BUFFER_SIZE = std::numeric_limits<unsigned short>::max();
+
 public:
     NetworkManager();
     ~NetworkManager();
 
 public:
-    bool InitializeNetwork(const std::filesystem::path& ipFilePath);
+    bool InitializeNetwork();
+    bool Connect(const std::filesystem::path& ipFilePath);
+
+    void JoinThreads();
 
 private:
     SOCKET mSocket;

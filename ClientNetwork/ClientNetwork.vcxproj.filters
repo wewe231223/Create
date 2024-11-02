@@ -7,6 +7,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{4dfa9cee-968f-47e9-b00a-be1578e5c8de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{7e431552-f86e-4b13-927d-b05a3d7c7879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -15,6 +18,12 @@
     <ClCompile Include="core\NetworkManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="utils\Utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Constants.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -22,6 +31,12 @@
     </ClInclude>
     <ClInclude Include="core\NetworkManager.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Constants.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

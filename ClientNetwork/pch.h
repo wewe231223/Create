@@ -7,6 +7,9 @@
 
 #include <Windows.h>
 
+#undef min
+#undef max
+
 #include <thread>
 #include <mutex>
 #include <condition_variable>
