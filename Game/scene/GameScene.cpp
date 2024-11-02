@@ -11,10 +11,11 @@
 #include "Game/scripts/SCRIPT_Player.h"
 #include "Game/subwindow/ChatWindow.h"
 
+#ifndef STAND_ALONE
 // 11-02 김성준 추가 - 네트워크 관련 헤더들
 #include "ClientNetwork/core/NetworkManager.h"
 #include "ClientNetwork/core/RecvBuffer.h"
-
+#endif
 
 GameScene::GameScene()
 	: Scene()
@@ -145,6 +146,7 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode->Enter();
 }
 
+#ifndef STAND_ALONE
 // 11-02 김성준 추가 - 네트워크 매니저 초기화 작업
 void GameScene::InitNetwork(const fs::path& ipFilePath)
 {
@@ -161,6 +163,7 @@ void GameScene::InitNetwork(const fs::path& ipFilePath)
 
 	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
 }
+#endif
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -181,7 +184,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
+#ifndef STAND_ALONE
 	GameScene::InitNetwork("Common/serverip.ini");
+#endif
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
@@ -274,6 +279,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
+#ifndef STAND_ALONE
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets()
 {
@@ -291,7 +297,7 @@ void GameScene::ProcessPackets()
 	}
 	recvBuffer.Clean();
 }
-
+#endif
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
@@ -319,7 +325,7 @@ void GameScene::Update()
 
 	GameScene::UpdateShaderVariables();
 }
-
+#ifndef STAND_ALONE
 void GameScene::Send()
 {
 	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
@@ -331,6 +337,7 @@ void GameScene::Send()
 	inputBuf.clear();
 	mNetworkManager->WakeSendThread();
 }
+#endif
 
 void GameScene::UpdateShaderVariables()
 {
