@@ -17,12 +17,15 @@
 #include <ranges>
 #include <typeindex>
 
+#define STAND_ALONE
+
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
 #else 
 #pragma comment(lib,"Out/release/Renderer.lib")
 #endif 
 
+#ifndef STAND_ALONE
 // 11-02 김성준 추가 - 클라이언트의 네트워크 작업을 위한 헤더 및 라이브러리 추가
 #include "ClientNetwork/pch.h"
 
@@ -30,6 +33,7 @@
 #pragma comment(lib, "Out/debug/ClientNetwork.lib")
 #else
 #pragma comment(lib, "Out/release/ClientNetwork.lib")
+#endif
 #endif
 
 #include "Renderer/external/Include/DirectXTK12/Keyboard.h"
