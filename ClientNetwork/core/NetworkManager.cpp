@@ -69,19 +69,33 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     mRecvBuffer = std::make_unique<RecvBuffer>();
     mSendBuffer = std::make_unique<SendBuffer>();
 
+    mSendThread = std::thread{ [=]() { SendWorker(); } };
+    mRecvThread = std::thread{ [=]() { RecvWorker(); } };
+
     return true;
 }
 
 void NetworkManager::SendWorker()
 {
+    int sendResult = 0;
     while (true) {
         std::unique_lock lock{ mSendLock };
         mSendConditionVar.wait(lock, [=]() { return mSendBuffer->Empty(); });
 
         /* TODO send 기능 작성 */
+        int dataSize = mSendBuffer->DataSize();
+        while (true) {
+            if (dataSize < SEND_AT_ONCE) {
+                sendResult = ::send(mSocket, mSendBuffer->Buffer(), SEND_AT_ONCE, 0);
+                dataSize = 0;
+                break;
+            }
+
+            sendResult = ::send(mSocket, mSendBuffer->Buffer(), SEND_AT_ONCE, 0);
+            dataSize -= SEND_AT_ONCE;
+        }
 
         mSendBuffer->Clean();
-        mSendBuffer->Buffer();
     }
 }
 

@@ -7,5 +7,7 @@ int main(int argc, char* argv[])
     NetworkManager n;
     n.InitializeNetwork();
     n.Connect("../Common/serverip.ini");
+
+
     n.JoinThreads();
 }
