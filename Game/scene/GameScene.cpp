@@ -11,6 +11,9 @@
 #include "Game/scripts/SCRIPT_Player.h"
 #include "Game/subwindow/ChatWindow.h"
 
+// 11-02 김성준 추가 - 네트워크 관련 헤더들
+#include "ClientNetwork/core/NetworkManager.h"
+
 
 GameScene::GameScene()
 	: Scene()
@@ -143,11 +146,30 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
+
+// 11-02 김성준 추가 - 네트워크 매니저 초기화 작업
+void GameScene::InitNetwork(const fs::path& ipFilePath)
+{
+	mNetworkManager = std::make_unique<NetworkManager>();
+	if (not mNetworkManager->InitializeNetwork()) {
+		mNetworkManager.reset(nullptr);
+		return;
+	}
+
+	if (not mNetworkManager->Connect(ipFilePath)) {
+		mNetworkManager.reset(nullptr);
+		return;
+	}
+
+	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
+}
+
 static float yaw = 0.f;
 static float HP = 0.f;
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
+
 	mWindow = window;
 	mResourceManager = std::make_shared<ResourceManager>(device);
 	mCanvas = std::make_shared<Canvas>(device, mResourceManager->GetLoadCommandList(), window);
@@ -164,6 +186,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
+	GameScene::InitNetwork("Common/serverip.ini");
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
@@ -256,7 +279,12 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
+// 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
+void GameScene::ProcessPackets()
+{
 
+	//mChatWindow->UpdateChatLog()
+}
 
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
