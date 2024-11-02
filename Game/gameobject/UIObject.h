@@ -56,6 +56,10 @@ private:
 	DirectX::XMFLOAT3X3 mScreenTransform{};
 };
 
+__interface IUIObject {
+	void Update() PURE;
+};
+
 
 class Canvas {
 public:
@@ -64,11 +68,31 @@ public:
 public:
 	void Load();
 
-	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex);
-	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+	std::shared_ptr<UIModel>& CreateUIModel(TextureIndex imageIndex);
+	std::shared_ptr<UIModel>& CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
 
+	std::shared_ptr<UIModel>& CreateUIModel(const std::string& imageName);
+	std::shared_ptr<UIModel>& CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
+
+	template<typename T, typename... Args> requires std::derived_from<T, IUIObject>
+	std::shared_ptr<T>& CreateUIObject(Args&&... args);
+
+
+	// 여기서 각 IUIObject 의 Update 도 호출하고, UIModel 의 Render 도 호출한다. 
+	void Update();
+	// 여기서는 UIRenderer 의 Render 를 호출해야 한다. 
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
-	std::shared_ptr<I2DRenderable> mUIRenderer{ nullptr };
+	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
 
+	// Update 를 위해서
+	std::vector<std::shared_ptr<IUIObject>> mUIObjects{};
+	// Render 를 위해서
 	std::vector<std::shared_ptr<UIModel>> mUIModels{};
 };
+
+template<typename T, typename ...Args> requires std::derived_from<T, IUIObject>
+inline std::shared_ptr<T>& Canvas::CreateUIObject(Args && ...args)
+{
+	return mUIObjects.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+}

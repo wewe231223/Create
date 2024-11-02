@@ -36,7 +36,7 @@ private:
 	void UpdateShaderVariables();
 private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
-	std::shared_ptr<UIRenderer> mUIRenderer{ nullptr };
+	std::shared_ptr<class Canvas> mCanvas{ nullptr };
 
 	std::shared_ptr<Window> mWindow{ nullptr };
 

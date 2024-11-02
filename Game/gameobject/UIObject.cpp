@@ -154,6 +154,7 @@ DirectX::XMFLOAT3X3 UIModel::Transpose(const DirectX::XMFLOAT3X3& mat) const
 
 Canvas::Canvas(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<class Window> window)
 {
+	mUIRenderer = std::make_shared<UIRenderer>(device, commandList, window);
 }
 
 Canvas::~Canvas()
@@ -162,14 +163,50 @@ Canvas::~Canvas()
 
 void Canvas::Load()
 {
+	const fs::path folderPath = "./Resources/Images/";
+
+	for (const auto& entry : fs::directory_iterator(folderPath)) {
+		if (fs::is_regular_file(entry.status())) {
+			mUIRenderer->CreateUIImage(entry.path().stem().string(), entry.path());
+			Console.InfoLog("{}", entry.path().stem().string());
+		}
+	}
+
+
 }
 
-std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex)
+std::shared_ptr<UIModel>& Canvas::CreateUIModel(TextureIndex imageIndex)
 {
-	return std::shared_ptr<UIModel>();
+	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, imageIndex));
 }
 
-std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
+std::shared_ptr<UIModel>& Canvas::CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
 {
-	return std::shared_ptr<UIModel>();
+	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, imageIndex, imageWidthHeight,imageUnit));
+}
+
+std::shared_ptr<UIModel>& Canvas::CreateUIModel(const std::string& imageName)
+{
+	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage(imageName)));
+}
+
+std::shared_ptr<UIModel>& Canvas::CreateUIModel(const std::string& imageName, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit)
+{
+	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage(imageName), imageWidthHeight, imageUnit));
+}
+
+void Canvas::Update()
+{
+	for (auto& uiObject : mUIObjects) {
+		uiObject->Update();
+	}
+
+	for (auto& uiModel : mUIModels) {
+		uiModel->Render();
+	}
+}
+
+void Canvas::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	mUIRenderer->Render(commandList);
 }

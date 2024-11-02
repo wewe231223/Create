@@ -64,9 +64,9 @@ void GameScene::LoadTextures()
 
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
 
-	mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
-	mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
-	mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
+	//mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
+	//mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
+	//mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
 
 
 }
@@ -138,7 +138,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 {
 	mWindow = window;
 	mResourceManager = std::make_shared<ResourceManager>(device);
-	mUIRenderer = std::make_shared<UIRenderer>(device, mResourceManager->GetLoadCommandList(), window);
+	mCanvas = std::make_shared<Canvas>(device, mResourceManager->GetLoadCommandList(), window);
+	mCanvas->Load();
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
@@ -209,33 +210,33 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 
-	ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
-	ui->GetUIRect().LTx = 0.f;
-	ui->GetUIRect().LTy = 0.f;
-	ui->GetUIRect().width = 1920.f;
-	ui->GetUIRect().height = 1080.f;
+	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
+	//ui->GetUIRect().LTx = 0.f;
+	//ui->GetUIRect().LTy = 0.f;
+	//ui->GetUIRect().width = 1920.f;
+	//ui->GetUIRect().height = 1080.f;
 
 
-	healthBarBase = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
-	auto& uirect = healthBarBase->GetUIRect();
-	uirect.LTx = 10.f;
-	uirect.LTy = 10.f;
-	uirect.width = 500.f;
-	uirect.height = 50.f;
+	//healthBarBase = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
+	//auto& uirect = healthBarBase->GetUIRect();
+	//uirect.LTx = 10.f;
+	//uirect.LTy = 10.f;
+	//uirect.width = 500.f;
+	//uirect.height = 50.f;
 
 
-	healthBar = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
-	auto& uirect1 = healthBar->GetUIRect();
-	uirect1.LTx = 10.f;
-	uirect1.LTy = 10.f;
-	uirect1.width = HP * 5.f;
-	uirect1.height = 50.f;
+	//healthBar = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
+	//auto& uirect1 = healthBar->GetUIRect();
+	//uirect1.LTx = 10.f;
+	//uirect1.LTy = 10.f;
+	//uirect1.width = HP * 5.f;
+	//uirect1.height = 50.f;
 
 
 
-	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	ui->SetActiveState(false);
+	//Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
+	//Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
+	//ui->SetActiveState(false);
 
 
 	GameScene::InitCameraMode();
@@ -261,11 +262,6 @@ void GameScene::Update()
 		}
 	}
 
-	if (HP < 100.f) {
-		HP += Time.GetSmoothDeltaTime<float>() * 5.f;
-		auto& uirect = healthBar->GetUIRect();
-		uirect.width = HP * 5.f;
-	}
 
 	for (auto& object : mGameObjects) {
 		object->Update();
@@ -307,11 +303,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
 
-
-	ui->Render();
-	healthBarBase->Render();
-	healthBar->Render();
-	mUIRenderer->Render(commandList);
+	mCanvas->Render(commandList);
 }
 
 
