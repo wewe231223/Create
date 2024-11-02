@@ -69,6 +69,34 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     return true;
 }
 
+void NetworkManager::SendWorker()
+{
+    while (true) {
+        std::unique_lock lock{ mSendLock };
+        mSendConditionVar.wait(lock, [=]() { return false; });
+
+        /* TODO send 기능 작성 */
+    }
+}
+
+void NetworkManager::RecvWorker()
+{
+    int len = 0;
+    char buffer[RECV_AT_ONCE];
+    while (true) {
+        len = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
+        if (len < 0) {
+            ErrorHandle::WSAErrorMessageBox("recv function failure");
+            break;
+        }
+        else if (len == 0) {
+            break;
+        }
+
+        /* TODO recv 기능 작성 */
+    }
+}
+
 void NetworkManager::JoinThreads()
 {
     if (mSendThread.joinable()) {

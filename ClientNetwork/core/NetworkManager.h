@@ -2,6 +2,7 @@
 
 class NetworkManager {
     static constexpr size_t BUFFER_SIZE = std::numeric_limits<unsigned short>::max();
+    static constexpr size_t RECV_AT_ONCE = 1024;
 
 public:
     NetworkManager();
@@ -10,6 +11,9 @@ public:
 public:
     bool InitializeNetwork();
     bool Connect(const std::filesystem::path& ipFilePath);
+
+    void SendWorker();
+    void RecvWorker();
 
     void JoinThreads();
 
@@ -22,4 +26,7 @@ private:
 
     std::thread mSendThread;
     std::thread mRecvThread;
+
+    std::array<char, BUFFER_SIZE> mRecvBuffer;
+    std::array<char, BUFFER_SIZE> mSendBuffer;
 };
