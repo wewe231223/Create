@@ -178,7 +178,7 @@ void NetworkManager::RecvWorker()
 void NetworkManager::SendChatPacket(std::string_view str)
 {
     PacketChatting chat{ sizeof(PacketChatting), PT_CS_PacketChatting, mId, { } };
-    if (str.size() > CHAT_PACKET_MAX_SIZE) {
+    if (str.size() > CHAT_PACKET_MAX_SIZE - 2) {
         ErrorHandle::CommonErrorMessageBox("ChatPacketSize Over MaxSize", "...");
         return;
     }
