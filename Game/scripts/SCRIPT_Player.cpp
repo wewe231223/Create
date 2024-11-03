@@ -37,12 +37,10 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 	
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Space, sign, [this]() {
-		//if (CoolTimeBar->mValue < 99.f) return;
-
-		auto bullet = BulletPool->Acquire();
-		bullet->SetActive(true);
-		CoolTimeBar->mValue = 0.f;
-
+			if (CoolTimeBar->mValue < 99.f) return;
+			auto bullet = BulletPool->Acquire();
+			bullet->SetActive(true);
+			CoolTimeBar->mValue = 0.f;
 		}
 	);
 }

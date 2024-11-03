@@ -243,8 +243,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
-<<<<<<< Updated upstream
-=======
+
 #ifndef STAND_ALONE
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets()
@@ -265,7 +264,7 @@ void GameScene::ProcessPackets()
 	recvBuffer.Clean();
 }
 #endif
->>>>>>> Stashed changes
+
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
@@ -330,66 +329,4 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 
 
-
-<<<<<<< Updated upstream
-
-
-
-Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
-	: GameObject(model, materials)
-{
-}
-
-Bullet::~Bullet()
-{
-}
-
-void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
-{
-	mDirection = dir;
-	mTimeOut = 5.f;
-}
- 
-bool Bullet::Validate() const 
-{
-	return mTimeOut > std::numeric_limits<float>::epsilon();
-}
-
-void Bullet::UpdateShaderVariables()
-{
-	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
-	mTimeOut -= Time.GetDeltaTime<float>();
-	GameObject::UpdateShaderVariables();
-}
-=======
-//
-//
-//
-//Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
-//	: GameObject(model, materials)
-//{
-//}
-//
-//Bullet::~Bullet()
-//{
-//}
-//
-//void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
-//{
-//	mDirection = dir;
-//	mTimeOut = 5.f;
-//}
-//
-//bool Bullet::Validate() const 
-//{
-//	return mTimeOut > std::numeric_limits<float>::epsilon();
-//}
-//
-//void Bullet::UpdateShaderVariables()
-//{
-//	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
-//	mTimeOut -= Time.GetDeltaTime<float>();
-//	GameObject::UpdateShaderVariables();
-//}
->>>>>>> Stashed changes
 
