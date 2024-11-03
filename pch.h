@@ -8,6 +8,9 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+
 
 // C++ 런타임 헤더 파일입니다. 
 #include <random>
@@ -19,22 +22,12 @@
 
 #define STAND_ALONE
 
+
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")
 #else 
 #pragma comment(lib,"Out/release/Renderer.lib")
 #endif 
-
-#ifndef STAND_ALONE
-// 11-02 김성준 추가 - 클라이언트의 네트워크 작업을 위한 헤더 및 라이브러리 추가
-#include "ClientNetwork/pch.h"
-
-#ifdef _DEBUG
-#pragma comment(lib, "Out/debug/ClientNetwork.lib")
-#else
-#pragma comment(lib, "Out/release/ClientNetwork.lib")
-#endif
-#endif
 
 #include "Renderer/external/Include/DirectXTK12/Keyboard.h"
 #include "Renderer/external/Include/DirectXTK12/Mouse.h"
@@ -59,5 +52,7 @@
 #include "Game/utils/Input.h"
 #include "Game/utils/Transform.h"
 #include "Game/scene/Camera.h"
+
 #include "Game/gameobject/UIObject.h"
 #include "Game/gameobject/GameObject.h"
+

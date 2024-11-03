@@ -5,6 +5,7 @@
 #include "Client.h"
 #include "Game/utils/Input.h"
 #include "Game/scene/GameScene.h"
+#include "Game/network/NetworkFramework.h"
 
 #define MAX_LOADSTRING 100
 
@@ -48,14 +49,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     DxRenderer dxrenderer{ window };
 
 	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
-
 	dxrenderer.LoadScene(gameScene);
+
+    gNetworkFramework.InitializeNetwork();
+	gNetworkFramework.Connect("ip.txt");
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};
     
-
-
     int endCallbackSign = NrSampler.Sample();
 
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Escape, endCallbackSign, []() {PostQuitMessage(0); });

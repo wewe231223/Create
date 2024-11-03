@@ -37,6 +37,9 @@
     <Filter Include="Game\subwindow">
       <UniqueIdentifier>{145da48a-615f-4e1f-9683-9075a7f7d412}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{c424c8da-ce52-4592-b18d-8757662679bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -114,6 +117,12 @@
     <ClInclude Include="Game\subwindow\ChatWindow.h">
       <Filter>Game\subwindow</Filter>
     </ClInclude>
+    <ClInclude Include="Game\network\NetworkFramework.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\network\ErrorHandler.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -184,6 +193,12 @@
     </ClCompile>
     <ClCompile Include="Game\subwindow\ChatWindow.cpp">
       <Filter>Game\subwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\network\NetworkFramework.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\network\ErrorHandler.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
