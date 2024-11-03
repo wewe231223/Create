@@ -40,13 +40,11 @@ void SCRIPT_Bullet::Update()
 
 void SCRIPT_Bullet::OnEnable()
 {
-	Console.InfoLog("Bullet Enabled");
 	mOwner->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
 	mDirection = mPlayer->GetChild(1)->GetTransform().GetForward();
 }
 
 void SCRIPT_Bullet::OnDisable()
 {
-	Console.InfoLog("Bullet Disabled");
 	mTimeOut = 5.f;
 }

@@ -59,6 +59,7 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
 
+	HPBar->mValue = mHP;
 	CoolTimeBar->mValue += Time.GetSmoothDeltaTime<float>() * 100.f;
 
 	if (mIsMovingForward) {

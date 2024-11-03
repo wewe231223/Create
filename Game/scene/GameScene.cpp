@@ -106,6 +106,9 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	auto slider2 = mCanvas->CreateUIObject<Slider>("HealthBarBase", "CoolDownBar", POINT{ 10, 70 }, 300, 20);
 	SCRIPT_Player::CoolTimeBar = slider2;
 
+	auto menu = mCanvas->CreateUIObject<Menu>("Menu",1920,1080);
+
+
 	mChatWindow = std::make_unique<ChatWindow>();
 }
 
