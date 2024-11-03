@@ -283,6 +283,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets()
 {
+	if (nullptr == mNetworkManager) {
+		return;
+	}
+
 	RecvBuffer recvBuffer;
 	mNetworkManager->ReadFromRecvBuffer(recvBuffer);
 	PacketChatting chatPacket;
@@ -328,6 +332,10 @@ void GameScene::Update()
 #ifndef STAND_ALONE
 void GameScene::Send()
 {
+	if (nullptr == mNetworkManager) {
+		return;
+	}
+
 	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
 
 	std::lock_guard lock{ mNetworkManager->GetSendMutex() };

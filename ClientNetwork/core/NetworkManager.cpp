@@ -19,9 +19,11 @@ NetworkManager::~NetworkManager()
         ::shutdown(mSocket, SD_BOTH);
         ::closesocket(mSocket);
 
-        char shutdown[20]{ "shutdown sendthread" };
-        mSendBuffer->Write(shutdown, 20);
-        mSendConditionVar.notify_all();
+        if (mSendBuffer) {
+            char shutdown[20]{ "shutdown sendthread" };
+            mSendBuffer->Write(shutdown, 20);
+            mSendConditionVar.notify_all();
+        }
 
         JoinThreads();
 
@@ -77,17 +79,17 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     }
 
     //// connect 후 ID를 통지받을때까지 대기함
-    //INT32 recvTimeOut = 1000; // ms
-    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    UINT32 recvTimeOut = 1000; // ms
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
     int len = ::recv(mSocket, reinterpret_cast<char*>(&mId), 1, 0);
     if (len < 1) {
         ErrorHandle::WSAErrorMessageBox("ID recv failure");
         return false;
     }
 
-    //// 받은 후에는 다시 타임아웃 옵션을 풀어준다.
-    //recvTimeOut = INFINITE;
-    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    // 받은 후에는 다시 타임아웃 옵션을 풀어준다.
+    recvTimeOut = INFINITE;
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
 
     std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
