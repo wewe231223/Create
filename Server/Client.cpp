@@ -25,12 +25,12 @@ BYTE Client::GetId()
 
 std::mutex& Client::GetRecvMutex()
 {
-	// TODO: 여기에 return 문을 삽입합니다.
+	return mRecvLock;
 }
 
 std::mutex& Client::GetSendMutex()
 {
-	// TODO: 여기에 return 문을 삽입합니다.
+	return mSendLock;
 }
 
 void Client::WakeSendThread()
