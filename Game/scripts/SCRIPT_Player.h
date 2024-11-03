@@ -23,4 +23,4 @@ private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };
 	float mHP{ 100.f };
-};
+}; 

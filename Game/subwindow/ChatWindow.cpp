@@ -20,6 +20,7 @@ void ChatWindow::Render()
 		ImGui::TextWrapped(msg.c_str());
 	}
 
+	ImGui::SetScrollHereY(1.0f);
 	ImGui::EndChild();
 
 
@@ -33,10 +34,6 @@ void ChatWindow::Render()
 			ZeroMemory(buf, sizeof(buf));
 			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
 		}
-	}
-
-	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-		ImGui::SetScrollHereY(1.0f);
 	}
 
 	ImGui::End();
