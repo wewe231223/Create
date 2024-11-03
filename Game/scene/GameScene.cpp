@@ -339,7 +339,7 @@ void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
 	mDirection = dir;
 	mTimeOut = 5.f;
 }
-
+ 
 bool Bullet::Validate() const 
 {
 	return mTimeOut > std::numeric_limits<float>::epsilon();
