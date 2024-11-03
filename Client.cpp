@@ -5,6 +5,8 @@
 #include "Client.h"
 #include "Game/utils/Input.h"
 #include "Game/scene/GameScene.h"
+#include "Game/scene/TitleScene.h"
+#include "Game/scene/SceneManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -46,16 +48,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	window->ChangeWindowStyle(EWindowStyle::Windowed);
     Input.Initialize(window);
     DxRenderer dxrenderer{ window };
-
-	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
-
-	dxrenderer.LoadScene(gameScene);
-
+    
+	SceneManager::GetInstance().Initialize(&dxrenderer);
+    SceneManager::GetInstance().ChangeScene<TitleScene>();
+	SceneManager::GetInstance().ChangeScene<GameScene>();
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};
     
-
-
     int endCallbackSign = NrSampler.Sample();
 
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Escape, endCallbackSign, []() {PostQuitMessage(0); });
@@ -75,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifndef STAND_ALONE
             gameScene->ProcessPackets();
 #endif
-            gameScene->Update();
+            SceneManager::GetInstance().Update();
 #ifndef STAND_ALONE
             gameScene->Send();
 #endif
