@@ -17,6 +17,13 @@ GameObject::GameObject(std::shared_ptr<I3DRenderable> model)
 	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
 }
 
+GameObject::GameObject(std::shared_ptr<I3DRenderable> model, const MaterialIndex& material)
+	: mModel(model)
+{
+	GameObject::SetMaterial(material);
+	mTransform.SetOrientedBoundingBox(mModel->GetBoundingBox());
+}
+
 GameObject::GameObject(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
 	: mModel(model) 
 {
@@ -28,12 +35,31 @@ GameObject::~GameObject()
 {
 }
 
+GameObject::operator bool() const
+{
+	return GameObject::GetActiveState();
+}
+
+bool GameObject::GetActiveState() const
+{
+	return mState;
+}
+
 void GameObject::SetMaterial(const std::vector<MaterialIndex>& materials)
 {
 	std::copy(materials.begin(), materials.end(), std::back_inserter(mMaterials));
 	for (auto& child : mChildObjects) {
 		child->SetMaterial(materials);
 	}
+}
+
+void GameObject::SetMaterial(const MaterialIndex& material)
+{
+	mMaterials.emplace_back(material);
+	for (auto& child : mChildObjects) {
+		child->SetMaterial(material);
+	}
+
 }
 
 void GameObject::SetChild(GameObject& child)
@@ -108,6 +134,20 @@ std::shared_ptr<GameObject> GameObject::Clone()
 	return ptr;
 }
 
+void GameObject::SetActive(bool state)
+{
+	if (mState == state) return;
+	mState = state;
+	if (mScript) {
+		if (state) {
+			mScript->OnEnable();
+		}
+		else {
+			mScript->OnDisable();
+		}
+	}
+}
+
 void GameObject::Awake()
 {
 	if (mScript) {
@@ -117,15 +157,17 @@ void GameObject::Awake()
 
 void GameObject::Update()
 {
+	if (!mState) return;
+
 	if (mScript) {
 		mScript->Update();
 	}
 }
 
-
-
 void GameObject::UpdateShaderVariables()
 {
+	if (!mState) return;
+
 	mTransform.CreateWorldMatrix();
 	mContext.World = mTransform.GetWorldMatrix().Transpose();
 
@@ -136,6 +178,8 @@ void GameObject::UpdateShaderVariables()
 
 void GameObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	if (!mState) return;
+
 	mModel->WriteContext(std::addressof(mContext), std::span(mMaterials) );
 
 	for (auto& child : mChildObjects) {
