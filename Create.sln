@@ -15,13 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루�
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyClient", "DummyClient\DummyClient.vcxproj", "{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7} = {301609FB-4B8D-407A-9FB3-CA059117EBE7}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientNetwork", "ClientNetwork\ClientNetwork.vcxproj", "{301609FB-4B8D-407A-9FB3-CA059117EBE7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -46,22 +39,6 @@ Global
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x64.Build.0 = Release|x64
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x86.ActiveCfg = Release|Win32
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x86.Build.0 = Release|Win32
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Debug|x64.ActiveCfg = Debug|x64
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Debug|x64.Build.0 = Debug|x64
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Debug|x86.ActiveCfg = Debug|Win32
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Debug|x86.Build.0 = Debug|Win32
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Release|x64.ActiveCfg = Release|x64
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Release|x64.Build.0 = Release|x64
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Release|x86.ActiveCfg = Release|Win32
-		{6CD6DF06-16C0-4AF3-B1D4-1B44CCC4D3AF}.Release|x86.Build.0 = Release|Win32
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Debug|x64.ActiveCfg = Debug|x64
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Debug|x64.Build.0 = Debug|x64
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Debug|x86.ActiveCfg = Debug|Win32
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Debug|x86.Build.0 = Debug|Win32
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Release|x64.ActiveCfg = Release|x64
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Release|x64.Build.0 = Release|x64
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Release|x86.ActiveCfg = Release|Win32
-		{301609FB-4B8D-407A-9FB3-CA059117EBE7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
