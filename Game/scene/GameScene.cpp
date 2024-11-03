@@ -9,9 +9,13 @@
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
-#include "Game/scripts/SCRIPT_Bullet.h"
 #include "Game/subwindow/ChatWindow.h"
-#include "Game/utils/RandomEngine.h"
+
+#ifndef STAND_ALONE
+// 11-02 김성준 추가 - 네트워크 관련 헤더들
+#include "ClientNetwork/core/NetworkManager.h"
+#include "ClientNetwork/core/RecvBuffer.h"
+#endif
 
 GameScene::GameScene()
 	: Scene()
@@ -26,6 +30,24 @@ GameScene::GameScene(const std::string& name)
 GameScene::~GameScene()
 {
 }
+
+
+/*
+넷겜플 클라 원하는 점
+
+빌보드가 아닌 나무 (이건 가능하면, 불가능하거나 힘들면 구현 X)
+텍스트 출력 (콘솔X, 이거도 가능하면)
+
+HP바
+플레이어를 따라다니는 빌보드
+
+충돌처리 ( 어떤 충돌처리? )
+
+터지는 효과 (파티클이든 아니든 상관 X, 이것도 가능하면)
+실외 지형 경계가 안보이도록 (자연스럽게 보이게)
+
+
+*/
 
 void GameScene::LoadTextures()
 {
@@ -43,6 +65,12 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
 
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
+
+	//mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
+	//mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
+	//mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
+
+
 }
 
 void GameScene::CreateMaterials()
@@ -103,15 +131,10 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	auto slider = mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
 	SCRIPT_Player::HPBar = slider;	
 
-	auto slider2 = mCanvas->CreateUIObject<Slider>("HealthBarBase", "CoolDownBar", POINT{ 10, 70 }, 300, 20);
-	SCRIPT_Player::CoolTimeBar = slider2;
-
-	auto menu = mCanvas->CreateUIObject<Menu>("Menu",1920,1080);
 
 
 	mChatWindow = std::make_unique<ChatWindow>();
 }
-
 
 void GameScene::InitCameraMode()
 {
@@ -122,6 +145,25 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
+
+#ifndef STAND_ALONE
+// 11-02 김성준 추가 - 네트워크 매니저 초기화 작업
+void GameScene::InitNetwork(const fs::path& ipFilePath)
+{
+	mNetworkManager = std::make_unique<NetworkManager>();
+	if (not mNetworkManager->InitializeNetwork()) {
+		mNetworkManager.reset(nullptr);
+		return;
+	}
+
+	if (not mNetworkManager->Connect(ipFilePath)) {
+		mNetworkManager.reset(nullptr);
+		return;
+	}
+
+	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
+}
+#endif
 
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
@@ -142,30 +184,16 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
+#ifndef STAND_ALONE
+	GameScene::InitNetwork("Common/serverip.ini");
+#endif
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
-	auto bulletInit = [](std::shared_ptr<I3DRenderable> model,MaterialIndex mat) {
-		auto bullet = std::make_shared<GameObject>(model, mat);
-		bullet->SetActive(false);
-		bullet->MakeScript<SCRIPT_Bullet>();
-		return bullet;
-		};
-
-	mBulletPool.Initialize(bulletInit,mResourceManager->GetModel("Cube"), mResourceManager->GetMaterial("BulletMaterial"));
-	SCRIPT_Player::BulletPool = &mBulletPool;
-	SCRIPT_Bullet::mTerrainCollider = mTerrain;
-
-
 	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
-	SCRIPT_Bullet::mPlayer = mPlayer;
-
 	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
-
-
-
 
 	auto originCliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
 
@@ -177,6 +205,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
 		mTerrain->OnTerrain(cliff);
 		mGameObjects.emplace_back(cliff);
+
 	}
 
 
@@ -213,19 +242,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	}
 
-	std::uniform_real_distribution<float> dist(0.f, 1270.f);
-	for (auto i = 0; i < 100; ++i) {
-		auto enemy = mPlayer->Clone();
-		enemy->SetMaterial(mResourceManager->GetMaterial("TankMaterialRed"));
-		enemy->GetTransform().Scale({ 0.1f,0.1f,0.1f });
-		enemy->GetTransform().SetPosition({ dist(MersenneTwister),0.f,dist(MersenneTwister) });
-		mTerrain->MakeObjectOnTerrain(enemy);
-		mGameObjects.emplace_back(enemy);
-		mEnemies.emplace_back(enemy);
-	}
 
-
-
+	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
+	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
 
 	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	//ui->GetUIRect().LTx = 0.f;
@@ -260,7 +279,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
-
 #ifndef STAND_ALONE
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets()
@@ -275,13 +293,15 @@ void GameScene::ProcessPackets()
 	while (false == recvBuffer.Empty()) {
 		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
 			std::string clientName{ std::format("Client {}", chatPacket.id) };
+			
+
+
 			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
 		}
 	}
 	recvBuffer.Clean();
 }
 #endif
-
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
@@ -290,21 +310,18 @@ void GameScene::ProcessPackets()
 
 void GameScene::Update()
 {
-	for (auto& object : mGameObjects) {
-		object->Update();
+	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
+		auto bullet = mBullets.Acquire();
+		if (bullet != nullptr) {
+			bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
+			bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+			bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
+		}
 	}
 
 
-	for (auto& bullet : mBulletPool) {
-		bullet->Update();
-		
-		for (auto& e : mEnemies) {
-			if (e->GetTransform().GetBB().Intersects(bullet->GetTransform().GetBB())) {
-				e->SetActive(false);
-			}
-		
-		}
-
+	for (auto& object : mGameObjects) {
+		object->Update();
 	}
 
 	mCanvas->Update();
@@ -312,6 +329,23 @@ void GameScene::Update()
 
 	GameScene::UpdateShaderVariables();
 }
+#ifndef STAND_ALONE
+void GameScene::Send()
+{
+	if (nullptr == mNetworkManager) {
+		return;
+	}
+
+	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
+
+	std::lock_guard lock{ mNetworkManager->GetSendMutex() };
+	for (const auto& str : inputBuf) {
+		mNetworkManager->SendChatPacket(str);
+	}
+	inputBuf.clear();
+	mNetworkManager->WakeSendThread();
+}
+#endif
 
 void GameScene::UpdateShaderVariables()
 {
@@ -321,8 +355,8 @@ void GameScene::UpdateShaderVariables()
 		object->UpdateShaderVariables();
 	}
 
-	mBulletPool.Update();
-	for (auto& bullet : mBulletPool) {
+	mBullets.Update();
+	for (auto& bullet : mBullets) {
 		bullet->UpdateShaderVariables();
 	}
 	
@@ -335,7 +369,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		object->Render(mMainCamera, commandList);
 	}
 
-	for (auto& bullet : mBulletPool) {
+	for (auto& bullet : mBullets) {
 		bullet->Render(mMainCamera, commandList);
 	}
 
@@ -344,9 +378,9 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
-#ifndef STAND_ALONE
+
 	mChatWindow->Render();
-#endif 
+
 
 	mCanvas->Render(commandList);
 }
@@ -354,4 +388,34 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 
 
+
+
+
+
+Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
+	: GameObject(model, materials)
+{
+}
+
+Bullet::~Bullet()
+{
+}
+
+void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
+{
+	mDirection = dir;
+	mTimeOut = 5.f;
+}
+
+bool Bullet::Validate() const 
+{
+	return mTimeOut > std::numeric_limits<float>::epsilon();
+}
+
+void Bullet::UpdateShaderVariables()
+{
+	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
+	mTimeOut -= Time.GetDeltaTime<float>();
+	GameObject::UpdateShaderVariables();
+}
 
