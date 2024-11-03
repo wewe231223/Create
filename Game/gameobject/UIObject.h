@@ -114,6 +114,25 @@ inline std::shared_ptr<T> Canvas::CreateUIObject(Args && ...args)
 //////////////////////////////////////////////////////////////////////////
 //																		//
 //																		//
+//								Title									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class Title : public IUIObject {
+public:
+	Title(Canvas* canvas, const std::string& image, UINT width, UINT height);
+	~Title();
+public:
+	virtual void Update() override;
+private:
+	std::shared_ptr<UIModel> mModel{ nullptr };
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
 //								Menu									//
 //																		//
 //																		//
