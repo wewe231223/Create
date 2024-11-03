@@ -3,6 +3,7 @@
 
 std::shared_ptr<Slider> SCRIPT_Player::HPBar = nullptr;
 std::shared_ptr<Slider> SCRIPT_Player::CoolTimeBar = nullptr;
+ObjectPool<GameObject, 64>* SCRIPT_Player::BulletPool = nullptr;
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -34,8 +35,16 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 
 	mOwner->GetTransform().SetPosition({ 10.f,100.f,10.f });
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+	
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Space, sign, [this]() {
+		//if (CoolTimeBar->mValue < 99.f) return;
 
+		auto bullet = BulletPool->Acquire();
+		bullet->SetActive(true);
+		CoolTimeBar->mValue = 0.f;
 
+		}
+	);
 }
 
 SCRIPT_Player::~SCRIPT_Player()
@@ -52,6 +61,7 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
 
+	CoolTimeBar->mValue += Time.GetSmoothDeltaTime<float>() * 100.f;
 
 	if (mIsMovingForward) {
 		mOwner->GetChild(2)->GetTransform().Rotate(0.f, Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);

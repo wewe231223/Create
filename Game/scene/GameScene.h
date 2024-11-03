@@ -1,20 +1,5 @@
 #pragma once 
 
-class Bullet : public GameObject {
-public:
-	Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
-	~Bullet();
-public:
-	void Reset(DirectX::SimpleMath::Vector3 dir);
-	bool Validate() const ;
-	virtual void UpdateShaderVariables() override;
-private:
-	DirectX::SimpleMath::Vector3 mDirection{};
-
-	float mTimeOut{ 5.f };
-};
-
-
 class GameScene : public Scene {
 public:
 	GameScene();
@@ -51,7 +36,7 @@ private:
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
 
 	// 총알 오브젝트 만들기... 
-	ObjectPool<Bullet, 64> mBullets{};
+	ObjectPool<GameObject, 64> mBulletPool{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
 };

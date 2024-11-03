@@ -24,11 +24,15 @@ public:
 	GameObject();
 	GameObject(const std::string& name);
 	GameObject(std::shared_ptr<I3DRenderable> model);
+	GameObject(std::shared_ptr<I3DRenderable> model, const MaterialIndex& material);
 	GameObject(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials);
 	virtual ~GameObject();
 public:
+	operator bool() const;
+	bool GetActiveState() const;
 	// 서브메쉬 순서대로 된 벡터 입력할것... 
 	virtual void SetMaterial(const std::vector<MaterialIndex>& materials);
+	virtual void SetMaterial(const MaterialIndex& material);
 
 	template<typename Ty,typename... Args> 
 		requires std::derived_from<Ty, Script> && std::constructible_from<Ty,std::shared_ptr<GameObject>, Args...>
@@ -42,6 +46,8 @@ public:
 	// 스크립트는 따로 복사할 것. 
 	virtual std::shared_ptr<GameObject> Clone();
 
+	void SetActive(bool state);
+
 	void Awake();
 
 	void Update();
@@ -54,6 +60,7 @@ protected:
 
 	GameObject* GetChildInternal(UINT& dfsIndex);
 protected:
+	bool mState{ true };
 	Transform mTransform{};
 
 	std::unique_ptr<Script> mScript{ nullptr };

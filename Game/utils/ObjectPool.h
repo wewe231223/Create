@@ -18,6 +18,19 @@ public:
         }
     }
 
+	template<typename Callable, typename... Args> 
+        requires    std::constructible_from<ObjectTy, Args...> && 
+                    std::invocable<Callable, Args...> && 
+                    std::same_as<std::invoke_result_t<Callable, Args...>, std::shared_ptr<ObjectTy>>
+   inline void Initialize(Callable&& callable, Args&&... args) {
+       mFree.resize(size);
+	   mUsed.reserve(size);
+
+       for (auto& object : mFree) {
+		   object = std::invoke(callable, args...);
+       }
+   }
+
 #ifdef DUMMY_SERVER_ENABLE 
 	inline ObjectIndex Acquire() {
 		if (mFree.size() == 0) {
@@ -99,11 +112,11 @@ inline void ObjectPool<ObjectTy, size>::Release(ObjectTy* obj) {
 
 template<typename ObjectTy, size_t size>
 inline void ObjectPool<ObjectTy, size>::Update()
-{
-    if (mValidateCallBack) {
-		auto it = std::partition(mUsed.begin(), mUsed.end(), mValidateCallBack);
-        if (it == mUsed.end()) return;
-		std::move(it, mUsed.end(), std::back_inserter(mFree));
-        mUsed.erase(it, mUsed.end());
-    }
+{    
+    auto it = std::partition(mUsed.begin(), mUsed.end(), [](const std::shared_ptr<ObjectTy>& object) { return (bool(*object)); });
+    if (it == mUsed.end()) return;
+    std::move(it, mUsed.end(), std::back_inserter(mFree));
+    mUsed.erase(it, mUsed.end());
 }
+
+

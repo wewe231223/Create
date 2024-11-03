@@ -11,6 +11,7 @@ public:
 	void UpdateCameraAboveTerrain(std::shared_ptr<Camera> camera);
 
 	void OnTerrain(std::shared_ptr<class GameObject> object);
+	bool TerrainCollision(Transform& object);
 private:
 	std::shared_ptr<TerrainImage> mTerrainHeightMap{ nullptr };
 	DirectX::SimpleMath::Vector3 mScale{ 1.0f,1.0f,1.0f };

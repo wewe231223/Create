@@ -25,6 +25,14 @@ void TerrainCollider::OnTerrain(std::shared_ptr<class GameObject> object)
 
 }
 
+bool TerrainCollider::TerrainCollision(Transform& object)
+{
+    float height = object.GetPosition().y;
+	float terrainHeight = mTerrainHeightMap->GetHeight(object.GetPosition().x / mScale.x, object.GetPosition().z / mScale.z);
+    
+	return height < terrainHeight;
+}
+
 void TerrainCollider::UpdateGameObjectAboveTerrain()
 {
     for (auto& object : mOnTerrainObject){

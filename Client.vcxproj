@@ -159,6 +159,7 @@
     <ClInclude Include="Game\scene\Camera.h" />
     <ClInclude Include="Game\scene\CameraMode.h" />
     <ClInclude Include="Game\scene\GameScene.h" />
+    <ClInclude Include="Game\scripts\SCRIPT_Bullet.h" />
     <ClInclude Include="Game\scripts\SCRIPT_Player.h" />
     <ClInclude Include="Game\subwindow\ChatWindow.h" />
     <ClInclude Include="Game\utils\Enumerate.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Game\scene\Camera.cpp" />
     <ClCompile Include="Game\scene\CameraMode.cpp" />
     <ClCompile Include="Game\scene\GameScene.cpp" />
+    <ClCompile Include="Game\scripts\SCRIPT_Bullet.cpp" />
     <ClCompile Include="Game\scripts\SCRIPT_Player.cpp" />
     <ClCompile Include="Game\subwindow\ChatWindow.cpp" />
     <ClCompile Include="Game\utils\Enumerate.cpp" />
