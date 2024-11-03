@@ -17,7 +17,7 @@
 #include <ranges>
 #include <typeindex>
 
-//#define STAND_ALONE
+#define STAND_ALONE
 
 #ifdef _DEBUG
 #pragma comment(lib,"Out/debug/Renderer.lib")

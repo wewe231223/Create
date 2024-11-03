@@ -9,6 +9,7 @@
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
 #include "Game/scripts/SCRIPT_Player.h"
+#include "Game/scripts/SCRIPT_Bullet.h"
 #include "Game/subwindow/ChatWindow.h"
 
 #ifndef STAND_ALONE
@@ -31,24 +32,6 @@ GameScene::~GameScene()
 {
 }
 
-
-/*
-넷겜플 클라 원하는 점
-
-빌보드가 아닌 나무 (이건 가능하면, 불가능하거나 힘들면 구현 X)
-텍스트 출력 (콘솔X, 이거도 가능하면)
-
-HP바
-플레이어를 따라다니는 빌보드
-
-충돌처리 ( 어떤 충돌처리? )
-
-터지는 효과 (파티클이든 아니든 상관 X, 이것도 가능하면)
-실외 지형 경계가 안보이도록 (자연스럽게 보이게)
-
-
-*/
-
 void GameScene::LoadTextures()
 {
 	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
@@ -65,12 +48,6 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
 
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
-
-	//mUIRenderer->CreateUIImage("Menu", "./Resources/textures/menu.png");
-	//mUIRenderer->CreateUIImage("HealthBarBase", "./Resources/textures/HealthBarBase.png");
-	//mUIRenderer->CreateUIImage("HealthBar", "./Resources/textures/HealthBar.png");
-
-
 }
 
 void GameScene::CreateMaterials()
@@ -131,10 +108,12 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 	auto slider = mCanvas->CreateUIObject<Slider>("HealthBarBase", "HealthBar", POINT{ 10, 10 } , 500, 50);
 	SCRIPT_Player::HPBar = slider;	
 
-
+	auto slider2 = mCanvas->CreateUIObject<Slider>("HealthBarBase", "CoolDownBar", POINT{ 10, 70 }, 300, 20);
+	SCRIPT_Player::CoolTimeBar = slider2;
 
 	mChatWindow = std::make_unique<ChatWindow>();
 }
+
 
 void GameScene::InitCameraMode()
 {
@@ -190,7 +169,21 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
+	auto bulletInit = [](std::shared_ptr<I3DRenderable> model,MaterialIndex mat) {
+		auto bullet = std::make_shared<GameObject>(model, mat);
+		bullet->SetActive(false);
+		bullet->MakeScript<SCRIPT_Bullet>();
+		return bullet;
+		};
+
+	mBulletPool.Initialize(bulletInit,mResourceManager->GetModel("Cube"), mResourceManager->GetMaterial("BulletMaterial"));
+	SCRIPT_Player::BulletPool = &mBulletPool;
+	SCRIPT_Bullet::mTerrainCollider = mTerrain;
+
+
 	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+	SCRIPT_Bullet::mPlayer = mPlayer;
+
 	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
@@ -242,9 +235,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	}
 
-
-	mBullets.Initialize(mResourceManager->GetModel("Cube"), std::vector<MaterialIndex>{ mResourceManager->GetMaterial("BulletMaterial") } );
-	mBullets.AssignValidateCallBack([](const std::shared_ptr<Bullet>& bullet) { return bullet->Validate(); });
+	
 
 	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	//ui->GetUIRect().LTx = 0.f;
@@ -293,9 +284,6 @@ void GameScene::ProcessPackets()
 	while (false == recvBuffer.Empty()) {
 		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
 			std::string clientName{ std::format("Client {}", chatPacket.id) };
-			
-
-
 			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
 		}
 	}
@@ -310,18 +298,13 @@ void GameScene::ProcessPackets()
 
 void GameScene::Update()
 {
-	if(Input.GetKeyboardTracker().IsKeyPressed(DirectX::Keyboard::Space)) {
-		auto bullet = mBullets.Acquire();
-		if (bullet != nullptr) {
-			bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
-			bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
-			bullet->Reset(mPlayer->GetChild(1)->GetTransform().GetForward());
-		}
+	for (auto& object : mGameObjects) {
+		object->Update();
 	}
 
 
-	for (auto& object : mGameObjects) {
-		object->Update();
+	for (auto& bullet : mBulletPool) {
+		bullet->Update();
 	}
 
 	mCanvas->Update();
@@ -355,8 +338,8 @@ void GameScene::UpdateShaderVariables()
 		object->UpdateShaderVariables();
 	}
 
-	mBullets.Update();
-	for (auto& bullet : mBullets) {
+	mBulletPool.Update();
+	for (auto& bullet : mBulletPool) {
 		bullet->UpdateShaderVariables();
 	}
 	
@@ -369,7 +352,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		object->Render(mMainCamera, commandList);
 	}
 
-	for (auto& bullet : mBullets) {
+	for (auto& bullet : mBulletPool) {
 		bullet->Render(mMainCamera, commandList);
 	}
 
@@ -378,9 +361,9 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
-
+#ifndef STAND_ALONE
 	mChatWindow->Render();
-
+#endif 
 
 	mCanvas->Render(commandList);
 }
@@ -389,33 +372,33 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 
 
-
-
-
-Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
-	: GameObject(model, materials)
-{
-}
-
-Bullet::~Bullet()
-{
-}
-
-void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
-{
-	mDirection = dir;
-	mTimeOut = 5.f;
-}
-
-bool Bullet::Validate() const 
-{
-	return mTimeOut > std::numeric_limits<float>::epsilon();
-}
-
-void Bullet::UpdateShaderVariables()
-{
-	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
-	mTimeOut -= Time.GetDeltaTime<float>();
-	GameObject::UpdateShaderVariables();
-}
+//
+//
+//
+//Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
+//	: GameObject(model, materials)
+//{
+//}
+//
+//Bullet::~Bullet()
+//{
+//}
+//
+//void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
+//{
+//	mDirection = dir;
+//	mTimeOut = 5.f;
+//}
+//
+//bool Bullet::Validate() const 
+//{
+//	return mTimeOut > std::numeric_limits<float>::epsilon();
+//}
+//
+//void Bullet::UpdateShaderVariables()
+//{
+//	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
+//	mTimeOut -= Time.GetDeltaTime<float>();
+//	GameObject::UpdateShaderVariables();
+//}
 

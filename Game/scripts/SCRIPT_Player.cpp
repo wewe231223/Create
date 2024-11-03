@@ -37,10 +37,12 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 	
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Space, sign, [this]() {
-			if (CoolTimeBar->mValue < 99.f) return;
-			auto bullet = BulletPool->Acquire();
-			bullet->SetActive(true);
-			CoolTimeBar->mValue = 0.f;
+		if (CoolTimeBar->mValue < 99.f) return;
+
+		auto bullet = BulletPool->Acquire();
+		bullet->SetActive(true);
+		CoolTimeBar->mValue = 0.f;
+
 		}
 	);
 }
@@ -59,7 +61,6 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(1)->GetTransform().Rotate(Input.GetDeltaMouseX() * Time.GetSmoothDeltaTime<float>() * 0.3f, 0.f, 0.f);
 	}
 
-	HPBar->mValue = mHP;
 	CoolTimeBar->mValue += Time.GetSmoothDeltaTime<float>() * 100.f;
 
 	if (mIsMovingForward) {
