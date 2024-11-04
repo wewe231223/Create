@@ -96,7 +96,7 @@ DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::Simp
 
 float TerrainImage::GetHeight(float x, float z) const
 {
-	if (x < std::numeric_limits<float>::epsilon() || z < std::numeric_limits<float>::epsilon() || x >= static_cast<float>(mWidth) || z >= static_cast<float>(mHeight)) {
+	if (x < 0.f || z < 0.f || x >= static_cast<float>(mWidth) || z >= static_cast<float>(mHeight)) {
 		return 0.f;
 	}
 
