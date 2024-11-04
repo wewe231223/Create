@@ -11,7 +11,7 @@
 #include "Game/scripts/SCRIPT_Player.h"
 #include "Game/scripts/SCRIPT_Bullet.h"
 #include "Game/subwindow/ChatWindow.h"
-
+#include "Game/utils/RandomEngine.h"
 
 GameScene::GameScene()
 	: Scene()
@@ -164,6 +164,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
 
+
+
+
 	auto originCliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
 
 	for (auto i = 0; i < 130; ++i) {
@@ -174,7 +177,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		cliff->SetMaterial({ mResourceManager->GetMaterial("CliffMaterial") });
 		mTerrain->OnTerrain(cliff);
 		mGameObjects.emplace_back(cliff);
-
 	}
 
 
@@ -211,7 +213,19 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	}
 
-	
+	std::uniform_real_distribution<float> dist(0.f, 1270.f);
+	for (auto i = 0; i < 100; ++i) {
+		auto enemy = mPlayer->Clone();
+		enemy->SetMaterial(mResourceManager->GetMaterial("TankMaterialRed"));
+		enemy->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+		enemy->GetTransform().SetPosition({ dist(MersenneTwister),0.f,dist(MersenneTwister) });
+		mTerrain->MakeObjectOnTerrain(enemy);
+		mGameObjects.emplace_back(enemy);
+		mEnemies.emplace_back(enemy);
+	}
+
+
+
 
 	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
 	//ui->GetUIRect().LTx = 0.f;
@@ -283,6 +297,14 @@ void GameScene::Update()
 
 	for (auto& bullet : mBulletPool) {
 		bullet->Update();
+		
+		for (auto& e : mEnemies) {
+			if (e->GetTransform().GetBB().Intersects(bullet->GetTransform().GetBB())) {
+				e->SetActive(false);
+			}
+		
+		}
+
 	}
 
 	mCanvas->Update();

@@ -55,6 +55,7 @@ void GameObject::SetMaterial(const std::vector<MaterialIndex>& materials)
 
 void GameObject::SetMaterial(const MaterialIndex& material)
 {
+	mMaterials.clear();
 	mMaterials.emplace_back(material);
 	for (auto& child : mChildObjects) {
 		child->SetMaterial(material);
@@ -121,14 +122,13 @@ std::shared_ptr<GameObject> GameObject::Clone()
 	auto ptr = std::make_shared<GameObject>();
 
 	ptr->mModel = mModel;
-	std::copy(mMaterials.begin(), mMaterials.end(), std::back_inserter(ptr->mMaterials));
-	
-	ptr->mTransform = Transform{ mTransform };
+	ptr->mTransform = Transform{};
+	ptr->mTransform = mTransform;
 
 	for (auto& child : mChildObjects) {
 		auto childClone = child->Clone();
-		ptr->mTransform.SetChild(&childClone->mTransform);
-		ptr->mChildObjects.emplace_back(child->Clone());
+		childClone->GetTransform().SetParent(&ptr->GetTransform());
+		ptr->mChildObjects.emplace_back(std::move(childClone));
 	}
 
 	return ptr;

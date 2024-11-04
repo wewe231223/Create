@@ -35,6 +35,8 @@ private:
 
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
 
+	std::vector<std::shared_ptr<GameObject>> mEnemies{};
+
 	// 총알 오브젝트 만들기... 
 	ObjectPool<GameObject, 64> mBulletPool{};
 
