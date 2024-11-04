@@ -71,7 +71,7 @@ TerrainImage::~TerrainImage()
 
 DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::SimpleMath::Vector3 scale) const
 {
-	if (x < 0 || z < 0 || x >= mWidth || z >= mHeight) {
+	if (x < 0 || z < 0 || x >= (mWidth - 1) || z >= (mHeight - 1)) {
 		return DirectX::SimpleMath::Vector3(0, 1, 0);
 	}
 	
@@ -96,7 +96,7 @@ DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::Simp
 
 float TerrainImage::GetHeight(float x, float z) const
 {
-	if (x < 0.f || z < 0.f || x >= static_cast<float>(mWidth) || z >= static_cast<float>(mHeight)) {
+	if (x < 0.f || z < 0.f || x >= static_cast<float>(mWidth - 1) || z >= static_cast<float>(mHeight - 1)) {
 		return 0.f;
 	}
 
