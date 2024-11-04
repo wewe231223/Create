@@ -25,8 +25,8 @@ TerrainImage::TerrainImage(const fs::path& path)
 	
 	file.seekg(0, std::ios::beg);
 
-	std::unique_ptr<BYTE[]> buffer	= std::make_unique<BYTE[]>(sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
-	mPixels							= std::make_unique<BYTE[]>(sizeof(BYTE) * mWidth * mHeight * BytesPerPixel);
+	std::unique_ptr<BYTE[]> buffer	= std::make_unique<BYTE[]>(sizeof(BYTE) * mWidth * mHeight * BytesPerPixel + 10);
+	mPixels							= std::make_unique<BYTE[]>(sizeof(BYTE) * mWidth * mHeight * BytesPerPixel + 10);
 
 	file.read(reinterpret_cast<char*>(buffer.get()), size);
 	file.close();
