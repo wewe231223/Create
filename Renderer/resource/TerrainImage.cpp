@@ -96,7 +96,7 @@ DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::Simp
 
 float TerrainImage::GetHeight(float x, float z) const
 {
-	if (x < 0 || z < 0 || x >= mWidth || z >= mHeight) {
+	if (x < std::numeric_limits<float>::epsilon() || z < std::numeric_limits<float>::epsilon() || x >= static_cast<float>(mWidth) || z >= static_cast<float>(mHeight)) {
 		return 0.f;
 	}
 
@@ -106,10 +106,10 @@ float TerrainImage::GetHeight(float x, float z) const
 	float fz{ z - iz };	// z의 소수 부분
 
 	BYTE* pixels{ mPixels.get() };
-	float LT{ (float)pixels[ix + ((iz + 1) * mWidth)] };		// 좌상단 높이
-	float RT{ (float)pixels[(ix + 1) + ((iz + 1) * mWidth)] };	// 우상단 높이
-	float LB{ (float)pixels[ix + (iz * mWidth)] };				// 좌하단 높이
-	float RB{ (float)pixels[(ix + 1) + (iz * mWidth)] };		// 우하단 높이	
+	float LT{ static_cast<float>(pixels[ix + ((iz + 1) * mWidth)]) };		// 좌상단 높이
+	float RT{ static_cast<float>(pixels[(ix + 1) + ((iz + 1) * mWidth)]) };	// 우상단 높이
+	float LB{ static_cast<float>(pixels[ix + (iz * mWidth)]) };				// 좌하단 높이
+	float RB{ static_cast<float>(pixels[(ix + 1) + (iz * mWidth)]) };		// 우하단 높이	
 
 	// 사각형의 네 점을 보간하여 최종 높이 반환
 	float topHeight{ Lerp(LT, RT, fx) };						// 보간한 상단 높이
