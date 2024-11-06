@@ -126,21 +126,10 @@ void GameScene::InitCameraMode()
 }
 
 #ifndef STAND_ALONE
-// 11-02 김성준 추가 - 네트워크 매니저 초기화 작업
-void GameScene::InitNetwork(const fs::path& ipFilePath)
+// 11-06 김성준 수정 - 네트워크 매니저 초기화 작업
+void GameScene::InitNetwork(const std::shared_ptr<NetworkManager>& networkManager)
 {
-	mNetworkManager = std::make_unique<NetworkManager>();
-	if (not mNetworkManager->InitializeNetwork()) {
-		mNetworkManager.reset(nullptr);
-		return;
-	}
-
-	if (not mNetworkManager->Connect(ipFilePath)) {
-		mNetworkManager.reset(nullptr);
-		return;
-	}
-
-	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
+	mNetworkManager = networkManager;
 }
 #endif
 
@@ -163,9 +152,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
-#ifndef STAND_ALONE
-	GameScene::InitNetwork("Common/serverip.ini");
-#endif
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 

@@ -52,8 +52,6 @@ bool NetworkManager::InitializeNetwork()
 
 bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
 {
-    
-    
     std::ifstream ipFile{ ipFilePath };
     if (not ipFile) {
         ErrorHandle::CommonErrorMessageBox("ipFile loading failure", "ip file not exists");
@@ -91,7 +89,7 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     recvTimeOut = INFINITE;
     ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
 
-    std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
+    //std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
     // 버퍼 생성 및 쓰레드 생성
     mRecvBuffer = std::make_unique<RecvBuffer>();
