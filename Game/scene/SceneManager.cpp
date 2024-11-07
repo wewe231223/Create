@@ -15,6 +15,16 @@ SceneManager& SceneManager::GetInstance()
 	return instance;
 }
 
+void SceneManager::ProcessPackets(std::shared_ptr<NetworkManager>& networkManager)
+{
+	mCurrentScene->ProcessPackets(networkManager);
+}
+
+void SceneManager::Send(std::shared_ptr<NetworkManager>& networkManager)
+{
+	mCurrentScene->Send(networkManager);
+}
+
 void SceneManager::Initialize(DxRenderer* renderer)
 {
 	mDxRenderer = renderer;
@@ -22,7 +32,6 @@ void SceneManager::Initialize(DxRenderer* renderer)
 
 void SceneManager::Update()
 {
-	SceneManager::CheckSceneChanged();
 	mCurrentScene->Update();
 }
 

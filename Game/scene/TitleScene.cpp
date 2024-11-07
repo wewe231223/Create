@@ -13,6 +13,16 @@ TitleScene::~TitleScene()
 {
 }
 
+#ifndef STAND_ALONE
+void TitleScene::ProcessPackets(std::shared_ptr<class NetworkManager>& networkManager)
+{
+}
+
+void TitleScene::Send(std::shared_ptr<class NetworkManager>& networkManager)
+{
+}
+#endif
+
 void TitleScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 	mWindow = window;

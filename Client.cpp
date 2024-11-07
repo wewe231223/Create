@@ -8,6 +8,10 @@
 #include "Game/scene/TitleScene.h"
 #include "Game/scene/SceneManager.h"
 
+#ifndef STAND_ALONE
+#include "ClientNetwork/core/NetworkManager.h"
+#endif
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -63,6 +67,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F4, endCallbackSign, []() {Input.DisableVirtualMouse(); });
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F5, endCallbackSign, []() {Input.EnableVirtualMouse(); });
 
+#ifndef STAND_ALONE 
+    std::shared_ptr<NetworkManager> networkManager = std::make_shared<NetworkManager>();
+    if (false == networkManager->InitializeNetwork()) {
+        networkManager.reset();
+    }
+
+    if (false == networkManager->Connect("Common/serverip.ini")) {
+        networkManager.reset();
+    }
+#endif
+
     // 기본 메시지 루프입니다:
     while (msg.message != WM_QUIT)
     {
@@ -73,9 +88,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else {
             Time.AdvanceTime();
 			Input.Update();
+            SceneManager::GetInstance().CheckSceneChanged();
 #ifndef STAND_ALONE
+            SceneManager::GetInstance().ProcessPackets(networkManager);
 #endif
             SceneManager::GetInstance().Update();
+#ifndef STAND_ALONE
+            SceneManager::GetInstance().Send(networkManager);
+#endif
             dxrenderer.StartRender();
             dxrenderer.Render();
             dxrenderer.EndRender();

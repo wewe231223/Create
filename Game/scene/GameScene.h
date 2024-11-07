@@ -10,6 +10,10 @@ public:
 	
 	virtual void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+
+	virtual void ProcessPackets(std::shared_ptr<class NetworkManager>& networkManager) override;
+    virtual void Send(std::shared_ptr<class NetworkManager>& networkManager) override;
+
 private:
 	void LoadTextures();
 	void CreateMaterials();
@@ -19,10 +23,8 @@ private:
 	void InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitCameraMode();
 	void UpdateShaderVariables();
-private:
-	//// 11-02 김성준 추가 - 네트워크 매니저
-	//std::unique_ptr<class NetworkManager> mNetworkManager{ nullptr };
 
+private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<class Canvas> mCanvas{ nullptr };
 
