@@ -20,6 +20,9 @@ private:
 	void InitCameraMode();
 	void UpdateShaderVariables();
 private:
+	//// 11-02 김성준 추가 - 네트워크 매니저
+	//std::unique_ptr<class NetworkManager> mNetworkManager{ nullptr };
+
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<class Canvas> mCanvas{ nullptr };
 

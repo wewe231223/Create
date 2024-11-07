@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "core/NetworkManager.h"
 #include "utils/Utils.h"
-#include "utils/Constants.h" 
-#include "buffer/SendBuffer.h"
-#include "buffer/RecvBuffer.h"
+#include "utils/Constants.h"
+#include "core/SendBuffer.h"
+#include "core/RecvBuffer.h"
 
 NetworkManager::NetworkManager()
     : mSocket{ INVALID_SOCKET },
@@ -19,9 +19,11 @@ NetworkManager::~NetworkManager()
         ::shutdown(mSocket, SD_BOTH);
         ::closesocket(mSocket);
 
-        char shutdown[20]{ "shutdown sendthread" };
-        mSendBuffer->Write(shutdown, 20);
-        mSendConditionVar.notify_all();
+        if (mSendBuffer) {
+            char shutdown[20]{ "shutdown sendthread" };
+            mSendBuffer->Write(shutdown, 20);
+            mSendConditionVar.notify_all();
+        }
 
         JoinThreads();
 
@@ -50,8 +52,6 @@ bool NetworkManager::InitializeNetwork()
 
 bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
 {
-
-
     std::ifstream ipFile{ ipFilePath };
     if (not ipFile) {
         ErrorHandle::CommonErrorMessageBox("ipFile loading failure", "ip file not exists");
@@ -77,19 +77,19 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     }
 
     //// connect 후 ID를 통지받을때까지 대기함
-    //INT32 recvTimeOut = 1000; // ms
-    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    UINT32 recvTimeOut = 1000; // ms
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
     int len = ::recv(mSocket, reinterpret_cast<char*>(&mId), 1, 0);
     if (len < 1) {
         ErrorHandle::WSAErrorMessageBox("ID recv failure");
         return false;
     }
 
-    //// 받은 후에는 다시 타임아웃 옵션을 풀어준다.
-    //recvTimeOut = INFINITE;
-    //::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(recvTimeOut), sizeof(INT32));
+    // 받은 후에는 다시 타임아웃 옵션을 풀어준다.
+    recvTimeOut = INFINITE;
+    ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
 
-    std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
+    //std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
     // 버퍼 생성 및 쓰레드 생성
     mRecvBuffer = std::make_unique<RecvBuffer>();

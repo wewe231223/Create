@@ -74,12 +74,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             Time.AdvanceTime();
 			Input.Update();
 #ifndef STAND_ALONE
-            gameScene->ProcessPackets();
 #endif
             SceneManager::GetInstance().Update();
-#ifndef STAND_ALONE
-            gameScene->Send();
-#endif
             dxrenderer.StartRender();
             dxrenderer.Render();
             dxrenderer.EndRender();

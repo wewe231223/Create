@@ -6,6 +6,8 @@ public:
 	~ChatWindow();
 
 public:
+	std::vector<std::string>& GetInputBuf();
+
 	template<typename ...Args> 
 	void UpdateChatLog(std::format_string<Args...> fmt, Args&&... args);
 	void Render();

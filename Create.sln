@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루�
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientNetwork", "ClientNetwork\ClientNetwork.vcxproj", "{45552ED8-67B4-43B6-84DE-32D3EBB857AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,14 @@ Global
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x64.Build.0 = Release|x64
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x86.ActiveCfg = Release|Win32
 		{B832BBD6-94AE-4280-9110-D28D6E9D3E30}.Release|x86.Build.0 = Release|Win32
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Debug|x64.ActiveCfg = Debug|x64
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Debug|x64.Build.0 = Debug|x64
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Debug|x86.ActiveCfg = Debug|Win32
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Debug|x86.Build.0 = Debug|Win32
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Release|x64.ActiveCfg = Release|x64
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Release|x64.Build.0 = Release|x64
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Release|x86.ActiveCfg = Release|Win32
+		{45552ED8-67B4-43B6-84DE-32D3EBB857AC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

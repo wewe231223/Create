@@ -9,6 +9,10 @@ ChatWindow::~ChatWindow()
 {
 }
 
+std::vector<std::string>& ChatWindow::GetInputBuf()
+{
+	return mInputChat;
+}
 
 void ChatWindow::Render()
 {
@@ -31,6 +35,7 @@ void ChatWindow::Render()
 		size_t len = strlen(buf);
 		if (len > 0 and len < 98) {
 			mInputChat.emplace_back(buf);
+
 			ZeroMemory(buf, sizeof(buf));
 			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
 		}

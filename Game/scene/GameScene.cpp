@@ -15,8 +15,9 @@
 #ifndef STAND_ALONE
 // 11-02 김성준 추가 - 네트워크 관련 헤더들
 #include "ClientNetwork/core/NetworkManager.h"
-#include "ClientNetwork/core/RecvBuffer.h"
+#include "ClientNetwork/buffer/RecvBuffer.h"
 #endif
+
 
 GameScene::GameScene()
 	: Scene()
@@ -255,27 +256,26 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 }
+//
+//// 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
+//void GameScene::ProcessPackets()
+//{
+//	if (nullptr == mNetworkManager) {
+//		return;
+//	}
+//
+//	RecvBuffer recvBuffer;
+//	mNetworkManager->ReadFromRecvBuffer(recvBuffer);
+//	PacketChatting chatPacket;
+//	while (false == recvBuffer.Empty()) {
+//		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
+//			std::string clientName{ std::format("Client {}", chatPacket.id) };
+//			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
+//		}
+//	}
+//	recvBuffer.Clean();
+//}
 
-#ifndef STAND_ALONE
-// 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
-void GameScene::ProcessPackets()
-{
-	if (nullptr == mNetworkManager) {
-		return;
-	}
-
-	RecvBuffer recvBuffer;
-	mNetworkManager->ReadFromRecvBuffer(recvBuffer);
-	PacketChatting chatPacket;
-	while (false == recvBuffer.Empty()) {
-		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
-			std::string clientName{ std::format("Client {}", chatPacket.id) };
-			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
-		}
-	}
-	recvBuffer.Clean();
-}
-#endif
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
@@ -298,23 +298,22 @@ void GameScene::Update()
 
 	GameScene::UpdateShaderVariables();
 }
-#ifndef STAND_ALONE
-void GameScene::Send()
-{
-	if (nullptr == mNetworkManager) {
-		return;
-	}
 
-	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
-
-	std::lock_guard lock{ mNetworkManager->GetSendMutex() };
-	for (const auto& str : inputBuf) {
-		mNetworkManager->SendChatPacket(str);
-	}
-	inputBuf.clear();
-	mNetworkManager->WakeSendThread();
-}
-#endif
+//void GameScene::Send()
+//{
+//	if (nullptr == mNetworkManager) {
+//		return;
+//	}
+//
+//	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
+//
+//	std::lock_guard lock{ mNetworkManager->GetSendMutex() };
+//	for (const auto& str : inputBuf) {
+//		mNetworkManager->SendChatPacket(str);
+//	}
+//	inputBuf.clear();
+//	mNetworkManager->WakeSendThread();
+//}
 
 void GameScene::UpdateShaderVariables()
 {
