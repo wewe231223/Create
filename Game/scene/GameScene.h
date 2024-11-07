@@ -38,6 +38,9 @@ private:
 
 	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
+	std::vector<std::shared_ptr<GameObject>> mOtherPlayer{ };
+	std::vector<ObjectPool<GameObject, 64>> mOtherPlayersBullets{ };
+
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
 
 	std::vector<std::shared_ptr<GameObject>> mEnemies{};

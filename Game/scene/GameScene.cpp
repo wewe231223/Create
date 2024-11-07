@@ -252,6 +252,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
 void GameScene::ProcessPackets(std::shared_ptr<NetworkManager>& networkManager)
 {
+#ifndef STAND_ALONE
 	if (nullptr == networkManager) {
 		return;
 	}
@@ -266,6 +267,7 @@ void GameScene::ProcessPackets(std::shared_ptr<NetworkManager>& networkManager)
 		}
 	}
 	recvBuffer.Clean();
+#endif
 }
 
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
@@ -293,6 +295,7 @@ void GameScene::Update()
 
 void GameScene::Send(std::shared_ptr<NetworkManager>& networkManager)
 {
+#ifndef STAND_ALONE
 	if (nullptr == networkManager) {
 		return;
 	}
@@ -305,6 +308,7 @@ void GameScene::Send(std::shared_ptr<NetworkManager>& networkManager)
 	}
 	inputBuf.clear();
 	networkManager->WakeSendThread();
+#endif
 }
 
 void GameScene::UpdateShaderVariables()

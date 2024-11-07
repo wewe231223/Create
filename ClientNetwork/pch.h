@@ -26,4 +26,12 @@
 #include <array>
 #include <span>
 
+#include "../Renderer/external/Include/DirectXTK12/SimpleMath.h"
+
+#ifdef _DEBUG 
+#pragma comment(lib,"../Renderer/external/lib/debug/DirectXTK12.lib")
+#else
+#pragma comment(lib,"../Renderer/external/lib/release/DirectXTK12.lib")
+#endif
+
 #include "core/Protocol.h"
