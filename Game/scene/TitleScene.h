@@ -1,6 +1,5 @@
 #pragma once 
 
-
 class TitleScene : public Scene {
 public:
 	TitleScene();

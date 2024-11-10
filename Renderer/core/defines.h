@@ -105,6 +105,22 @@ struct ModelContext2D {
 	UINT ImageIndex{ 0 };
 };
 
+struct BillBoardVertex {
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 texCoord;
+
+	UINT halfWidth;
+	UINT height;
+
+	// UP 을 설정하는 경우 UP 축을 고정하고, 카메라를 바라본다.		( FORWARD = CAM - POS, UP = UP							, RIGHT = FORWARD x UP )   
+	// UP 이 영벡터일 경우 항상 완전히 카메라를 바라본다			( FORWARD = CAM - POS, RIGHT = FORWARD x { 0, 1, 0 }	, UP = FORWARD x RIGHT )  
+	DirectX::XMFLOAT3 up;
+
+};
+
+
+
+
 enum EGlobalConstants : UINT {
 	GC_FrameCount			= 3,
 	GC_BackBufferCount		= 3,
@@ -129,3 +145,4 @@ enum UIRootParamIndex : UINT {
 	URP_Texture = 1,
 	URP_END = 2
 };
+

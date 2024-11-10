@@ -120,6 +120,9 @@
     <ClInclude Include="core\window.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="resource\BillBoardManager.h">
+      <Filter>resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -205,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="core\window.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\BillBoardManager.cpp">
+      <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
