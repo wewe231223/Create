@@ -17,6 +17,7 @@ enum PacketType {
 
     // CS Part
     PT_CS_PacketChatting,
+    PT_CS_PacketPlayerInfo,
     PT_CS_PacketExit,
 };
 
@@ -37,7 +38,7 @@ struct PacketExit : public Packet { };
 
 struct PacketEnter : public Packet { };
 
-struct PacektPosition : public Packet {
+struct PacketPlayerInfo : public Packet {
     DirectX::SimpleMath::Vector3 position;
 };
 #pragma pack(pop)

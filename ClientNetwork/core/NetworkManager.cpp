@@ -154,27 +154,48 @@ void NetworkManager::SendWorker()
 
 void NetworkManager::RecvWorker()
 {
-    int len = 0;
+    int recvLen = 0;
+    int remainLen = 0;
+
+    int dataLen = 0;
+    char remainBuffer[RECV_AT_ONCE];
     char buffer[RECV_AT_ONCE];
     while (true) {
-        len = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
-        if (len < 0) {
+        recvLen = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
+        if (recvLen < 0) {
 #ifdef NETWORK_DEBUG
             ErrorHandle::WSAErrorMessageBox("recv function failure");
 #endif
             break;
         }
-        else if (len == 0) {
+        else if (recvLen == 0) {
             break;
         }
 
-#ifdef NETWORK_DEBUG
-        std::cout << std::format("Recv Len: {}\n", len);
-#endif
+        // 이전에 남은 데이터가 있을때 다시 검사하는 과정
+        if (remainLen > 0) {
+            if (recvLen + remainLen > RECV_AT_ONCE) {
+                ErrorHandle::CommonErrorMessageBoxAbort("remain data is so big", "error");
+                break;
+            }
+            else {
+                memmove(buffer + remainLen, buffer, recvLen);
+                memcpy(buffer, remainBuffer, remainLen);
+            }
+        }
 
-        /* TODO recv 기능 작성 */
-        std::lock_guard lock{ mRecvLock };
-        mRecvBuffer->Write(buffer, len);
+        // 새로 받아온 데이터에 대해서 검사하는 과정
+        remainLen = CheckPackets(buffer, recvLen);
+        dataLen = recvLen - remainLen;
+        if (remainLen > 0) {
+            std::lock_guard lock{ mRecvLock };
+            mRecvBuffer->Write(buffer, dataLen);
+            memcpy(remainBuffer, buffer + dataLen, remainLen);
+        }
+        else {
+            std::lock_guard lock{ mRecvLock };
+            mRecvBuffer->Write(buffer, dataLen);
+        }
     }
 }
 
@@ -188,6 +209,13 @@ void NetworkManager::SendChatPacket(std::string_view str)
     memcpy(chat.chatBuffer, str.data(), str.size());
 
     mSendBuffer->Write(&chat, chat.size);
+}
+
+void NetworkManager::SendPlayerInfoPacket(const DirectX::SimpleMath::Vector3& position)
+{
+    PacketPlayerInfo playerInfo{ sizeof(PacketPlayerInfo), PT_CS_PacketPlayerInfo, mId, };
+    playerInfo.position = position;
+    mSendBuffer->Write(&playerInfo, playerInfo.size);
 }
 
 void NetworkManager::JoinThreads()
@@ -210,4 +238,25 @@ void NetworkManager::ReadFromRecvBuffer(RecvBuffer& buffer)
 void NetworkManager::WakeSendThread()
 {
     mSendConditionVar.notify_one();
+}
+
+size_t NetworkManager::CheckPackets(char* buffer, size_t len)
+{
+    size_t checkLen = 0;
+    size_t remainLen = 0;
+    while (checkLen < len) {
+        checkLen += buffer[0];
+#if defined(_DEBUG) || defined(DEBUG)
+        if (buffer[0] == 0) {
+            ErrorHandle::CommonErrorMessageBoxAbort("Recv Size is 0", "Packet's size member value is zero");
+        }
+#endif
+
+        if (len > checkLen) {
+            remainLen = len - checkLen;
+            break;
+        }
+    }
+
+    return remainLen;
 }
