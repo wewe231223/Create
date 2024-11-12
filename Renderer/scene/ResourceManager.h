@@ -36,10 +36,17 @@ public:
 	// 이 함수를 호출한 뒤에 반드시 FlushCommandQueue 를 호출할 것 ( 이 객체와 Fence 는 무관하기에 동작을 구분하였음 ) 
 	void ExecuteUpload(ComPtr<ID3D12CommandQueue>& queue);
 
+	D3D12_GPU_DESCRIPTOR_HANDLE					GetTexHandle();
+
+	// NOT IMPL
+	D3D12_GPU_DESCRIPTOR_HANDLE					GetTexArrHandle();
+	// NOT IMPL
+	D3D12_GPU_DESCRIPTOR_HANDLE					GetCubeTexHandle();
+	
 	std::shared_ptr<IGraphicsShader>			GetShader(const std::string& name);
 	MaterialIndex								GetMaterial(const std::string& name);
 	TextureIndex								GetTexture(const std::string& name);
-	std::shared_ptr<I3DRenderable>			GetModel(const std::string& name);
+	std::shared_ptr<I3DRenderable>				GetModel(const std::string& name);
 
 	// 이 부분들은 렌더링할 때 호출된다. 로드 커맨드 리스트와 다르므로, 이 세 함수는 렌더 커맨드 리스트를 받아야 한다. 
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
@@ -49,7 +56,6 @@ private:
 	void Reset();
 	void UploadMaterial();
 private:
-	// 여기에 디바이스를 놓기 너무 싫은데 이건 안할수가 없다.. 
 	ComPtr<ID3D12Device>				mDevice{ nullptr };
 	ComPtr<ID3D12GraphicsCommandList>	mLoadCommandList{ nullptr };
 	ComPtr<ID3D12CommandAllocator>		mCommandAllocator{ nullptr };

@@ -83,10 +83,8 @@ void UIModel::Render()
 			mContext.UVTransform._23 = static_cast<float>(mSpriteCoord.second) * mContext.UVTransform._22;
 		}
 
-		
 		mContext.Transform = Transpose(Multifly(mTransform, mScreenTransform));
-		mUIRenderer->WriteContext(&mContext);
-		
+		mUIRenderer->WriteContext(&mContext);		
 	}
 }
 

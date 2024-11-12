@@ -162,6 +162,23 @@ void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
+D3D12_GPU_DESCRIPTOR_HANDLE ResourceManager::GetTexHandle()
+{
+	return mTexHeap->GetGPUDescriptorHandleForHeapStart();
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE ResourceManager::GetTexArrHandle()
+{
+	abort();
+	return CD3DX12_GPU_DESCRIPTOR_HANDLE{};
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE ResourceManager::GetCubeTexHandle()
+{
+	abort();
+	return D3D12_GPU_DESCRIPTOR_HANDLE();
+}
+
 std::shared_ptr<IGraphicsShader> ResourceManager::GetShader(const std::string& name)
 {
 	return mShaderMap[name];

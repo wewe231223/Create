@@ -49,8 +49,6 @@ enum : WORD {
 
 /// <summary>
 /// 각 값의 의미는 정의부 주석 참고.
-/// 
-/// 재질은 좀 고치자
 /// </summary>
 struct Material {
 	DirectX::XMFLOAT4 DiffuseColor				{ 0.f,0.f,0.f,0.f };
@@ -112,13 +110,11 @@ struct BillBoardVertex {
 	UINT halfWidth;
 	UINT height;
 
+	//																					계산 순서는 다음과 같다 
 	// UP 을 설정하는 경우 UP 축을 고정하고, 카메라를 바라본다.		( FORWARD = CAM - POS, UP = UP							, RIGHT = FORWARD x UP )   
 	// UP 이 영벡터일 경우 항상 완전히 카메라를 바라본다			( FORWARD = CAM - POS, RIGHT = FORWARD x { 0, 1, 0 }	, UP = FORWARD x RIGHT )  
 	DirectX::XMFLOAT3 up;
-
 };
-
-
 
 
 enum EGlobalConstants : UINT {
@@ -130,14 +126,13 @@ enum EGlobalConstants : UINT {
 	GC_MaxRefPerModel		= 1024,
 };
 
-
 enum EGraphicRootParamIndex : UINT {
 	GRP_CameraConstants = 0,
 	GRP_MeshConstants = 1,
 	GRP_ObjectConstants = 2,
 	GRP_MaterialSRV = 3,
 	GRP_Texture = 4,
-	GRP_END = 5
+	GRP_END = 5,
 };
 
 enum UIRootParamIndex : UINT {
@@ -145,4 +140,3 @@ enum UIRootParamIndex : UINT {
 	URP_Texture = 1,
 	URP_END = 2
 };
-
