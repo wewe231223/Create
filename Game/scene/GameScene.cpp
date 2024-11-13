@@ -290,8 +290,7 @@ void GameScene::Update()
 	for (auto& object : mGameObjects) {
 		object->Update();
 	}
-			bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
-			bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+
 	for (auto& bullet : mBulletPool) {
 		bullet->Update();
 	}
@@ -305,15 +304,15 @@ void GameScene::Update()
 	mTerrain->UpdateGameObjectAboveTerrain();
 
 	GameScene::UpdateShaderVariables();
-	if (nullptr == networkManager) {
-		return;
-	}
+}
 
 void GameScene::Send(std::shared_ptr<NetworkManager>& networkManager)
 {
 #ifndef STAND_ALONE
-void GameScene::Send()
-{
+	if (nullptr == networkManager) {
+		return;
+	}
+
 	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
 
 	std::lock_guard lock{ networkManager->GetSendMutex() };
@@ -363,8 +362,5 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
-}	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
-	mTimeOut -= Time.GetDeltaTime<float>();
-	GameObject::UpdateShaderVariables();
 }
 
