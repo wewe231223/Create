@@ -17,7 +17,7 @@ public:
 
     /// <returns>현재 버퍼에 쓰여진 데이터의 크기를 반환</returns>
     INT32 DataSize() const;
-    
+
     /// <summary>
     /// data에 넘어온 메모리를 writeByte만큼 내부 버퍼에 복사
     /// </summary>
@@ -30,4 +30,4 @@ public:
 private:
     INT32 mWriteCursor;
     std::array<char, BUFFER_SIZE> mBuffer;
-}; 
+};

@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "core/NetworkManager.h"
 #include "utils/Utils.h"
-#include "utils/Constants.h" 
-#include "buffer/SendBuffer.h"
-#include "buffer/RecvBuffer.h"
+#include "utils/Constants.h"
+#include "core/SendBuffer.h"
+#include "core/RecvBuffer.h"
 
 NetworkManager::NetworkManager()
     : mSocket{ INVALID_SOCKET },
@@ -52,8 +52,6 @@ bool NetworkManager::InitializeNetwork()
 
 bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
 {
-
-
     std::ifstream ipFile{ ipFilePath };
     if (not ipFile) {
         ErrorHandle::CommonErrorMessageBox("ipFile loading failure", "ip file not exists");
@@ -91,7 +89,7 @@ bool NetworkManager::Connect(const std::filesystem::path& ipFilePath)
     recvTimeOut = INFINITE;
     ::setsockopt(mSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&recvTimeOut), sizeof(UINT32));
 
-    std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
+    //std::cout << "Connected MyId: " << static_cast<int>(mId) << std::endl;
 
     // 버퍼 생성 및 쓰레드 생성
     mRecvBuffer = std::make_unique<RecvBuffer>();
@@ -156,48 +154,27 @@ void NetworkManager::SendWorker()
 
 void NetworkManager::RecvWorker()
 {
-    int recvLen = 0;
-    int remainLen = 0;
-
-    int dataLen = 0;
-    char remainBuffer[RECV_AT_ONCE];
+    int len = 0;
     char buffer[RECV_AT_ONCE];
     while (true) {
-        recvLen = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
-        if (recvLen < 0) {
+        len = ::recv(mSocket, buffer, RECV_AT_ONCE, 0);
+        if (len < 0) {
 #ifdef NETWORK_DEBUG
             ErrorHandle::WSAErrorMessageBox("recv function failure");
 #endif
             break;
         }
-        else if (recvLen == 0) {
+        else if (len == 0) {
             break;
         }
 
-        // 이전에 남은 데이터가 있을때 다시 검사하는 과정
-        if (remainLen > 0) {
-            if (recvLen + remainLen > RECV_AT_ONCE) {
-                ErrorHandle::CommonErrorMessageBoxAbort("remain data is so big", "error");
-                break;
-            }
-            else {
-                memmove(buffer + remainLen, buffer, recvLen);
-                memcpy(buffer, remainBuffer, remainLen);
-            }
-        }
+#ifdef NETWORK_DEBUG
+        std::cout << std::format("Recv Len: {}\n", len);
+#endif
 
-        // 새로 받아온 데이터에 대해서 검사하는 과정
-        remainLen = CheckPackets(buffer, recvLen);
-        dataLen = recvLen - remainLen;
-        if (remainLen > 0) {
-            std::lock_guard lock{ mRecvLock };
-            mRecvBuffer->Write(buffer, dataLen);
-            memcpy(remainBuffer, buffer + dataLen, remainLen);
-        }
-        else {
-            std::lock_guard lock{ mRecvLock };
-            mRecvBuffer->Write(buffer, dataLen);
-        }
+        /* TODO recv 기능 작성 */
+        std::lock_guard lock{ mRecvLock };
+        mRecvBuffer->Write(buffer, len);
     }
 }
 
@@ -211,13 +188,6 @@ void NetworkManager::SendChatPacket(std::string_view str)
     memcpy(chat.chatBuffer, str.data(), str.size());
 
     mSendBuffer->Write(&chat, chat.size);
-}
-
-void NetworkManager::SendPlayerInfoPacket(const DirectX::SimpleMath::Vector3& position)
-{
-    PacketPlayerInfo playerInfo{ sizeof(PacketPlayerInfo), PT_CS_PacketPlayerInfo, mId, };
-    playerInfo.position = position;
-    mSendBuffer->Write(&playerInfo, playerInfo.size);
 }
 
 void NetworkManager::JoinThreads()
@@ -240,25 +210,4 @@ void NetworkManager::ReadFromRecvBuffer(RecvBuffer& buffer)
 void NetworkManager::WakeSendThread()
 {
     mSendConditionVar.notify_one();
-}
-
-size_t NetworkManager::CheckPackets(char* buffer, size_t len)
-{
-    size_t checkLen = 0;
-    size_t remainLen = 0;
-    while (checkLen < len) {
-        checkLen += buffer[0];
-#if defined(_DEBUG) || defined(DEBUG)
-        if (buffer[0] == 0) {
-            ErrorHandle::CommonErrorMessageBoxAbort("Recv Size is 0", "Packet's size member value is zero");
-        }
-#endif
-
-        if (len > checkLen) {
-            remainLen = len - checkLen;
-            break;
-        }
-    }
-
-    return remainLen;
 }

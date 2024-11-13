@@ -8,12 +8,12 @@ public:
 
 	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window) override;
 	
-	void Update();
-#ifndef STAND_ALONE
-	void ProcessPackets();
-	void Send();
-#endif
+	virtual void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+
+	virtual void ProcessPackets(std::shared_ptr<class NetworkManager>& networkManager) override;
+    virtual void Send(std::shared_ptr<class NetworkManager>& networkManager) override;
+
 private:
 	void LoadTextures();
 	void CreateMaterials();
@@ -22,10 +22,8 @@ private:
 	void InitTerrain(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void InitCameraMode();
-#ifndef STAND_ALONE
-	void InitNetwork(const fs::path& ipFilePath);
-#endif
 	void UpdateShaderVariables();
+
 private:
 	std::shared_ptr<ResourceManager> mResourceManager{ nullptr };
 	std::shared_ptr<class Canvas> mCanvas{ nullptr };
@@ -40,15 +38,15 @@ private:
 
 	std::shared_ptr<GameObject> mPlayer{ nullptr };
 
+	std::vector<std::shared_ptr<GameObject>> mOtherPlayer{ };
+	std::vector<ObjectPool<GameObject, 64>> mOtherPlayersBullets{ };
+
 	std::vector<std::shared_ptr<GameObject>> mGameObjects{};
+
+	std::vector<std::shared_ptr<GameObject>> mEnemies{};
 
 	// 총알 오브젝트 만들기... 
 	ObjectPool<GameObject, 64> mBulletPool{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
-
-#ifndef STAND_ALONE
-	// 11-02 김성준 추가 - 네트워크 매니저
-	std::unique_ptr<class NetworkManager> mNetworkManager{ nullptr };
-#endif
 };

@@ -28,11 +28,14 @@ public:
     /// </summary>
     /// <param name="str"></param>
     void SendChatPacket(std::string_view str);
+    void SendPlayerInfoPacket(const DirectX::SimpleMath::Vector3& position);
 
     void JoinThreads();
 
     void ReadFromRecvBuffer(class RecvBuffer& buffer);
     void WakeSendThread();
+
+    size_t CheckPackets(char* buffer, size_t len);
 
 private:
     SOCKET mSocket;

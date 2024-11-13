@@ -96,7 +96,7 @@ DirectX::SimpleMath::Vector3 TerrainImage::GetNormal(int x, int z, DirectX::Simp
 
 float TerrainImage::GetHeight(float x, float z) const
 {
-	if (x < 0 || z < 0 || x >= mWidth || z >= mHeight) {
+	if (x < 0 || z < 0 || x >= mWidth - 1 || z >= mHeight - 1) {
 		return 0.f;
 	}
 

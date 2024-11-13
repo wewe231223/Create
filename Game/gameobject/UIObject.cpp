@@ -208,7 +208,69 @@ void Canvas::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mUIRenderer->Render(commandList);
 }
 
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								Title									//
+//																		//
+//																		//
+////////////////////////////////////////////////////////////////////////// 
 
+
+Title::Title(Canvas* canvas, const std::string& image, UINT width, UINT height)
+	: mModel(canvas->CreateUIModel(image))
+{
+	mModel->GetUIRect().LTx = 0.f;
+	mModel->GetUIRect().LTy = 0.f;
+	mModel->GetUIRect().width = static_cast<float>(width);
+	mModel->GetUIRect().height = static_cast<float>(height);
+}
+
+Title::~Title()
+{
+}
+
+void Title::Update()
+{
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								Menu									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+Menu::Menu(Canvas* canvas, const std::string& image, UINT width, UINT height)
+	: mModel(canvas->CreateUIModel(image))
+{
+	mModel->GetUIRect().LTx = 0.f;
+	mModel->GetUIRect().LTy = 0.f;
+	mModel->GetUIRect().width = static_cast<float>(width);
+	mModel->GetUIRect().height = static_cast<float>(height);
+
+	int sample = NrSampler.Sample();
+
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, sample, [this]() {
+		mModel->ToggleActiveState();
+		});
+
+	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, sample, [this]() {
+		mModel->ToggleActiveState();
+		});
+	mModel->SetActiveState(false);	
+
+}
+
+Menu::~Menu()
+{
+}
+
+void Menu::Update()
+{
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -248,3 +310,5 @@ void Slider::Update()
 	mValue = std::clamp(mValue, 0.f, 100.f);
 	mSlider->GetUIRect().width = mUnit * mValue;
 }
+
+

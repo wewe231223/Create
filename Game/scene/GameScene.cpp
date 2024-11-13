@@ -15,8 +15,9 @@
 #ifndef STAND_ALONE
 // 11-02 김성준 추가 - 네트워크 관련 헤더들
 #include "ClientNetwork/core/NetworkManager.h"
-#include "ClientNetwork/core/RecvBuffer.h"
+#include "ClientNetwork/buffer/RecvBuffer.h"
 #endif
+
 
 GameScene::GameScene()
 	: Scene()
@@ -125,25 +126,6 @@ void GameScene::InitCameraMode()
 	mCurrentCameraMode->Enter();
 }
 
-#ifndef STAND_ALONE
-// 11-02 김성준 추가 - 네트워크 매니저 초기화 작업
-void GameScene::InitNetwork(const fs::path& ipFilePath)
-{
-	mNetworkManager = std::make_unique<NetworkManager>();
-	if (not mNetworkManager->InitializeNetwork()) {
-		mNetworkManager.reset(nullptr);
-		return;
-	}
-
-	if (not mNetworkManager->Connect(ipFilePath)) {
-		mNetworkManager.reset(nullptr);
-		return;
-	}
-
-	Console.InfoLog("네트워크 연결 성공! MyID: {}\n", static_cast<int>(mNetworkManager->GetId()));
-}
-#endif
-
 void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window)
 {
 
@@ -163,9 +145,6 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	GameScene::InitSkyBox(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitTerrain(device, mResourceManager->GetLoadCommandList());
 	GameScene::InitUI(device, mResourceManager->GetLoadCommandList());
-#ifndef STAND_ALONE
-	GameScene::InitNetwork("Common/serverip.ini");
-#endif
 
 	mResourceManager->CreateModel<TexturedModel>("Cube", mResourceManager->GetShader("TexturedObjectShader"), TexturedModel::BasicShape::Cube);
 
@@ -187,6 +166,15 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
+
+	constexpr size_t MAX_PLAYER = 4;
+	for (int id : std::views::iota(0ULL, MAX_PLAYER)) {
+        auto player = mPlayer->Clone();
+		player->SetMaterial(mResourceManager->GetMaterial("TankMeterial"));
+		mTerrain->MakeObjectOnTerrain(player);
+		mGameObjects.emplace_back(player);
+		player->SetActive(false);
+	}
 
 	auto originCliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
 
@@ -235,71 +223,77 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	}
 
-	
-
-	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
-	//ui->GetUIRect().LTx = 0.f;
-	//ui->GetUIRect().LTy = 0.f;
-	//ui->GetUIRect().width = 1920.f;
-	//ui->GetUIRect().height = 1080.f;
-
-
-	//healthBarBase = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
-	//auto& uirect = healthBarBase->GetUIRect();
-	//uirect.LTx = 10.f;
-	//uirect.LTy = 10.f;
-	//uirect.width = 500.f;
-	//uirect.height = 50.f;
-
-
-	//healthBar = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
-	//auto& uirect1 = healthBar->GetUIRect();
-	//uirect1.LTx = 10.f;
-	//uirect1.LTy = 10.f;
-	//uirect1.width = HP * 5.f;
-	//uirect1.height = 50.f;
-
-
-
-	//Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	//Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	//ui->SetActiveState(false);
-
-
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 }
 
-#ifndef STAND_ALONE
 // 11-02 게임 씬에서 패킷 처리를 위한 코드 작성
-void GameScene::ProcessPackets()
+void GameScene::ProcessPackets(std::shared_ptr<NetworkManager>& networkManager)
 {
-	if (nullptr == mNetworkManager) {
+#ifndef STAND_ALONE
+	if (nullptr == networkManager) {
 		return;
 	}
 
 	RecvBuffer recvBuffer;
-	mNetworkManager->ReadFromRecvBuffer(recvBuffer);
-	PacketChatting chatPacket;
+	networkManager->ReadFromRecvBuffer(recvBuffer);
+    Packet header;
+	char temp[512];
 	while (false == recvBuffer.Empty()) {
-		if (recvBuffer.Read(reinterpret_cast<char*>(&chatPacket), sizeof(PacketChatting))) {
-			std::string clientName{ std::format("Client {}", chatPacket.id) };
-			mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName,  chatPacket.chatBuffer );
+		if (false == recvBuffer.Read(reinterpret_cast<char*>(&header), sizeof(Packet))) {
+			abort();
+		}
+
+		switch (header.type) {
+		case PT_SC_PacketChatting:
+			{
+				// 패킷 조립
+				PacketChatting chatPacket;
+				char* chat = reinterpret_cast<char*>(&chatPacket);
+				recvBuffer.Read(chat + sizeof(Packet), sizeof(PacketChatting) - sizeof(Packet));
+				memcpy(chat, &header, sizeof(Packet));
+				
+				std::string clientName{ std::format("Client {}", chatPacket.id) };
+				mChatWindow->UpdateChatLog("{:^10}: {}\n", clientName, chatPacket.chatBuffer);
+			}
+			break;
+
+		case PT_SC_PacketPlayerInfo:
+			{
+				PacketPlayerInfo playerInfoPacket;
+				char* playerInfo = reinterpret_cast<char*>(&playerInfoPacket);
+				recvBuffer.Read(playerInfo + sizeof(Packet), sizeof(PacketPlayerInfo) - sizeof(Packet));
+				memcpy(playerInfo, &header, sizeof(Packet));
+
+				auto player = mOtherPlayer[playerInfoPacket.id];
+				player->SetActive(true);
+				player->GetTransform().SetPosition(playerInfoPacket.position);
+			}
+			break;
+			
+		default:
+			recvBuffer.Read(temp, header.size - sizeof(Packet)); // 지금 당장 처리하지 않는 패킷 데이터 제거
+			break;
 		}
 	}
 	recvBuffer.Clean();
-}
 #endif
+}
+
 // 트랜스폼 회전을 쿼터니언으로 하니까 존나 부조리하네 
 // 회전 문제를 해결해야 할 때가 왔다. 
 // 완전 누적 방식으로 하던지, 회전을 계층별로 나누던지, 쿼터니언을 포기하던지. 
 // 10.24 해결 ! 
 
-
 void GameScene::Update()
 {
 	for (auto& object : mGameObjects) {
 		object->Update();
+	}
+			bullet->GetTransform().SetPosition(mPlayer->GetChild(1)->GetTransform().GetPosition());
+			bullet->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+	for (auto& bullet : mBulletPool) {
+		bullet->Update();
 	}
 
 
@@ -311,24 +305,28 @@ void GameScene::Update()
 	mTerrain->UpdateGameObjectAboveTerrain();
 
 	GameScene::UpdateShaderVariables();
-}
-#ifndef STAND_ALONE
-void GameScene::Send()
-{
-	if (nullptr == mNetworkManager) {
+	if (nullptr == networkManager) {
 		return;
 	}
 
+void GameScene::Send(std::shared_ptr<NetworkManager>& networkManager)
+{
+#ifndef STAND_ALONE
+void GameScene::Send()
+{
 	std::vector<std::string>& inputBuf = mChatWindow->GetInputBuf();
 
-	std::lock_guard lock{ mNetworkManager->GetSendMutex() };
+	std::lock_guard lock{ networkManager->GetSendMutex() };
 	for (const auto& str : inputBuf) {
-		mNetworkManager->SendChatPacket(str);
+		networkManager->SendChatPacket(str);
 	}
+
+	networkManager->SendPlayerInfoPacket(mPlayer->GetTransform().GetPosition());
+
 	inputBuf.clear();
-	mNetworkManager->WakeSendThread();
-}
+	networkManager->WakeSendThread();
 #endif
+}
 
 void GameScene::UpdateShaderVariables()
 {
@@ -356,49 +354,17 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		bullet->Render(mMainCamera, commandList);
 	}
 
+	for (auto& player : std::views::filter(mOtherPlayer, [=](std::shared_ptr<GameObject>& o) -> bool { return *o; })) {
+		player->Render(mMainCamera, commandList);
+	}
+
 	mMainCamera->RenderSkyBox();
 
 	mResourceManager->PrepareRender(commandList);
 	mMainCamera->Render(commandList);
 	mResourceManager->Render(commandList);
-#ifndef STAND_ALONE
-	mChatWindow->Render();
-#endif 
-
-	mCanvas->Render(commandList);
+}	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
+	mTimeOut -= Time.GetDeltaTime<float>();
+	GameObject::UpdateShaderVariables();
 }
-
-
-
-
-
-//
-//
-//
-//Bullet::Bullet(std::shared_ptr<I3DRenderable> model, const std::vector<MaterialIndex>& materials)
-//	: GameObject(model, materials)
-//{
-//}
-//
-//Bullet::~Bullet()
-//{
-//}
-//
-//void Bullet::Reset(DirectX::SimpleMath::Vector3 dir)
-//{
-//	mDirection = dir;
-//	mTimeOut = 5.f;
-//}
-//
-//bool Bullet::Validate() const 
-//{
-//	return mTimeOut > std::numeric_limits<float>::epsilon();
-//}
-//
-//void Bullet::UpdateShaderVariables()
-//{
-//	GetTransform().Translate(mDirection * Time.GetDeltaTime<float>() * 100.f);
-//	mTimeOut -= Time.GetDeltaTime<float>();
-//	GameObject::UpdateShaderVariables();
-//}
 

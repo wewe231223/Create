@@ -25,7 +25,7 @@ RecvBuffer::RecvBuffer(RecvBuffer&& other) noexcept
 void RecvBuffer::operator=(RecvBuffer&& other) noexcept
 {
     mReadCursor = other.mReadCursor;
-    mWriteCursor= other.mWriteCursor;
+    mWriteCursor = other.mWriteCursor;
     other.ReadAll(mBuffer.data());
     other.Clean();
 }

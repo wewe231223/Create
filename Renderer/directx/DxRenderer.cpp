@@ -46,25 +46,20 @@ ComPtr<ID3D12GraphicsCommandList> DxRenderer::GetCommandList() const
 
 void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 {
-	if (mScene) {
-		Console.WarningLog("이미 로드되어 있는 Scene : {} 이 있습니다.",scene->GetName());
-	}
-	else {
-		Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
-		scene->Load(mDevice,mCommandQueue,mWindow);
-		mScene = scene;
+	Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
-		DxRenderer::FlushCommandQueue();
-	}
+	scene->Load(mDevice, mCommandQueue, mWindow);
+	mScene = scene;
+
+	DxRenderer::FlushCommandQueue();
+	
 }
 
 void DxRenderer::UnloadScene()
 {
 	Console.InfoLog("Scene : {} 을 언로드합니다.", mScene->GetName());
 	mScene.reset();
-
-	
 }
 
 void DxRenderer::StartRender()

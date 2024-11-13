@@ -8,8 +8,8 @@ enum class EWindowStyle {
 };
 
 
-constexpr size_t gDefaultWidth = 1920;
-constexpr size_t gDefaultHeight = 1080;
+constexpr size_t gDefaultWidth = 800;
+constexpr size_t gDefaultHeight = 600;
 
 class Window {
 public:

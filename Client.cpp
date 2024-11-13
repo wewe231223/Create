@@ -5,6 +5,12 @@
 #include "Client.h"
 #include "Game/utils/Input.h"
 #include "Game/scene/GameScene.h"
+#include "Game/scene/TitleScene.h"
+#include "Game/scene/SceneManager.h"
+
+#ifndef STAND_ALONE
+#include "ClientNetwork/core/NetworkManager.h"
+#endif
 
 #define MAX_LOADSTRING 100
 
@@ -46,21 +52,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	window->ChangeWindowStyle(EWindowStyle::Windowed);
     Input.Initialize(window);
     DxRenderer dxrenderer{ window };
+    
+	SceneManager::GetInstance().Initialize(&dxrenderer);
 
-	std::shared_ptr<GameScene> gameScene = std::make_shared<GameScene>("Scene1");
-
-	dxrenderer.LoadScene(gameScene);
-
+    SceneManager::GetInstance().ChangeScene<TitleScene>();
+//	SceneManager::GetInstance().ChangeScene<GameScene>();
+    
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};
     
-
-
     int endCallbackSign = NrSampler.Sample();
 
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Escape, endCallbackSign, []() {PostQuitMessage(0); });
     Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F4, endCallbackSign, []() {Input.DisableVirtualMouse(); });
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::F5, endCallbackSign, []() {Input.EnableVirtualMouse(); });
+
+#ifndef STAND_ALONE 
+    std::shared_ptr<NetworkManager> networkManager = std::make_shared<NetworkManager>();
+    if (false == networkManager->InitializeNetwork()) {
+        networkManager.reset();
+    }
+
+    if (false == networkManager->Connect("Common/serverip.ini")) {
+        networkManager.reset();
+    }
+#endif
 
     // 기본 메시지 루프입니다:
     while (msg.message != WM_QUIT)
@@ -72,12 +88,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else {
             Time.AdvanceTime();
 			Input.Update();
+            SceneManager::GetInstance().CheckSceneChanged();
 #ifndef STAND_ALONE
-            gameScene->ProcessPackets();
+            SceneManager::GetInstance().ProcessPackets(networkManager);
 #endif
-            gameScene->Update();
+            SceneManager::GetInstance().Update();
 #ifndef STAND_ALONE
-            gameScene->Send();
+            SceneManager::GetInstance().Send(networkManager);
 #endif
             dxrenderer.StartRender();
             dxrenderer.Render();

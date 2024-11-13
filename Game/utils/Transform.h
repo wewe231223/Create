@@ -6,6 +6,8 @@ public:
 	~Transform();
 	Transform(const Transform& other);
 public:
+	Transform& operator=(const Transform& other);
+
 	void Translate(const DirectX::SimpleMath::Vector3& translation);
 	// 월드 내 위치이기도 하지만, 자식 노드의 경우, 오프셋 위치이기도 하다. 
 	void SetPosition(const DirectX::SimpleMath::Vector3& position);

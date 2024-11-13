@@ -45,5 +45,5 @@ private:
     INT32 mWriteCursor;
 
     INT32 mBufferSize;
-    std::array<char, BUFFER_SIZE * BUFFER_COUNT> mBuffer;
+    std::array<char, BUFFER_SIZE* BUFFER_COUNT> mBuffer;
 };

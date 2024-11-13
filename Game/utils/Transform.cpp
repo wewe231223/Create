@@ -16,6 +16,17 @@ Transform::Transform(const Transform& other)
 	mParent = other.mParent;
 }
 
+Transform& Transform::operator=(const Transform& other)
+{
+	if (this != &other) {
+		mLocalTransform = other.mLocalTransform;
+		mOrientedBoundingBox = other.mOrientedBoundingBox;
+		mParent = other.mParent;
+	}
+
+	return *this;
+}
+
 void Transform::Translate(const DirectX::SimpleMath::Vector3& translation)
 {
 	mPosition += translation;
