@@ -1,8 +1,9 @@
 #include "pch.h"
-#include "resource/BillBoardManager.h"
+#include "resource/BillBoard.h"
 
 BillBoard::BillBoard(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandList> loadCommandList)
 {
+	// 빌보드 정점 업로드 버퍼 생성... 
 }
 
 BillBoard::~BillBoard()
@@ -34,9 +35,7 @@ void BillBoard::MakeBillBoard(UINT halfWidth, UINT height, TextureIndex image)
 	mDecayed = true;
 }
 
-void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS texHeap)
+void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
 {
-	mShader->SetShader(commandList);
 
-	// commandList->SetGraphicsRootShaderResourceView()
 }

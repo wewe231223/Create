@@ -16,7 +16,7 @@ public:
 	// 움직이지 않는 빌보드 생성 ( NonSpritable ) 
 	void MakeBillBoard(UINT halfWidth, UINT height, TextureIndex image);
 
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList,D3D12_GPU_VIRTUAL_ADDRESS texHeap);
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer);
 private: 
 	std::unique_ptr<IGraphicsShader> mShader{ nullptr };
 

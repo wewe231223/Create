@@ -120,7 +120,7 @@
     <ClInclude Include="core\window.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="resource\BillBoardManager.h">
+    <ClInclude Include="resource\BillBoard.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>
@@ -209,7 +209,7 @@
     <ClCompile Include="core\window.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="resource\BillBoardManager.cpp">
+    <ClCompile Include="resource\BillBoard.cpp">
       <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>

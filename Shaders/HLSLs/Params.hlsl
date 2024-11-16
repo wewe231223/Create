@@ -40,7 +40,6 @@ Texture2D                   gTextures[1024]            : register(t3,space0);
 Texture2DArray              gTextureArray[512]         : register(t3,space1);   
 TextureCube                 gTextureCube[512]          : register(t3,space2);
 
-
 SamplerState pointWrapSampler : register(s0);
 SamplerState pointClampSampler : register(s1);
 SamplerState linearWrapSampler : register(s2);
