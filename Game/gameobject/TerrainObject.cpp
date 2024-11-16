@@ -25,10 +25,34 @@ void TerrainCollider::OnTerrain(std::shared_ptr<class GameObject> object)
 
 }
 
-DirectX::SimpleMath::Vector3 TerrainCollider::OnTerrain(DirectX::SimpleMath::Vector3 position)
+DirectX::SimpleMath::Vector3 TerrainCollider::OnTerrain(const DirectX::SimpleMath::Vector3& position)
 {
     float height = mTerrainHeightMap->GetHeight(position.x / mScale.x, position.z / mScale.z);
     return DirectX::SimpleMath::Vector3(position.x, height, position.z);
+}
+
+DirectX::SimpleMath::Vector3 TerrainCollider::GetNormal(const DirectX::SimpleMath::Vector3& position)
+{
+    int ix = static_cast<int>(position.x / mScale.x);
+    int iz = static_cast<int>(position.z / mScale.z);
+
+    float fx = position.x / mScale.x - ix;
+    float fz = position.z / mScale.z - iz;
+
+
+    DirectX::XMFLOAT3 LT{ mTerrainHeightMap->GetNormal(ix,iz + 1,mScale) };
+    DirectX::XMFLOAT3 LB{ mTerrainHeightMap->GetNormal(ix, iz, mScale) };
+    DirectX::XMFLOAT3 RT{ mTerrainHeightMap->GetNormal(ix + 1, iz + 1, mScale) };
+    DirectX::XMFLOAT3 RB{ mTerrainHeightMap->GetNormal(ix + 1, iz, mScale) };
+
+
+    DirectX::XMFLOAT3 Bot{ DirectX::SimpleMath::Vector3::Lerp(LB, RB, fx) };
+    DirectX::XMFLOAT3 Top{ DirectX::SimpleMath::Vector3::Lerp(LT, RT, fx) };
+
+    DirectX::SimpleMath::Vector3 terrainNormal{ DirectX::SimpleMath::Vector3::Lerp(Bot, Top, fz) };
+    terrainNormal.Normalize();
+
+	return terrainNormal;
 }
 
 bool TerrainCollider::TerrainCollision(Transform& object)

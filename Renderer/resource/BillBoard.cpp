@@ -63,6 +63,7 @@ void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU
 	if (mDecayed) {
 		mDecayed = false;
 	}
+	// TODO :: Decay 인 상태를 판별하라. 
 	::memcpy(mVertexBuffers[mCurrentBuffer].bufferptr, mVertices.data(), sizeof(BillBoardVertex) * mVertices.size());
 	
 	mShader->SetShader(commandList);
@@ -81,7 +82,7 @@ void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU
 
 	commandList->SetGraphicsRootDescriptorTable(BRP_Texture, texHeap);
 
-	commandList->DrawInstanced(1, static_cast<UINT>(mVertices.size()), 0, 0);
+	commandList->DrawInstanced(static_cast<UINT>(mVertices.size()), static_cast<UINT>(mVertices.size()), 0, 0);
 
 	mCurrentBuffer = (mCurrentBuffer + 1) % static_cast<size_t>(GC_FrameCount);
 

@@ -73,7 +73,7 @@ BillBoard_GS_IN BillBoardVS(BillBoard_VS_IN input)
 
 bool CheckZeroVector(float3 v)
 {
-    return v.x == 0.f && v.y == 0.f && v.z == 0.f;
+    return length(v) < 0.0001f;
 }
 
 [maxvertexcount(4)]
@@ -90,7 +90,7 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     else
     {
         forward = normalize(cameraPosition - input[0].position);
-        right = cross(input[0].up, forward);
+        right = normalize(cross(input[0].up, forward));
         up = input[0].up;
     }
     
@@ -144,7 +144,7 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     
 }
 
-
+[earlydepthstencil]
 float4 BillBoardPS(BillBoard_PS_IN input) : SV_TARGET
 {
     return gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);

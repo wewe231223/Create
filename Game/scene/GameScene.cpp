@@ -231,7 +231,17 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	
 	mBillBoard = std::make_shared<BillBoard>(device,mResourceManager->GetLoadCommandList());
 
-	mBillBoard->MakeBillBoard(mTerrain->OnTerrain({ 100.f,10.f,100.f }) + DirectX::SimpleMath::Vector3{0.f,10.f,0.f}, 10, 10, mResourceManager->GetTexture("Grass"));
+	for (auto i = 0; i < 1000; ++i) {
+		BillBoardVertex vertex{};
+		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{0.f,1.f,0.f};
+		vertex.halfWidth = 10;
+		vertex.height = 10;
+		vertex.texture = mResourceManager->GetTexture("Grass");
+		vertex.up = mTerrain->GetNormal(vertex.position);
+		vertex.spritable = false;
+
+		mBillBoard->MakeBillBoard(vertex);
+	}
 
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
