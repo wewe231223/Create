@@ -170,6 +170,7 @@ struct BillBoardVertex {
 
 	DirectX::XMFLOAT3 up{ 0.f,0.f,0.f };
 
+	TextureIndex texture{};
 #pragma region Sprite 
 	bool spritable{ false };
 	UINT spriteFrameInRow{ 0 };
@@ -204,3 +205,9 @@ enum UIRootParamIndex : UINT {
 	URP_Texture = 1,
 	URP_END = 2
 };
+
+enum BillBoardRootParamIndex : UINT {
+	BRP_END
+};
+
+
