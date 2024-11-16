@@ -41,7 +41,7 @@ public:
 
 	void Update();
 	void RenderSkyBox();
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	D3D12_GPU_VIRTUAL_ADDRESS GetCameraBufferAddress();
 private:
 	Transform mTransform{};
 	CameraParam mParam{};

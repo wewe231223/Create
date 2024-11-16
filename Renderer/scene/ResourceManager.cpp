@@ -205,7 +205,7 @@ std::shared_ptr<I3DRenderable> ResourceManager::GetModel(const std::string& name
 	return mModelContainer->GetModel(name);
 }
 
-void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
@@ -220,6 +220,7 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	ResourceManager::SetGlobals(commandList);
 #endif 
+	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, cameraBuffer);
 }
 
 void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)

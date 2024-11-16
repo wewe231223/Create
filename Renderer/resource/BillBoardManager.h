@@ -1,13 +1,13 @@
 #pragma once 
-class BillBoardManager {
+class BillBoard {
 	constexpr static size_t BillboardCount = 1000;
 	struct VertexBuffer {
 		ComPtr<ID3D12Resource> buffer{};
 		BillBoardVertex* bufferptr{};
 	};
 public:
-	BillBoardManager(ComPtr<ID3D12Device> device,ComPtr<ID3D12CommandList> loadCommandList);
-	~BillBoardManager();
+	BillBoard(ComPtr<ID3D12Device> device,ComPtr<ID3D12CommandList> loadCommandList);
+	~BillBoard();
 public:
 	// 기본 빌보드 생성 함수 
 	void MakeBillBoard(const BillBoardVertex& vertex);

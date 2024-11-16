@@ -24,7 +24,7 @@ protected:
 	};
 public:
 	GraphicsShaderBase(ComPtr<ID3D12Device>& device);
-	~GraphicsShaderBase();
+	virtual ~GraphicsShaderBase();
 
 	virtual size_t GetShaderID() const noexcept override;
 	virtual void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
@@ -153,3 +153,17 @@ public:
 };
 
 
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						BillBoard Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class BillBoardShader : public GraphicsShaderBase {
+public:
+	BillBoardShader(ComPtr<ID3D12Device>& device);
+	~BillBoardShader();
+};

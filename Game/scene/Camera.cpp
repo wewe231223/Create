@@ -91,6 +91,15 @@ void Camera::Update()
 {
 	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(),DirectX::SimpleMath::Vector3::Up);
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
+	
+	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
+
+	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
+
+	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
+	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
+	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
+	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
 }
 
 void Camera::RenderSkyBox()
@@ -101,17 +110,7 @@ void Camera::RenderSkyBox()
 
 }
 
-void Camera::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+D3D12_GPU_VIRTUAL_ADDRESS Camera::GetCameraBufferAddress()
 {
-
-	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
-
-	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
-	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
-	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
-	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
-
-	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, CameraBuffer.buffer->GetGPUVirtualAddress());
-
-	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
+	return mCameraBuffers[mMemoryIndex].buffer->GetGPUVirtualAddress();
 }

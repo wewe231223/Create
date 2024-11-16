@@ -341,9 +341,11 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 	mMainCamera->RenderSkyBox();
 
-	mResourceManager->PrepareRender(commandList);
-	mMainCamera->Render(commandList);
+	mResourceManager->PrepareRender(commandList,mMainCamera->GetCameraBufferAddress());
+
 	mResourceManager->Render(commandList);
+
+
 #ifndef STAND_ALONE
 	mChatWindow->Render();
 #endif 
