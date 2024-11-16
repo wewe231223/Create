@@ -14,15 +14,15 @@ public:
 	// 빌보드 여러개 생성 
 	void MakeBillBoard(const std::vector<BillBoardVertex>& vertices);
 	// 움직이지 않는 빌보드 생성 ( NonSpritable ) 
-	void MakeBillBoard(UINT halfWidth, UINT height, TextureIndex image);
+	void MakeBillBoard(const DirectX::XMFLOAT3& position,UINT halfWidth, UINT height, TextureIndex image);
 
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer);
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_DESCRIPTOR_HANDLE texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer);
 private: 
 	std::unique_ptr<IGraphicsShader> mShader{ nullptr };
 
 	std::vector<BillBoardVertex> mVertices{};
-	ComPtr<ID3D12Resource> mVertexBuffer{ nullptr };
 	bool mDecayed{ true };
 
 	std::array<VertexBuffer,static_cast<size_t>(GC_FrameCount)> mVertexBuffers{};
+	UINT mCurrentBuffer{ 0 };
 };

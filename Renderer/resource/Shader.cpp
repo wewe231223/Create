@@ -670,7 +670,7 @@ SkyBoxShader::~SkyBoxShader()
 UIShader::UIShader(ComPtr<ID3D12Device>& device)
 	: GraphicsShaderBase(device)
 {
-    mAttribute = VertexAttrib_position ;
+    mAttribute = VertexAttrib_position;
     MakeShader(EShaderType::VS, "UI.hlsl", "UiVS", "vs_5_1", nullptr);
     MakeShader(EShaderType::PS, "UI.hlsl", "UiPS", "ps_5_1", nullptr);
 
@@ -785,7 +785,93 @@ UIShader::~UIShader()
 BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
 	: GraphicsShaderBase(device)
 {
+    mAttribute = VertexAttrib_BillBoard;
+    MakeShader(EShaderType::VS, "BillBoard.hlsl", "BillBoardVS", "vs_5_1", nullptr);
+    MakeShader(EShaderType::GS, "BillBoard.hlsl", "BillBoardGS", "gs_5_1", nullptr);
+    MakeShader(EShaderType::PS, "BillBoard.hlsl", "BillBoardPS", "ps_5_1", nullptr);
 
+
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
+        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
+        { "WIDTH",              0, DXGI_FORMAT_R32_UINT,        0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_UINT,        0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
+        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
+        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
+        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
+        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_UINT,        0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+    };
+
+
+    // 애는 하나만씀. 
+    D3D12_DESCRIPTOR_RANGE texRange[1];
+    // Tex2D 
+    texRange[0].BaseShaderRegister = 0;
+    texRange[0].NumDescriptors = 1024;
+    texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[0].RegisterSpace = 0;
+
+
+    D3D12_ROOT_PARAMETER rootParams[BRP_END]{};
+
+	rootParams[BRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParams[BRP_CameraConstants].Descriptor.ShaderRegister = 0;
+	rootParams[BRP_CameraConstants].Descriptor.RegisterSpace = 0;
+	rootParams[BRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	rootParams[BRP_Time].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	rootParams[BRP_Time].Constants.Num32BitValues = 1;
+	rootParams[BRP_Time].Constants.ShaderRegister = 1;
+	rootParams[BRP_Time].Constants.RegisterSpace = 0;
+	rootParams[BRP_Time].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	rootParams[BRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParams[BRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
+	rootParams[BRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
+	rootParams[BRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+
+    D3D12_ROOT_SIGNATURE_DESC rootDesc{};
+    rootDesc.NumParameters = _countof(rootParams);
+    rootDesc.pParameters = rootParams;
+    rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
+    rootDesc.pStaticSamplers = mStaticSamplers.data();
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> error;
+
+    auto hr = D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1, signature.GetAddressOf(), error.GetAddressOf());
+    if (FAILED(hr)) {
+        OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+    }
+
+    CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+
+    // 파이프라인 상태 객체(PSO) 생성
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+    psoDesc.pRootSignature = mRootSignature.Get();
+    psoDesc.VS = GetShaderByteCode(EShaderType::VS);
+	psoDesc.GS = GetShaderByteCode(EShaderType::GS);
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
+    psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT ;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat);
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+
+    Console.InfoLog("BillBoard Shader 가 성공적으로 로딩되었습니다.");
 
 }
 

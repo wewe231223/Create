@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Renderer/resource/TerrainImage.h"
+#include "Renderer/resource/BillBoard.h"
 #include "Game/scene/GameScene.h"
 #include "Game/gameobject/GameObject.h"
 #include "Game/gameobject/TerrainObject.h"
@@ -12,6 +13,7 @@
 #include "Game/scripts/SCRIPT_Bullet.h"
 #include "Game/subwindow/ChatWindow.h"
 #include "Game/utils/RandomEngine.h"
+
 
 GameScene::GameScene()
 	: Scene()
@@ -43,6 +45,8 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
 
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
+
+	mResourceManager->CreateTexture("Grass", "./Resources/textures/Grass01.png");
 }
 
 void GameScene::CreateMaterials()
@@ -119,7 +123,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
+	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
 	mCurrentCameraMode->Enter();
 }
 
@@ -224,37 +228,10 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		mEnemies.emplace_back(enemy);
 	}
 
+	
+	mBillBoard = std::make_shared<BillBoard>(device,mResourceManager->GetLoadCommandList());
 
-
-
-	//ui = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("Menu"));
-	//ui->GetUIRect().LTx = 0.f;
-	//ui->GetUIRect().LTy = 0.f;
-	//ui->GetUIRect().width = 1920.f;
-	//ui->GetUIRect().height = 1080.f;
-
-
-	//healthBarBase = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBarBase"));
-	//auto& uirect = healthBarBase->GetUIRect();
-	//uirect.LTx = 10.f;
-	//uirect.LTy = 10.f;
-	//uirect.width = 500.f;
-	//uirect.height = 50.f;
-
-
-	//healthBar = std::make_shared<UIModel>(mUIRenderer, mUIRenderer->GetUIImage("HealthBar"));
-	//auto& uirect1 = healthBar->GetUIRect();
-	//uirect1.LTx = 10.f;
-	//uirect1.LTy = 10.f;
-	//uirect1.width = HP * 5.f;
-	//uirect1.height = 50.f;
-
-
-
-	//Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	//Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::Keys::Tab, 0, [this]() { ui->ToggleActiveState(); });
-	//ui->SetActiveState(false);
-
+	mBillBoard->MakeBillBoard(mTerrain->OnTerrain({ 100.f,10.f,100.f }) + DirectX::SimpleMath::Vector3{0.f,10.f,0.f}, 10, 10, mResourceManager->GetTexture("Grass"));
 
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
@@ -342,9 +319,10 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mMainCamera->RenderSkyBox();
 
 	mResourceManager->PrepareRender(commandList,mMainCamera->GetCameraBufferAddress());
-
 	mResourceManager->Render(commandList);
 
+
+	mBillBoard->Render(commandList, mResourceManager->GetTexHandle(), mMainCamera->GetCameraBufferAddress());
 
 #ifndef STAND_ALONE
 	mChatWindow->Render();

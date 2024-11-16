@@ -41,4 +41,6 @@ private:
 	ObjectPool<GameObject, 64> mBulletPool{};
 
 	std::shared_ptr<class TerrainCollider> mTerrain{ nullptr };
+
+	std::shared_ptr<class BillBoard> mBillBoard{ nullptr };
 };

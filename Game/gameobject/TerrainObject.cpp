@@ -25,6 +25,12 @@ void TerrainCollider::OnTerrain(std::shared_ptr<class GameObject> object)
 
 }
 
+DirectX::SimpleMath::Vector3 TerrainCollider::OnTerrain(DirectX::SimpleMath::Vector3 position)
+{
+    float height = mTerrainHeightMap->GetHeight(position.x / mScale.x, position.z / mScale.z);
+    return DirectX::SimpleMath::Vector3(position.x, height, position.z);
+}
+
 bool TerrainCollider::TerrainCollision(Transform& object)
 {
     float height = object.GetPosition().y;
