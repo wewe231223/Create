@@ -30,7 +30,7 @@ struct BillBoard_VS_IN
     bool spritable          : SPRITABLE;
     uint spriteFrameInRow   : SPRITEFRAMEINROW;
     uint spriteFrameInCol   : SPRITEFRAMEINCOL;
-    uint spriteDuration    : SPRITEDURATION;
+    uint spriteDuration : SPRITEDURATION;
 };
 
 struct BillBoard_GS_IN
@@ -147,5 +147,8 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
 [earlydepthstencil]
 float4 BillBoardPS(BillBoard_PS_IN input) : SV_TARGET
 {
-    return gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
+    float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
+ 
+    
+    return Color;
 }
