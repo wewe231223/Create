@@ -78,6 +78,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 #endif
 
+    size_t sendPerTime = 30;
+    float sendTime = 1.0f / static_cast<float>(sendPerTime);
+    float sendCounter = 0.0f;
+
     // 기본 메시지 루프입니다:
     while (msg.message != WM_QUIT)
     {
@@ -87,6 +91,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else {
             Time.AdvanceTime();
+            sendCounter += Time.GetDeltaTime();
+
 			Input.Update();
             SceneManager::GetInstance().CheckSceneChanged();
 #ifndef STAND_ALONE
@@ -94,7 +100,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif
             SceneManager::GetInstance().Update();
 #ifndef STAND_ALONE
-            SceneManager::GetInstance().Send(networkManager);
+            if (sendCounter > sendTime) {
+                SceneManager::GetInstance().Send(networkManager);
+                sendCounter = 0.0f;
+            }
 #endif
             dxrenderer.StartRender();
             dxrenderer.Render();

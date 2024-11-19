@@ -171,6 +171,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	for (int id : std::views::iota(0ULL, MAX_PLAYER)) {
         auto player = mPlayer->Clone();
 		player->SetMaterial(mResourceManager->GetMaterial("TankMeterial"));
+		player->GetTransform().Scale({ 0.1f, 0.1f, 0.1f });
+		mOtherPlayer.emplace_back(player);
 		mTerrain->MakeObjectOnTerrain(player);
 		mGameObjects.emplace_back(player);
 		player->SetActive(false);
@@ -263,6 +265,10 @@ void GameScene::ProcessPackets(std::shared_ptr<NetworkManager>& networkManager)
 				PacketPlayerInfo playerInfoPacket;
 				char* playerInfo = reinterpret_cast<char*>(&playerInfoPacket);
 				recvBuffer.Read(playerInfo + sizeof(Packet), sizeof(PacketPlayerInfo) - sizeof(Packet));
+				if (header.id == networkManager->GetId()) {
+					break;
+				}
+
 				memcpy(playerInfo, &header, sizeof(Packet));
 
 				auto player = mOtherPlayer[playerInfoPacket.id];
