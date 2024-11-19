@@ -78,7 +78,7 @@ namespace fs = std::filesystem;
 // 지금은 이렇게 두고 나중에 한곳에 묶자 
 extern GTime Time;
 // 심볼 
-#define SWAPCHAIN_ALLOW_TEARING
+// #define SWAPCHAIN_ALLOW_TEARING
 #define UI_RENDER
 #define UI_DARK_THEME
 #define NULL_INDEX 0xFFFFFFFF

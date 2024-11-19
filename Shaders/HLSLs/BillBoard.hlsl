@@ -144,11 +144,14 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     
 }
 
-[earlydepthstencil]
 float4 BillBoardPS(BillBoard_PS_IN input) : SV_TARGET
 {
     float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
  
+    if (Color.a < 0.1f)
+    {
+        discard;
+    }
     
     return Color;
 }

@@ -231,7 +231,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	
 	mBillBoard = std::make_shared<BillBoard>(device,mResourceManager->GetLoadCommandList());
 
-	for (auto i = 0; i < 1000; ++i) {
+	for (auto i = 0; i < 100000; ++i) {
 		BillBoardVertex vertex{};
 		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{0.f,1.f,0.f};
 		vertex.halfWidth = 10;

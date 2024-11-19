@@ -88,7 +88,7 @@ void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU
 
 	commandList->SetGraphicsRootDescriptorTable(BRP_Texture, texHeap);
 
-	commandList->DrawInstanced(static_cast<UINT>(mVertices.size()),1, 0, 0);
+	commandList->DrawInstanced(static_cast<UINT>(mVertices.size()), 1, 0, 0);
 
 	mCurrentBuffer = (mCurrentBuffer + 1) % static_cast<size_t>(GC_FrameCount);
 
