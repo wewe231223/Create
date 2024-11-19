@@ -793,8 +793,8 @@ BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
 
     D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
         { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
-        { "WIDTH",              0, DXGI_FORMAT_R32_UINT,        0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
-        { "HEIGHT",             0, DXGI_FORMAT_R32_UINT,        0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,        0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,        0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
         { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
         { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
         { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable

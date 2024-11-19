@@ -50,6 +50,10 @@ void BillBoard::MakeBillBoard(const std::vector<BillBoardVertex>& vertices)
 {
 	std::copy(vertices.begin(), vertices.end(), std::back_inserter(mVertices));
 	mDecayed = true;
+	for (auto& buffer : mVertexBuffers) {
+		::memcpy(buffer.bufferptr, mVertices.data(), sizeof(BillBoardVertex) * mVertices.size());
+
+	}
 }
 
 void BillBoard::MakeBillBoard(const DirectX::XMFLOAT3& position, UINT halfWidth, UINT height, TextureIndex image)

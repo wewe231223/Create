@@ -112,6 +112,7 @@ void Transform::SetChild(Transform* child)
 	mChildren.push_back(child);
 }
 
+
 void Transform::SetOrientedBoundingBox(DirectX::BoundingOrientedBox box)
 {
 	mOrientedBoundingBox = box;
@@ -194,4 +195,43 @@ DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 DirectX::SimpleMath::Matrix Transform::GetWorldMatrix()
 {
 	return mWorldMatrix;
+}
+
+Transform& Transform::GetChild(UINT dfsIndex)
+{
+	if (dfsIndex == 0) {
+		return *this;
+	}
+	Transform* ret = nullptr;
+	UINT index = dfsIndex - 1;
+
+
+	for (auto& child : mChildren) {
+		ret = child->InternalGetChild(index);
+		if (ret == nullptr) {
+			break;
+		}
+	}
+
+	return *ret;
+}
+
+Transform* Transform::InternalGetChild(UINT& dfsIndex)
+{
+	if (dfsIndex == 0) {
+		return this;
+	}
+
+	Transform* ret = nullptr;
+	dfsIndex -= 1;
+
+	for (auto& child : mChildren) {
+		ret = child->InternalGetChild(dfsIndex);
+
+		if (ret != nullptr) {
+			break;
+		}
+	}
+
+	return ret;
 }

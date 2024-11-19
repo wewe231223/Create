@@ -1,6 +1,6 @@
 #pragma once 
 class BillBoard {
-	constexpr static size_t BillboardCount = 100000;
+	constexpr static size_t BillboardCount = 200'0000;
 	struct VertexBuffer {
 		ComPtr<ID3D12Resource> buffer{};
 		BillBoardVertex* bufferptr{};

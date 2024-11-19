@@ -169,8 +169,8 @@ struct ModelContext2D {
 struct BillBoardVertex {
 	DirectX::XMFLOAT3 position{ 0.f,0.f,0.f };
 
-	UINT halfWidth{ 0 };
-	UINT height{ 0 };
+	float halfWidth{ 0.f };
+	float height{ 0.f };
 
 	DirectX::XMFLOAT3 up{ 0.f,0.f,0.f };
 

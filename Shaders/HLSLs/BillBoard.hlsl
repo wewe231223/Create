@@ -23,8 +23,8 @@ SamplerState anisotropicClampSampler : register(s5);
 struct BillBoard_VS_IN
 {
     float3 position         : POSITION;
-    uint halfWidth          : WIDTH;
-    uint height             : HEIGHT;
+    float halfWidth          : WIDTH;
+    float height             : HEIGHT;
     float3 up               : UP; 
     uint textureIndex       : TEXTUREINDEX;
     bool spritable          : SPRITABLE;
@@ -36,8 +36,8 @@ struct BillBoard_VS_IN
 struct BillBoard_GS_IN
 {
     float3 position : POSITION;
-    uint halfWidth : WIDTH;
-    uint height : HEIGHT;
+    float halfWidth : WIDTH;
+    float height : HEIGHT;
     float3 up : UP;
     uint textureIndex : TEXTUREINDEX;
     bool spritable : SPRITABLE;

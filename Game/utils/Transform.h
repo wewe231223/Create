@@ -28,6 +28,8 @@ public:
 	void SetParent(Transform* parent);
 	void SetChild(Transform* child);
 
+	Transform& GetChild(UINT dfsIndex);
+
 	void SetOrientedBoundingBox(DirectX::BoundingOrientedBox box);
 
 	DirectX::SimpleMath::Vector3 GetPosition() const;
@@ -42,6 +44,8 @@ public:
 
 	DirectX::SimpleMath::Matrix& CreateWorldMatrix();
 	DirectX::SimpleMath::Matrix GetWorldMatrix();
+private:
+	Transform* InternalGetChild(UINT& dfsIndex);
 private:
 	DirectX::SimpleMath::Vector3	mPosition{ DirectX::SimpleMath::Vector3::Zero };
 	DirectX::SimpleMath::Quaternion mRotation{ DirectX::SimpleMath::Quaternion::Identity };
