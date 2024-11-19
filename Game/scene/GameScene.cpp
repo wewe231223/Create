@@ -233,9 +233,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	for (auto i = 0; i < 100000; ++i) {
 		BillBoardVertex vertex{};
-		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{0.f,1.f,0.f};
-		vertex.halfWidth = 10;
-		vertex.height = 10;
+		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{0.f,0.7f,0.f};
+		vertex.halfWidth = 1;
+		vertex.height = 1;
 		vertex.texture = mResourceManager->GetTexture("Grass");
 		vertex.up = mTerrain->GetNormal(vertex.position);
 		vertex.spritable = false;

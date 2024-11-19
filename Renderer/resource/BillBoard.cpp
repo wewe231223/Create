@@ -26,6 +26,8 @@ BillBoard::BillBoard(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandList> load
 		CheckHR(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(buffer.buffer.GetAddressOf())));
 		buffer.buffer->Map(0, nullptr, reinterpret_cast<void**>(&buffer.bufferptr));
 	}
+
+	mVertices.reserve(10'0000);
 }
 
 BillBoard::~BillBoard()
