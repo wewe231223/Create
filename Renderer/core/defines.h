@@ -190,6 +190,24 @@ struct BillBoardVertex {
 };
 
 
+struct LIGHT
+{
+	DirectX::XMFLOAT4				m_xmf4Ambient;				// 빛의 주변광(Ambient Light) 색상 및 강도.
+	DirectX::XMFLOAT4				m_xmf4Diffuse;				// 빛의 난반사(Diffuse Light) 색상 및 강도.
+	DirectX::XMFLOAT4				m_xmf4Specular;				// 빛의 반사광(Specular Light) 색상 및 강도.	
+	DirectX::XMFLOAT3				m_xmf3Position;				// 빛의 위치.
+	float 							m_fFalloff;					// 빛의 감쇠 정도.
+	DirectX::XMFLOAT3				m_xmf3Direction;			// 빛의 방향.
+	float 							m_fTheta;					// 스포트라이트 내부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
+	DirectX::XMFLOAT3				m_xmf3Attenuation;			// 빛의 감쇠 계수.
+	float							m_fPhi;						// 스포트라이트 외부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
+	bool							m_bEnable;					// 빛의 사용/미사용.	
+	int								m_nType;					// 빛의 타입.	
+	float							m_fRange;					// 빛의 범위.	
+	float							padding;					// 명시적 패딩 
+};
+
+
 enum EGlobalConstants : UINT {
 	GC_FrameCount			= 3,
 	GC_BackBufferCount		= 3,
