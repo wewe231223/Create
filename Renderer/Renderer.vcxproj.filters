@@ -238,5 +238,8 @@
     <FxCompile Include="..\Shaders\HLSLs\BillBoard.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\NormalTexturedObject.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

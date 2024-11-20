@@ -147,6 +147,12 @@ struct ModelContext2D {
 // uint 스프라이트 가로 좌표	= 스프라이트 인덱스 % 이미지 가로 개수
 // uint 스프라이트 세로 좌표	= 스프라이트 인덱스 / 이미지 가로 개수
 // 
+// 
+// ** Sprite Index ** 
+//		
+// min ( (uint)( floor( ( t * n ) / ( 1000 * d ) ) + 1, n )    
+// 
+// 
 // float3x3 UVTransform = 
 // -----------------------------------------------------------------------------------------------------------------------
 // |		 단위 가로 비율 			|				0.0					|		단위 가로 비율 * 스프라이트 가로 좌표			|	
@@ -179,7 +185,7 @@ struct BillBoardVertex {
 	bool spritable{ false };
 	UINT spriteFrameInRow{ 0 };
 	UINT spriteFrameInCol{ 0 };
-	UINT spriteDuration{ 0 };
+	float spriteDuration{ 0 };
 #pragma endregion Sprite 
 };
 

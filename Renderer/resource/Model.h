@@ -89,8 +89,8 @@ public:
 public:
 	TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader, BasicShape shapeType);
 	TexturedModel(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader, std::vector<DirectX::XMFLOAT3>& positions, std::vector<DirectX::XMFLOAT3>& norms, std::vector<DirectX::XMFLOAT2>& uvs, std::vector<UINT>& indices);
+	TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList, std::shared_ptr<IGraphicsShader> shader, std::vector<DirectX::XMFLOAT3>& positions, std::vector<DirectX::XMFLOAT3>& norms, std::vector<DirectX::XMFLOAT3>& tangents, std::vector<DirectX::XMFLOAT3>& biTangents , std::vector<DirectX::XMFLOAT2>& uvs, std::vector<UINT>& indices);
 	~TexturedModel();
-
 };
 
 

@@ -81,7 +81,7 @@
     <ClInclude Include="Game\gameobject\CubeObject.h">
       <Filter>Game\gameobject</Filter>
     </ClInclude>
-    <ClInclude Include="Game\gameobject\BinObject.h">
+    <ClInclude Include="Game\gameobject\TexturedObject.h">
       <Filter>Game\gameobject</Filter>
     </ClInclude>
     <ClInclude Include="Game\utils\Math2D.h">
@@ -161,7 +161,7 @@
     <ClCompile Include="Game\gameobject\CubeObject.cpp">
       <Filter>Game\gameobject</Filter>
     </ClCompile>
-    <ClCompile Include="Game\gameobject\BinObject.cpp">
+    <ClCompile Include="Game\gameobject\TexturedObject.cpp">
       <Filter>Game\gameobject</Filter>
     </ClCompile>
     <ClCompile Include="Game\utils\Math2D.cpp">

@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "Game/gameobject/BinObject.h"
+#include "Game/gameobject/TexturedObject.h"
 
 // 내일 실제 데이터 넣어보고 렌더링 해보자
 // 에셋 바이너라이저는 단순 정점 정보만 올리고 재질 정보는 별도로 바인딩 하는 것으로 한다. 
 
-BinObject::BinObject(std::shared_ptr<ResourceManager>& resourceMgr, const fs::path& binPath)
+TexturedObject::TexturedObject(std::shared_ptr<ResourceManager>& resourceMgr, const fs::path& binPath)
 {
 	std::ifstream file(binPath, std::ios::binary);
 	assert(file.is_open());
@@ -70,7 +70,7 @@ BinObject::BinObject(std::shared_ptr<ResourceManager>& resourceMgr, const fs::pa
 
 	for (UINT i = 0; i < childCount; ++i)
 	{
-		auto& child = mChildObjects.emplace_back(std::make_shared<BinObject>(resourceMgr, file));
+		auto& child = mChildObjects.emplace_back(std::make_shared<TexturedObject>(resourceMgr, file));
 		child->GetTransform().SetParent(&mTransform);
 	}
 
@@ -78,7 +78,7 @@ BinObject::BinObject(std::shared_ptr<ResourceManager>& resourceMgr, const fs::pa
 
 }
 
-BinObject::BinObject(std::shared_ptr<ResourceManager>& resourceMgr, std::ifstream& file)
+TexturedObject::TexturedObject(std::shared_ptr<ResourceManager>& resourceMgr, std::ifstream& file)
 {
 	size_t size{ 0 };
 
@@ -141,23 +141,23 @@ BinObject::BinObject(std::shared_ptr<ResourceManager>& resourceMgr, std::ifstrea
 
 	for (UINT i = 0; i < childCount; ++i)
 	{
-		auto& child = mChildObjects.emplace_back(std::make_shared<BinObject>(resourceMgr, file));
+		auto& child = mChildObjects.emplace_back(std::make_shared<TexturedObject>(resourceMgr, file));
 		mTransform.SetChild(&child->GetTransform());
 		child->SetMaterial(mMaterials);
 	}
 }
 
-BinObject::~BinObject()
+TexturedObject::~TexturedObject()
 {
 }
 
 
-void BinObject::UpdateShaderVariables()
+void TexturedObject::UpdateShaderVariables()
 {
 	GameObject::UpdateShaderVariables();
 }
 
-void BinObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)
+void TexturedObject::Render(std::shared_ptr<Camera> camera, ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	if (GameObject::IsInFrustum(camera)) {
 		GameObject::Render(camera, commandList);

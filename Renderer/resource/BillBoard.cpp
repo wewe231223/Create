@@ -56,7 +56,7 @@ void BillBoard::MakeBillBoard(const std::vector<BillBoardVertex>& vertices)
 	}
 }
 
-void BillBoard::MakeBillBoard(const DirectX::XMFLOAT3& position, UINT halfWidth, UINT height, TextureIndex image)
+void BillBoard::MakeBillBoard(const DirectX::XMFLOAT3& position, float halfWidth, float height, TextureIndex image)
 {
 	BillBoardVertex vertex{};
 	vertex.position = position;
@@ -70,6 +70,8 @@ void BillBoard::MakeBillBoard(const DirectX::XMFLOAT3& position, UINT halfWidth,
 	mDecayed = true;
 }
 
+#include "ui/Console.h"
+
 void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_DESCRIPTOR_HANDLE texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
 {
 	if (mDecayed) {
@@ -77,7 +79,7 @@ void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU
 	}
 	// TODO :: Decay 인 상태를 판별하라. 
 //	::memcpy(mVertexBuffers[mCurrentBuffer].bufferptr, mVertices.data(), sizeof(BillBoardVertex) * mVertices.size());
-	
+
 	mShader->SetShader(commandList);
 
 	D3D12_VERTEX_BUFFER_VIEW vbv{};
@@ -90,7 +92,7 @@ void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU
 
 	commandList->SetGraphicsRootConstantBufferView(BRP_CameraConstants, cameraBuffer);
 
-	commandList->SetGraphicsRoot32BitConstant(BRP_Time, Time.GetTimeSinceStarted<UINT>(), 0);
+	commandList->SetGraphicsRoot32BitConstant(BRP_Time, Time.GetTimeSinceStarted<UINT, std::chrono::milliseconds>(), 0);
 
 	commandList->SetGraphicsRootDescriptorTable(BRP_Texture, texHeap);
 

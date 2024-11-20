@@ -5,7 +5,7 @@
 #include "Game/gameobject/GameObject.h"
 #include "Game/gameobject/TerrainObject.h"
 #include "Game/gameobject/CubeObject.h"
-#include "Game/gameobject/BinObject.h"
+#include "Game/gameobject/TexturedObject.h"
 #include "Game/utils/Math2D.h"
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
@@ -47,6 +47,7 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
 
 	mResourceManager->CreateTexture("Grass", "./Resources/textures/Grass01.png");
+	mResourceManager->CreateTexture("Tree", "./Resources/textures/Tree.png");
 }
 
 void GameScene::CreateMaterials()
@@ -123,7 +124,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
+	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
 	mCurrentCameraMode->Enter();
 }
 
@@ -161,7 +162,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	SCRIPT_Bullet::mTerrainCollider = mTerrain;
 
 
-	mPlayer = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Tank.bin");
+	mPlayer = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	SCRIPT_Bullet::mPlayer = mPlayer;
 
 	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
@@ -171,7 +172,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 
-	auto originCliff = std::make_shared<BinObject>(mResourceManager, "./Resources/bins/Cliff.bin");
+	auto originCliff = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Cliff.bin");
 
 	for (auto i = 0; i < 130; ++i) {
 		auto cliff = originCliff->Clone();
@@ -233,14 +234,18 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	
 
-	std::vector<BillBoardVertex> vertices{ 200'0000 };
+	std::vector<BillBoardVertex> vertices{ 25'000 };
 	for (auto& vertex : vertices) {
-		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{ 0.f,1.f,0.f };
-		vertex.halfWidth = 0.5f;
-		vertex.height = 0.5f;
-		vertex.texture = mResourceManager->GetTexture("Grass");
+		vertex.position = mTerrain->OnTerrain({ dist(MersenneTwister),10.f,dist(MersenneTwister) }) + DirectX::SimpleMath::Vector3{ 0.f,5.5f,0.f };
+		vertex.halfWidth = 5.f;
+		vertex.height = 5.f;
+		vertex.texture = mResourceManager->GetTexture("Tree");
 		vertex.up = mTerrain->GetNormal(vertex.position);
-		vertex.spritable = false;
+		vertex.spritable = true;
+		vertex.spriteFrameInCol = 1;
+		vertex.spriteFrameInRow = 16;
+		vertex.spriteDuration = 16.f;
+
 	}
 
 	mBillBoard->MakeBillBoard(vertices);

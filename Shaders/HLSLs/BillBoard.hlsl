@@ -1,3 +1,5 @@
+#include "Common.hlsl"
+
 cbuffer CameraCB : register(b0)
 {
     matrix viewMatrix;
@@ -30,7 +32,7 @@ struct BillBoard_VS_IN
     bool spritable          : SPRITABLE;
     uint spriteFrameInRow   : SPRITEFRAMEINROW;
     uint spriteFrameInCol   : SPRITEFRAMEINCOL;
-    uint spriteDuration : SPRITEDURATION;
+    float spriteDuration : SPRITEDURATION;
 };
 
 struct BillBoard_GS_IN
@@ -43,13 +45,13 @@ struct BillBoard_GS_IN
     bool spritable : SPRITABLE;
     uint spriteFrameInRow : SPRITEFRAMEINROW;
     uint spriteFrameInCol : SPRITEFRAMEINCOL;
-    uint spriteDuration : SPRITEDURATION;
+    float spriteDuration : SPRITEDURATION;
 };
 
 struct BillBoard_PS_IN
 {
     float4 positionH : SV_Position;
-    float3 positionW : POSITION;
+    float3 positionV : POSITION;
     uint textureIndex : TEXTUREINDEX;
     float2 uv : TEXCOORD;
 };
@@ -75,6 +77,15 @@ bool CheckZeroVector(float3 v)
 {
     return length(v) < 0.0001f;
 }
+
+
+
+uint GetSpriteIndex(float TimeSinceStarted, float SpriteDuration, uint TotalSpriteCount)
+{
+    float frame_duration_ms = (1000.0 * SpriteDuration) / TotalSpriteCount; // 각 그림이 표시되는 시간 (밀리초 단위)
+    return ((uint) (TimeSinceStarted / frame_duration_ms) % TotalSpriteCount); // 현재 그림 번호
+}
+
 
 [maxvertexcount(4)]
 void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_PS_IN> output)
@@ -102,7 +113,7 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     
     if (input[0].spritable)
     {
-        uint spriteIndex = globalTime % input[0].spriteDuration;
+        uint spriteIndex = GetSpriteIndex(globalTime, input[0].spriteDuration, input[0].spriteFrameInRow * input[0].spriteFrameInCol);
         
         float spriteWidthRatio = 1.f / input[0].spriteFrameInRow;
         float spriteHeightRatio = 1.f / input[0].spriteFrameInCol;
@@ -130,14 +141,13 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
 
     
     BillBoard_PS_IN outpoint;
-    
+    [unroll]
     for(uint i = 0; i < 4; i++)
     {
+        outpoint.positionV = mul(positions[i], viewMatrix).xyz;
         outpoint.positionH = mul(positions[i], viewProjectionMatrix);
-        outpoint.positionW = positions[i].xyz;
         outpoint.textureIndex = input[0].textureIndex;
-        //outpoint.uv = mul(uvTransform, float3(uvs[i], 1.f)).xy;
-        outpoint.uv = uvs[i];
+        outpoint.uv = mul(uvTransform, float3(uvs[i], 1.f)).xy;
         output.Append(outpoint);
     }
     
@@ -153,5 +163,5 @@ float4 BillBoardPS(BillBoard_PS_IN input) : SV_TARGET
         discard;
     }
     
-    return Color;
+    return Fog(Color, input.positionV.z, 50.f, 1000.f);
 }

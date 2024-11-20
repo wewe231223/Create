@@ -151,7 +151,7 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="Game\defines.h" />
     <ClInclude Include="Game\dummyServer\DummyServer.h" />
-    <ClInclude Include="Game\gameobject\BinObject.h" />
+    <ClInclude Include="Game\gameobject\TexturedObject.h" />
     <ClInclude Include="Game\gameobject\CubeObject.h" />
     <ClInclude Include="Game\gameobject\GameObject.h" />
     <ClInclude Include="Game\gameobject\TerrainObject.h" />
@@ -181,7 +181,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Game\defines.cpp" />
     <ClCompile Include="Game\dummyServer\DummyServer.cpp" />
-    <ClCompile Include="Game\gameobject\BinObject.cpp" />
+    <ClCompile Include="Game\gameobject\TexturedObject.cpp" />
     <ClCompile Include="Game\gameobject\CubeObject.cpp" />
     <ClCompile Include="Game\gameobject\GameObject.cpp" />
     <ClCompile Include="Game\gameobject\TerrainObject.cpp" />
