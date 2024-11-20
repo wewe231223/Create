@@ -189,8 +189,13 @@ struct BillBoardVertex {
 #pragma endregion Sprite 
 };
 
+enum : int {
+	LightType_Point = 1,
+	LightType_Spot = 2,
+	LightType_Directional = 3,
+};
 
-struct LIGHT
+struct LightInfo
 {
 	DirectX::XMFLOAT4				m_xmf4Ambient;				// 빛의 주변광(Ambient Light) 색상 및 강도.
 	DirectX::XMFLOAT4				m_xmf4Diffuse;				// 빛의 난반사(Diffuse Light) 색상 및 강도.
