@@ -158,7 +158,7 @@ float4 BillBoardPS(BillBoard_PS_IN input) : SV_TARGET
 {
     float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
  
-    if (Color.a < 0.1f)
+    if (Color.a < 0.5f)
     {
         discard;
     }

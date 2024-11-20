@@ -6,6 +6,7 @@
 #include "Game/gameobject/TerrainObject.h"
 #include "Game/gameobject/CubeObject.h"
 #include "Game/gameobject/TexturedObject.h"
+#include "Game/gameobject/NormalTexturedObject.h"
 #include "Game/utils/Math2D.h"
 #include "Game/gameobject/UIObject.h"
 #include "Game/scene/CameraMode.h"
@@ -43,6 +44,7 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
 
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
+	mResourceManager->CreateTexture("CliffNormal", "./Resources/textures/CaveCrystal1_Base_Normal.png");
 
 	mResourceManager->CreateTexture("Bullet", "./Resources/textures/Bullet.png");
 
@@ -59,7 +61,7 @@ void GameScene::CreateMaterials()
 	mResourceManager->CreateMaterial("SkyBoxLeftMaterial", { mResourceManager->GetTexture("SkyBox_Left") });
 	mResourceManager->CreateMaterial("SkyBoxRightMaterial", { mResourceManager->GetTexture("SkyBox_Right") });
 
-	mResourceManager->CreateMaterial("CliffMaterial", { mResourceManager->GetTexture("Cliff") });
+	mResourceManager->CreateMaterial("CliffMaterial", { mResourceManager->GetTexture("Cliff"), mResourceManager->GetTexture("CliffNormal") });
 
 	mResourceManager->CreateMaterial("BulletMaterial", { mResourceManager->GetTexture("Bullet") });
 
@@ -124,7 +126,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
+	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
 
@@ -139,7 +141,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
+	mResourceManager->CreateShader<NormalTexturedObjectShader>("NormalTexturedObjectShader");
 	mResourceManager->CreateShader<SkyBoxShader>("SkyBoxShader");
+
 
 	GameScene::LoadTextures();
 	GameScene::CreateMaterials();
@@ -172,7 +176,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 
-	auto originCliff = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Cliff.bin");
+	auto originCliff = std::make_shared<NormalTexturedObject>(mResourceManager, "./Resources/bins/Normal_Cliff.bin");
 
 	for (auto i = 0; i < 130; ++i) {
 		auto cliff = originCliff->Clone();

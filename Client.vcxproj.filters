@@ -123,6 +123,9 @@
     <ClInclude Include="Game\scene\TitleScene.h">
       <Filter>Game\scene</Filter>
     </ClInclude>
+    <ClInclude Include="Game\gameobject\NormalTexturedObject.h">
+      <Filter>Game\gameobject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -202,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="Game\scene\TitleScene.cpp">
       <Filter>Game\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\gameobject\NormalTexturedObject.cpp">
+      <Filter>Game\gameobject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

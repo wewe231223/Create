@@ -321,10 +321,10 @@ TexturedModel::TexturedModel(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphics
 	mVertexBufferViews.emplace_back(mVertexBuffers[1]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * norms.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
 
 	mVertexBuffers[2] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(tangents.data()), sizeof(DirectX::XMFLOAT3) * tangents.size());
-	mVertexBufferViews[2] = { mVertexBuffers[2]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * tangents.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)) };
+	mVertexBufferViews.emplace_back(mVertexBuffers[2]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * tangents.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
 
 	mVertexBuffers[3] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(biTangents.data()), sizeof(DirectX::XMFLOAT3) * biTangents.size());
-	mVertexBufferViews[3] = { mVertexBuffers[3]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * biTangents.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)) };
+	mVertexBufferViews.emplace_back(mVertexBuffers[3]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * biTangents.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT3)));
 
 	mVertexBuffers[4] = std::make_unique<DefaultBuffer>(device, commandList, reinterpret_cast<void*>(uvs.data()), sizeof(DirectX::XMFLOAT2) * uvs.size());
 	mVertexBufferViews.emplace_back(mVertexBuffers[4]->GetBuffer()->GetGPUVirtualAddress(), static_cast<UINT>(sizeof(DirectX::XMFLOAT2) * uvs.size()), static_cast<UINT>(sizeof(DirectX::XMFLOAT2)));

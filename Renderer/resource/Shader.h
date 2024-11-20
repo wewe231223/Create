@@ -167,3 +167,20 @@ public:
 	BillBoardShader(ComPtr<ID3D12Device>& device);
 	~BillBoardShader();
 };
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//					Normal TexturedObject Shader						//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class NormalTexturedObjectShader : public GraphicsShaderBase {
+public:
+	NormalTexturedObjectShader(ComPtr<ID3D12Device>& device);
+	~NormalTexturedObjectShader();
+};

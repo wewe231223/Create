@@ -41,7 +41,7 @@ NormalTexturedObject_PS_IN NormaledTexturedObjectVS(NormalTexturedObject_VS_IN i
     return output;
 }
 
-float4 NormalTexturedObjectPS(NormalTexturedObject_PS_IN input) : SV_TARGET
+float4 NormaledTexturedObjectPS(NormalTexturedObject_PS_IN input) : SV_TARGET
 {
     float3 normal = normalize(input.normal);
     float3 bitangent = normalize(input.bitangent);
