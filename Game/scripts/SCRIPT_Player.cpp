@@ -4,6 +4,7 @@
 std::shared_ptr<Slider> SCRIPT_Player::HPBar = nullptr;
 std::shared_ptr<Slider> SCRIPT_Player::CoolTimeBar = nullptr;
 ObjectPool<GameObject, 64>* SCRIPT_Player::BulletPool = nullptr;
+Light SCRIPT_Player::Light{};
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -43,6 +44,20 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 			CoolTimeBar->mValue = 0.f;
 		}
 	);
+
+	Light->ambient = { 0.1f,0.1f,0.1f,1.f };
+	Light->diffuse = { 1.f,1.f,1.f,1.f };
+	Light->specular = { 1.f,1.f,1.f,1.f };
+	Light->position = { 0.f,0.f,0.f };
+	Light->direction = mOwner->GetTransform().GetForward();
+	Light->attenuation = { 0.1f,0.1f,0.1f };
+	Light->falloff = 1.f;
+	Light->internalTheta = std::cosf(DirectX::XMConvertToRadians(30.f));
+	Light->externalPhi = std::cosf(DirectX::XMConvertToRadians(45.f));
+	Light->enable = true;
+	Light->type = LightType_Spot;
+	Light->range = 100.f;
+
 }
 
 SCRIPT_Player::~SCRIPT_Player()
@@ -76,6 +91,8 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
 	}
 
+	Light->position = mOwner->GetTransform().GetPosition();
+	Light->direction = mOwner->GetChild(1)->GetTransform().GetForward();
 	
 }
 

@@ -2,9 +2,9 @@
 
 // Model 에서 지원하는 정점 속성과, Shader 에서 원하는 정점 속성을 다루는 비트 플래그 변수 자료형 
 using VertexAttribute = WORD; 
-
 using TextureIndex	= UINT;
 using MaterialIndex = UINT;
+
 
 enum : WORD {
 	VertexAttrib_position			= 0b0000'0000'0000'0001,	// 1
@@ -23,6 +23,17 @@ enum : WORD {
 	// 이 아래 위치하는 정점 속성들은 일반적인 정점 구조를 가지지 않으며, 하나의 Stride 에 정점에 필요한 모든 정보를 가진다.
 	VertexAttrib_BillBoard			= 0b0000'1000'0000'0000,	// Special Attribute 
 };
+
+enum EGlobalConstants : UINT {
+	GC_FrameCount			= 3,
+	GC_BackBufferCount		= 3,
+	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
+	GC_MaxTextureNumber		= 2048,
+	GC_MaxUiImageNumber		= 64,
+	GC_MaxRefPerModel		= 1024,
+	GC_MaxLight				= 16
+};
+
 
 // Material 에서 지원하는 상수들을 다루는 구조체.
 // 텍스쳐는 인덱스로 대체함. 
@@ -212,15 +223,9 @@ struct LightInfo
 	float							padding;				// 명시적 패딩 
 };
 
+using Light = std::array<LightInfo, static_cast<size_t>(EGlobalConstants::GC_MaxLight)>::iterator;
 
-enum EGlobalConstants : UINT {
-	GC_FrameCount			= 3,
-	GC_BackBufferCount		= 3,
-	GC_RenderTargetFormat	= static_cast<UINT>(DXGI_FORMAT_R8G8B8A8_UNORM), // DXGI_FORMAT_R8G8B8A8_UNORM
-	GC_MaxTextureNumber		= 2048,
-	GC_MaxUiImageNumber		= 64,
-	GC_MaxRefPerModel		= 1024,
-};
+
 
 enum EGraphicRootParamIndex : UINT {
 	GRP_CameraConstants = 0,

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Renderer/resource/TerrainImage.h"
 #include "Renderer/resource/BillBoard.h"
+#include "Renderer/scene/LightManager.h"
 #include "Game/scene/GameScene.h"
 #include "Game/gameobject/GameObject.h"
 #include "Game/gameobject/TerrainObject.h"
@@ -136,7 +137,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mWindow = window;
 	mResourceManager = std::make_shared<ResourceManager>(device);
 	mCanvas = std::make_shared<Canvas>(device, mResourceManager->GetLoadCommandList(), window);
-
+	mLightManager = std::make_shared<LightManager>(device);
 
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
@@ -164,7 +165,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBulletPool.Initialize(bulletInit,mResourceManager->GetModel("Cube"), mResourceManager->GetMaterial("BulletMaterial"));
 	SCRIPT_Player::BulletPool = &mBulletPool;
 	SCRIPT_Bullet::mTerrainCollider = mTerrain;
-
+	SCRIPT_Player::Light = mLightManager->GetLight();
 
 	mPlayer = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	SCRIPT_Bullet::mPlayer = mPlayer;
@@ -255,6 +256,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mBillBoard->MakeBillBoard(vertices);
 
 
+
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -341,6 +343,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mMainCamera->RenderSkyBox();
 
 	mResourceManager->PrepareRender(commandList,mMainCamera->GetCameraBufferAddress());
+	mLightManager->SetLight(commandList);
 	mResourceManager->Render(commandList);
 
 

@@ -1,3 +1,5 @@
+#define PARAM
+
 struct Material {
     float4 DiffuseColor;            // 확산 색상
     float4 SpecularColor;           // 반사 색상
@@ -15,10 +17,11 @@ struct Material {
     float SubsurfaceScattering;     // 피하 산란 강도
 };
 
-#define LIGHT_TYPE_POINT            = 1;
-#define LIGHT_TYPE_SPOT             = 2;
-#define LIGHT_TYPE_DIRECTIONAL      = 3;
-#define MAX_LIGHT                   = 16;
+#define LIGHT_TYPE_POINT             1
+#define LIGHT_TYPE_SPOT              2
+#define LIGHT_TYPE_DIRECTIONAL       3
+#define MAX_LIGHT                    16
+
 struct LightInfo
 {
     float4  diffuse;

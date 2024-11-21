@@ -1,5 +1,6 @@
 #include "params.hlsl"
 #include "common.hlsl"
+#include "Lights.hlsl"
 
 struct NormalTexturedObject_VS_IN
 {
@@ -14,7 +15,8 @@ struct NormalTexturedObject_VS_IN
 struct NormalTexturedObject_PS_IN
 {
     float4 position     : SV_POSITION;
-    float3 positionV    : POSITION;
+    float3 positionV    : POSITION1;
+    float3 positionW    : POSITION2;
     float3 normal       : NORMAL;
     float3 tangent      : TANGENT;
     float3 bitangent    : BINORMAL;
@@ -26,9 +28,14 @@ NormalTexturedObject_PS_IN NormaledTexturedObjectVS(NormalTexturedObject_VS_IN i
 {
     NormalTexturedObject_PS_IN output = (NormalTexturedObject_PS_IN)0;
 
-    output.position     = mul(float4(input.position, 1.f), gObjects[input.instanceID].worldMatrix);
-    output.positionV    = mul(output.position,viewMatrix).xyz;
-    output.position     = mul(output.position, viewProjectionMatrix);
+    
+    float4 pos = float4(input.position, 1.f);
+    
+    pos                 = mul(pos, gObjects[input.instanceID].worldMatrix);
+    output.positionW    = pos.xyz;
+    pos                 = mul(pos,viewMatrix);
+    output.positionV    = pos.xyz;
+    output.position     = mul(pos, projectionMatrix);
     
     output.normal       = normalize(mul(float4(input.normal, 1.f), gObjects[input.instanceID].worldMatrix).xyz);
     output.tangent      = normalize(mul(float4(input.tangent, 1.f), gObjects[input.instanceID].worldMatrix).xyz);
@@ -43,13 +50,20 @@ NormalTexturedObject_PS_IN NormaledTexturedObjectVS(NormalTexturedObject_VS_IN i
 
 float4 NormaledTexturedObjectPS(NormalTexturedObject_PS_IN input) : SV_TARGET
 {
-    float3 normal = normalize(input.normal);
-    float3 bitangent = normalize(input.bitangent);
-    float3 tangent = cross(normal, bitangent);
+    float3 normal = input.normal;
+    float3x3 TBN = float3x3(input.tangent, input.bitangent, normal);
     
-    float3x3 TBN = float3x3(tangent, bitangent, normal);
+   
+    float3 normalColor = gTextures[gMaterials[input.materialID].Textures[1]].Sample(pointWrapSampler, input.tex1).rgb;
+    normalColor = normalize(normalColor.rgb * 2.f - 1.f); // [0, 1] -> [-1, 1]
+    
+    normal = normalize(mul(normal, TBN));
+    
+    float4 illumination = float4(1.f, 1.f, 1.f, 1.f);
+    illumination = Lighting(input.positionW, normal);
     
     float4 baseColor = gTextures[gMaterials[input.materialID].Textures[0]].Sample(linearClampSampler, input.tex1);
     
-    return Fog(baseColor, input.positionV.z, 50.f, 1000.f);
+    return float4(input.tangent, 1.f);
+   // return Fog(lerp(baseColor,illumination,0.3f), input.positionV.z, 50.f, 1000.f);
 }
