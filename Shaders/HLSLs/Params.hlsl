@@ -15,6 +15,27 @@ struct Material {
     float SubsurfaceScattering;     // 피하 산란 강도
 };
 
+#define LIGHT_TYPE_POINT            = 1;
+#define LIGHT_TYPE_SPOT             = 2;
+#define LIGHT_TYPE_DIRECTIONAL      = 3;
+#define MAX_LIGHT                   = 16;
+struct LightInfo
+{
+    float4  diffuse;
+    float4  specular;
+    float4  ambient;
+    float3  position;
+    float3  direction;
+    float3  attenuation;
+    float   falloff;
+    float   internalTheta; //cos(m_fTheta)
+    float   externalThetha; //cos(m_fPhi)
+    bool    enable;
+    int     type;
+    float   range;
+    float   padding;
+};
+
 struct ObjectCB
 {
     matrix worldMatrix;
@@ -30,15 +51,17 @@ cbuffer CameraCB : register(b1)
 };
 
 // t0 : Root Descriptor Static SRV ( CB )
-StructuredBuffer<uint> gMaterialIndices : register(t0);
-// t0 : Root Descriptor Dynamic SRV ( CB ) 
-StructuredBuffer<ObjectCB>  gObjects        : register(t1);
-// t1 : Root Descriptor Static SRV ( CB )
-StructuredBuffer<Material>  gMaterials      : register(t2);
-// t2 : Textures
-Texture2D                   gTextures[1024]            : register(t3,space0);
-Texture2DArray              gTextureArray[512]         : register(t3,space1);   
-TextureCube                 gTextureCube[512]          : register(t3,space2);
+StructuredBuffer<uint>              gMaterialIndices    : register(t0);
+// t1 : Root Descriptor Dynamic SRV ( CB )
+StructuredBuffer<LightInfo>         gLights             : register(t1);
+// t2 : Root Descriptor Dynamic SRV ( CB ) 
+StructuredBuffer<ObjectCB>          gObjects            : register(t2);
+// t3 : Root Descriptor Static SRV ( CB )
+StructuredBuffer<Material>          gMaterials          : register(t3);
+// t4 : Textures
+Texture2D                   gTextures[1024]            : register(t4,space0);
+Texture2DArray              gTextureArray[512]         : register(t4,space1);   
+TextureCube                 gTextureCube[512]          : register(t4,space2);
 
 SamplerState pointWrapSampler : register(s0);
 SamplerState pointClampSampler : register(s1);

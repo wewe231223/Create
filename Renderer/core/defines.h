@@ -197,19 +197,19 @@ enum : int {
 
 struct LightInfo
 {
-	DirectX::XMFLOAT4				m_xmf4Ambient;				// 빛의 주변광(Ambient Light) 색상 및 강도.
-	DirectX::XMFLOAT4				m_xmf4Diffuse;				// 빛의 난반사(Diffuse Light) 색상 및 강도.
-	DirectX::XMFLOAT4				m_xmf4Specular;				// 빛의 반사광(Specular Light) 색상 및 강도.	
-	DirectX::XMFLOAT3				m_xmf3Position;				// 빛의 위치.
-	float 							m_fFalloff;					// 빛의 감쇠 정도.
-	DirectX::XMFLOAT3				m_xmf3Direction;			// 빛의 방향.
-	float 							m_fTheta;					// 스포트라이트 내부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
-	DirectX::XMFLOAT3				m_xmf3Attenuation;			// 빛의 감쇠 계수.
-	float							m_fPhi;						// 스포트라이트 외부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
-	bool							m_bEnable;					// 빛의 사용/미사용.	
-	int								m_nType;					// 빛의 타입.	
-	float							m_fRange;					// 빛의 범위.	
-	float							padding;					// 명시적 패딩 
+	DirectX::XMFLOAT4				diffuse;				// 빛의 난반사(Diffuse Light) 색상 및 강도.
+	DirectX::XMFLOAT4				specular;				// 빛의 반사광(Specular Light) 색상 및 강도.	
+	DirectX::XMFLOAT4				ambient;				// 빛의 주변광(Ambient Light) 색상 및 강도.
+	DirectX::XMFLOAT3				position;				// 빛의 위치.
+	DirectX::XMFLOAT3				direction;				// 빛의 방향.
+	DirectX::XMFLOAT3				attenuation;			// 빛의 감쇠 계수.
+	float 							falloff;				// 빛의 감쇠 정도.
+	float 							internalTheta;			// 스포트라이트 내부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
+	float							externalPhi;			// 스포트라이트 외부 각도의 코사인 값. cos 값을 사용하여 계산의 효율성을 높임 
+	bool							enable;					// 빛의 사용/미사용.	
+	int								type;					// 빛의 타입.	
+	float							range;					// 빛의 범위.	
+	float							padding;				// 명시적 패딩 
 };
 
 
@@ -225,10 +225,11 @@ enum EGlobalConstants : UINT {
 enum EGraphicRootParamIndex : UINT {
 	GRP_CameraConstants = 0,
 	GRP_MeshConstants = 1,
-	GRP_ObjectConstants = 2,
-	GRP_MaterialSRV = 3,
-	GRP_Texture = 4,
-	GRP_END = 5,
+	GRP_LightInfo = 2,
+	GRP_ObjectConstants = 3,
+	GRP_MaterialSRV = 4,
+	GRP_Texture = 5,
+	GRP_END = 6,
 };
 
 enum UIRootParamIndex : UINT {

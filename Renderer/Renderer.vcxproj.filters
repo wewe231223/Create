@@ -123,6 +123,9 @@
     <ClInclude Include="resource\BillBoard.h">
       <Filter>resource</Filter>
     </ClInclude>
+    <ClInclude Include="scene\LightManager.h">
+      <Filter>scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="resource\BillBoard.cpp">
       <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\LightManager.cpp">
+      <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

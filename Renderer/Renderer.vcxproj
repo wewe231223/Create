@@ -183,6 +183,7 @@
     <ClInclude Include="resource\Model.h" />
     <ClInclude Include="resource\Shader.h" />
     <ClInclude Include="resource\TerrainImage.h" />
+    <ClInclude Include="scene\LightManager.h" />
     <ClInclude Include="scene\ResourceManager.h" />
     <ClInclude Include="scene\Scene.h" />
     <ClInclude Include="ui\Console.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="resource\Model.cpp" />
     <ClCompile Include="resource\Shader.cpp" />
     <ClCompile Include="resource\TerrainImage.cpp" />
+    <ClCompile Include="scene\LightManager.cpp" />
     <ClCompile Include="scene\ResourceManager.cpp" />
     <ClCompile Include="scene\Scene.cpp" />
     <ClCompile Include="ui\Console.cpp" />

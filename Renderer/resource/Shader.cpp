@@ -307,52 +307,58 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     inputDescs[3] = { "TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,3,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
 
     // 애는 하나만씀. 
-	D3D12_DESCRIPTOR_RANGE texRange[3];
+    D3D12_DESCRIPTOR_RANGE texRange[3];
     // Tex2D 
-    texRange[0].BaseShaderRegister = 3;
-	texRange[0].NumDescriptors = 1024;
+    texRange[0].BaseShaderRegister = 4;
+    texRange[0].NumDescriptors = 1024;
     texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	texRange[0].RegisterSpace = 0;
+    texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[0].RegisterSpace = 0;
     // Tex2DArray
-    texRange[1].BaseShaderRegister = 3;
+    texRange[1].BaseShaderRegister = 4;
     texRange[1].NumDescriptors = 512;
     texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[1].RegisterSpace = 1;
     // TexCube 
-    texRange[2].BaseShaderRegister = 3;
+    texRange[2].BaseShaderRegister = 4;
     texRange[2].NumDescriptors = 512;
     texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[2].RegisterSpace = 2;
 
-	D3D12_ROOT_PARAMETER rootParams[GRP_END]{};
+
+    D3D12_ROOT_PARAMETER rootParams[GRP_END]{};
 
     rootParams[GRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
- 	rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
-	rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
-	rootParams[GRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_MeshConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	rootParams[GRP_MeshConstants].Descriptor.ShaderRegister = 0;
-	rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
-	rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    rootParams[GRP_MeshConstants].Descriptor.ShaderRegister = 0;
+    rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 1;
-	rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
-	rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    rootParams[GRP_LightInfo].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_LightInfo].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 2;
-	rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
-	rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
+    rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParams[GRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
-	rootParams[GRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
-	rootParams[GRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+    rootParams[GRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
+    rootParams[GRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
+    rootParams[GRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     D3D12_ROOT_SIGNATURE_DESC rootDesc{};
     rootDesc.NumParameters = _countof(rootParams);
@@ -371,7 +377,6 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     }
 
     CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
-
 
 
 
@@ -434,19 +439,19 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     // 애는 하나만씀. 
     D3D12_DESCRIPTOR_RANGE texRange[3];
     // Tex2D 
-    texRange[0].BaseShaderRegister = 3;
+    texRange[0].BaseShaderRegister = 4;
     texRange[0].NumDescriptors = 1024;
     texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[0].RegisterSpace = 0;
     // Tex2DArray
-    texRange[1].BaseShaderRegister = 3;
+    texRange[1].BaseShaderRegister = 4;
     texRange[1].NumDescriptors = 512;
     texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[1].RegisterSpace = 1;
     // TexCube 
-    texRange[2].BaseShaderRegister = 3;
+    texRange[2].BaseShaderRegister = 4;
     texRange[2].NumDescriptors = 512;
     texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -465,13 +470,18 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_LightInfo].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_LightInfo].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 2;
+    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 3;
     rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -479,6 +489,7 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     rootParams[GRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
     rootParams[GRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
     rootParams[GRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 
     D3D12_ROOT_SIGNATURE_DESC rootDesc{};
     rootDesc.NumParameters = _countof(rootParams);
@@ -560,19 +571,19 @@ SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
     // 애는 하나만씀. 
     D3D12_DESCRIPTOR_RANGE texRange[3];
     // Tex2D 
-    texRange[0].BaseShaderRegister = 3;
+    texRange[0].BaseShaderRegister = 4;
     texRange[0].NumDescriptors = 1024;
     texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[0].RegisterSpace = 0;
     // Tex2DArray
-    texRange[1].BaseShaderRegister = 3;
+    texRange[1].BaseShaderRegister = 4;
     texRange[1].NumDescriptors = 512;
     texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[1].RegisterSpace = 1;
     // TexCube 
-    texRange[2].BaseShaderRegister = 3;
+    texRange[2].BaseShaderRegister = 4;
     texRange[2].NumDescriptors = 512;
     texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -591,16 +602,21 @@ SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+	rootParams[GRP_LightInfo].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParams[GRP_LightInfo].Descriptor.ShaderRegister = 1;
+	rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
+	rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 2;
+    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 3;
     rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
+        
     rootParams[GRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
     rootParams[GRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
     rootParams[GRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
@@ -922,19 +938,19 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     // 애는 하나만씀. 
     D3D12_DESCRIPTOR_RANGE texRange[3];
     // Tex2D 
-    texRange[0].BaseShaderRegister = 3;
+    texRange[0].BaseShaderRegister = 4;
     texRange[0].NumDescriptors = 1024;
     texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[0].RegisterSpace = 0;
     // Tex2DArray
-    texRange[1].BaseShaderRegister = 3;
+    texRange[1].BaseShaderRegister = 4;
     texRange[1].NumDescriptors = 512;
     texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
     texRange[1].RegisterSpace = 1;
     // TexCube 
-    texRange[2].BaseShaderRegister = 3;
+    texRange[2].BaseShaderRegister = 4;
     texRange[2].NumDescriptors = 512;
     texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -953,13 +969,18 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_LightInfo].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_LightInfo].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
     rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 2;
+    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 3;
     rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
     rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -985,8 +1006,6 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     }
 
     CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
-
-
 
 
     // 파이프라인 상태 객체(PSO) 생성
