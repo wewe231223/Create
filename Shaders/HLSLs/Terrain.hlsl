@@ -34,7 +34,7 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
     // Pass through other data.
     output.Tex1 = input.Tex1;
     output.Tex2 = input.Tex2;
-    output.Normal = input.Normal;
+    output.Normal = normalize(mul(float4(input.Normal, 1.0f), gObjects[input.InstanceID].worldMatrix).xyz);
     output.MateialID = gMaterialIndices[input.InstanceID];
     return output;
 };
@@ -48,6 +48,5 @@ float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
     
     float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f);
    
-   
-    return Fog(Color,input.PosW.z, 50.f, 1000.f);
+   return Fog(Color,input.PosW.z, 50.f, 1000.f);
 }
