@@ -52,8 +52,8 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	Light->direction = mOwner->GetTransform().GetForward();
 	Light->attenuation = { 0.1f,0.1f,0.1f };
 	Light->falloff = 1.f;
-	Light->internalTheta = std::cosf(DirectX::XMConvertToRadians(30.f));
-	Light->externalPhi = std::cosf(DirectX::XMConvertToRadians(45.f));
+	Light->internalTheta = std::cosf(DirectX::XMConvertToRadians(10.f));
+	Light->externalPhi = std::cosf(DirectX::XMConvertToRadians(30.f));
 	Light->enable = true;
 	Light->type = LightType_Spot;
 	Light->range = 100.f;

@@ -1,6 +1,6 @@
 #include "Params.hlsl"
 #include "Common.hlsl"
-
+#include "Lights.hlsl"
 struct Terrain_VS_IN
 {
     float3  Pos      : POSITION;
@@ -15,7 +15,8 @@ struct Terrain_VS_IN
 struct Terrain_VS_OUT
 {
     float4  PosH      : SV_POSITION;
-    float3  PosW      : POSITION;
+    float3  PosV      : POSITION1;
+    float3  PosW       : POSITION2;
     nointerpolation uint MateialID : TEXCOORD0;
     float2  Tex1     : TEXCOORD1;
     float2  Tex2     : TEXCOORD2;
@@ -26,15 +27,22 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 {
     Terrain_VS_OUT output = (Terrain_VS_OUT) 0;
 
-
-    output.PosW = mul(float4(input.Pos, 1.0f), gObjects[input.InstanceID].worldMatrix).xyz;
-    output.PosW = mul(float4(output.PosW, 1.0f), viewMatrix);
-    output.PosH = mul(float4(output.PosW, 1.0f), projectionMatrix);
+    float4 pos = float4(input.Pos, 1.f);
+    
+    pos = mul(pos, gObjects[input.InstanceID].worldMatrix);
+    output.PosW = pos.xyz;
+    pos = mul(pos, viewMatrix);
+    output.PosV = pos.xyz;
+    output.PosH = mul(pos, projectionMatrix);
+    
     
     // Pass through other data.
     output.Tex1 = input.Tex1;
     output.Tex2 = input.Tex2;
-    output.Normal = normalize(mul(float4(input.Normal, 1.0f), gObjects[input.InstanceID].worldMatrix).xyz);
+    
+    float3x3 normalMatrix = (float3x3) gObjects[input.InstanceID].worldMatrix;
+    output.Normal = normalize(mul(input.Normal, normalMatrix));
+    
     output.MateialID = gMaterialIndices[input.InstanceID];
     return output;
 };
@@ -48,5 +56,5 @@ float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
     
     float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f);
    
-   return Fog(Color,input.PosW.z, 50.f, 1000.f);
+    return Fog(lerp(Color, Lighting(input.PosW,input.Normal),0.3f), input.PosW.z, 50.f, 1000.f);
 }

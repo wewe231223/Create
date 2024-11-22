@@ -69,5 +69,5 @@ float4 NormaledTexturedObjectPS(NormalTexturedObject_PS_IN input) : SV_TARGET
     float4 baseColor = gTextures[gMaterials[input.materialID].Textures[0]].Sample(linearClampSampler, input.tex1);
     
     //return float4(normal, 1.f);
-    return Fog(lerp(baseColor,illumination,0.5f), input.positionV.z, 50.f, 1000.f);
+    return Fog(lerp(baseColor,illumination,0.3f), input.positionV.z, 50.f, 1000.f);
 }
