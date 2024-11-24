@@ -181,6 +181,7 @@
     <ClInclude Include="resource\BillBoard.h" />
     <ClInclude Include="resource\Mesh.h" />
     <ClInclude Include="resource\Model.h" />
+    <ClInclude Include="resource\ParticleSystem.h" />
     <ClInclude Include="resource\Shader.h" />
     <ClInclude Include="resource\TerrainImage.h" />
     <ClInclude Include="scene\LightManager.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="resource\BillBoard.cpp" />
     <ClCompile Include="resource\Mesh.cpp" />
     <ClCompile Include="resource\Model.cpp" />
+    <ClCompile Include="resource\ParticleSystem.cpp" />
     <ClCompile Include="resource\Shader.cpp" />
     <ClCompile Include="resource\TerrainImage.cpp" />
     <ClCompile Include="scene\LightManager.cpp" />

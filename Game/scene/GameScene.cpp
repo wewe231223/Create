@@ -44,6 +44,14 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("SkyBox_Left", "./Resources/textures/SkyBox_Left_0.dds");
 	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
 
+
+	mResourceManager->CreateTexture("DarkSkyBox_Front", "./Resources/textures/DarkStorm4K_front.png");
+	mResourceManager->CreateTexture("DarkSkyBox_Back", "./Resources/textures/DarkStorm4K_back.png");
+	mResourceManager->CreateTexture("DarkSkyBox_Top", "./Resources/textures/DarkStorm4K_top.png");
+	mResourceManager->CreateTexture("DarkSkyBox_Bottom", "./Resources/textures/DarkStorm4K_bottom.png");
+	mResourceManager->CreateTexture("DarkSkyBox_Left", "./Resources/textures/DarkStorm4K_left.png");
+	mResourceManager->CreateTexture("DarkSkyBox_Right", "./Resources/textures/DarkStorm4K_right.png");
+
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
 	mResourceManager->CreateTexture("CliffNormal", "./Resources/textures/CaveCrystal1_Base_Normal.png");
 
@@ -127,7 +135,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
+	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
 	mCurrentCameraMode->Enter();
 }
 

@@ -126,6 +126,9 @@
     <ClInclude Include="scene\LightManager.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="resource\ParticleSystem.h">
+      <Filter>resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -217,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="scene\LightManager.cpp">
       <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\ParticleSystem.cpp">
+      <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

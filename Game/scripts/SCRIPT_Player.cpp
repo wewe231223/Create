@@ -56,7 +56,7 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	Light->externalPhi = std::cosf(DirectX::XMConvertToRadians(30.f));
 	Light->enable = true;
 	Light->type = LightType_Spot;
-	Light->range = 100.f;
+	Light->range = 200.f;
 
 }
 

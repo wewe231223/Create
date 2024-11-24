@@ -13,7 +13,7 @@ float4 PointLight(int index, float3 position, float3 normal, float3 toCamera)
 {
     return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
-#define Intensity 2.f
+#define Intensity 5.f
 
 float4 SpotLight(int index, float3 position, float3 normal, float3 toCamera)
 {
