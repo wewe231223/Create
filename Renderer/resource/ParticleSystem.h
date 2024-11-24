@@ -92,9 +92,16 @@
 // 프레임 리소스 방식은 CPU 에서 데이터를 업데이트 할 시점을 고르기 위해 존재하는 것 
 
 class ParticleSystem {
+	struct Buffer {
+		ComPtr<ID3D12Resource> mBuffer{ nullptr };
+		
+	};
 public:
 	ParticleSystem();
 	~ParticleSystem();
 public:
-	
+private:
+	ComPtr<ID3D12Resource> mParticleSOBuffer{ nullptr };
+
+	std::array<Buffer, static_cast<size_t>(EGlobalConstants::GC_FrameCount)> mParticleBuffer{};
 };
