@@ -33,6 +33,7 @@ struct BillBoard_VS_IN
     uint spriteFrameInRow   : SPRITEFRAMEINROW;
     uint spriteFrameInCol   : SPRITEFRAMEINCOL;
     float spriteDuration : SPRITEDURATION;
+    uint InstanceID : SV_InstanceID;
 };
 
 struct BillBoard_GS_IN
@@ -69,7 +70,6 @@ BillBoard_GS_IN BillBoardVS(BillBoard_VS_IN input)
     output.spriteFrameInRow = input.spriteFrameInRow;
     output.spriteFrameInCol = input.spriteFrameInCol;
     output.spriteDuration = input.spriteDuration;
-    
     return output; 
 }
 
@@ -138,8 +138,7 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     positions[1] = float4(input[0].position + right * input[0].halfWidth + up * input[0].height, 1.f);
     positions[2] = float4(input[0].position - right * input[0].halfWidth - up * input[0].height, 1.f);
     positions[3] = float4(input[0].position - right * input[0].halfWidth + up * input[0].height, 1.f);
-
-    
+   
     BillBoard_PS_IN outpoint;
     [unroll]
     for(uint i = 0; i < 4; i++)

@@ -71,7 +71,7 @@ void BillBoard::MakeBillBoard(const DirectX::XMFLOAT3& position, float halfWidth
 }
 
 #include "ui/Console.h"
-
+// Instnacing 을 하게 되면 하나의 점을 점의 개수만큼 그린다. 이를 해결해야 한다. 
 void BillBoard::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_DESCRIPTOR_HANDLE texHeap, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
 {
 	if (mDecayed) {
