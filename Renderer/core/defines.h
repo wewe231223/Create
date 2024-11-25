@@ -98,6 +98,7 @@ struct CameraContext {
 
 struct ModelContext {
 	DirectX::SimpleMath::Matrix World{ DirectX::SimpleMath::Matrix::Identity };
+	DirectX::SimpleMath::Vector3 Extents{ 0.f,0.f,0.f };
 };
 
 struct ModelContext2D {

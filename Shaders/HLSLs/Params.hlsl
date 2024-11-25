@@ -42,6 +42,7 @@ struct LightInfo
 struct ObjectCB
 {
     matrix worldMatrix;
+    float3 BBExtents;
 };
 
 // b1 : Root Descriptor CBV 

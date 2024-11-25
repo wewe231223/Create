@@ -170,6 +170,7 @@ void GameObject::UpdateShaderVariables()
 
 	mTransform.CreateWorldMatrix();
 	mContext.World = mTransform.GetWorldMatrix().Transpose();
+	mContext.Extents = mTransform.GetBB().Extents;
 
 	for (auto& child : mChildObjects) {
 		child->UpdateShaderVariables();

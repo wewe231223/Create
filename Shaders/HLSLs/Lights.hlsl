@@ -13,49 +13,7 @@ float4 PointLight(int index, float3 position, float3 normal, float3 toCamera)
 {
     return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
-#define Intensity 5.f
-
-//float4 SpotLight(int index, float3 position, float3 normal, float3 toCamera)
-//{
-
-//    float3 toLight = position - gLights[index].position;
-//    //float3 toLight = gLights[index].direction;
-//    float distance = length(toLight);
-
-
-//    if (distance > gLights[index].range)
-//    {
-//        return float4(0.0f, 0.0f, 0.0f, 0.0f);
-//    }
-
-
-//    toLight /= distance;
-
-//    float alpha = max(dot(toLight, normalize(gLights[index].direction)), 0.0f);
-
-
-//    float spotFactor = saturate((alpha - gLights[index].externalThetha) /
-//                                (gLights[index].internalTheta - gLights[index].externalThetha));
-    
-//    spotFactor = pow(spotFactor, gLights[index].falloff);
-
-  
-//    float attenuation = 1.0f / dot(gLights[index].attenuation,
-//                                    float3(1.0f, distance, distance * distance));
-
-
-//    float3 ambient = gLights[index].ambient;
-
-//    float diffuseFactor = max(dot(normal, toLight), 0.0f);
-//    float3 diffuse = gLights[index].diffuse * diffuseFactor;
-
-//    float3 halfwayDir = normalize(toLight + toCamera);
-//    float specularFactor = pow(max(dot(normal, halfwayDir), 0.0f), 0.5f);
-//    float3 specular = gLights[index].specular * specularFactor * spotFactor;
-
-
-//    return float4((ambient + diffuse * Intensity + specular * Intensity) * attenuation * spotFactor, 1.0f);
-//}
+#define Intensity 1.f
 
 
 float4 SpotLight(int index, float3 position, float3 normal, float3 toCamera)
