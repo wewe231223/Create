@@ -46,8 +46,8 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	);
 
 	Light->ambient = { 0.1f,0.1f,0.1f,1.f };
-	Light->diffuse = { 1.f,1.f,1.f,1.f };
-	Light->specular = { 1.f,1.f,1.f,1.f };
+	Light->diffuse = { 1.f,0.f,0.f,1.f };
+	Light->specular = { 1.f,0.f,0.f,1.f };
 	Light->position = { 0.f,0.f,0.f };
 	Light->direction = mOwner->GetTransform().GetForward();
 	Light->attenuation = { 0.1f,0.1f,0.1f };
@@ -91,7 +91,7 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
 	}
 
-	Light->position = mOwner->GetTransform().GetPosition() + mOwner->GetTransform().GetUp() ;
+	Light->position = mOwner->GetTransform().GetPosition() + mOwner->GetTransform().GetUp() + mOwner->GetChild(1)->GetTransform().GetForward();
 	Light->direction = mOwner->GetChild(1)->GetTransform().GetForward();
 	
 }
