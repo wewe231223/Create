@@ -28,6 +28,8 @@ public:
 	virtual void Exit() PURE;
 	virtual void Update() PURE;
 
+	virtual ECameraType GetType() const PURE;
+
 protected:
 	std::shared_ptr<class Camera> mCamera{ nullptr };
 
@@ -53,6 +55,8 @@ public:
 	virtual void Enter() override;
 	virtual void Exit() override;
 	virtual void Update() override;
+
+	virtual ECameraType GetType() const;
 };
 
 
@@ -76,6 +80,7 @@ public:
 	virtual void Enter() override;
 	virtual void Exit() override;
 	virtual void Update() override;
+	virtual ECameraType GetType() const;
 private:
 	Transform& mTargetTransform;
 	DirectX::SimpleMath::Vector3 mOffset{ DirectX::SimpleMath::Vector3::Zero };

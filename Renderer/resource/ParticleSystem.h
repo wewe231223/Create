@@ -88,18 +88,19 @@
 //=============================================================================
 
 
-// 너가 걱정하는 그 문제 없다. 앞으로 바로 진행할 것. 
-// 프레임 리소스 방식은 CPU 에서 데이터를 업데이트 할 시점을 고르기 위해 존재하는 것 
 
+
+ 
 class ParticleSystem {
 	struct Buffer {
 		ComPtr<ID3D12Resource> mBuffer{ nullptr };
-		
+		ParticleVertex* mBufferPtr{ nullptr };
 	};
 public:
 	ParticleSystem();
 	~ParticleSystem();
 public:
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	ComPtr<ID3D12Resource> mParticleSOBuffer{ nullptr };
 

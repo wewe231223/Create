@@ -121,6 +121,11 @@ void FreeCameraMode::Update()
 
 }
 
+ECameraType FreeCameraMode::GetType() const
+{
+	return CT_FreeCamera;
+}
+
 
 
 
@@ -152,6 +157,7 @@ void TPPCameraMode::Enter()
 
 void TPPCameraMode::Exit()
 {
+
 }
 
 void TPPCameraMode::Update()
@@ -160,7 +166,12 @@ void TPPCameraMode::Update()
 	auto right = mTargetTransform.GetRight();
 	auto up = mTargetTransform.GetUp();
 
-	mCamera->GetTransform().ResetRotation();
+//	mCamera->GetTransform().ResetRotation();
 	mCamera->GetTransform().SetPosition(mTargetTransform.GetPosition() + DirectX::SimpleMath::Vector3{ mOffset.x* right + mOffset.y * up + mOffset.z * forward });
 	mCamera->GetTransform().LookAt(mTargetTransform);
+}
+
+ECameraType TPPCameraMode::GetType() const
+{
+	return CT_ThirdPersonCamera;
 }

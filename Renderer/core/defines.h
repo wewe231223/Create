@@ -200,6 +200,12 @@ struct BillBoardVertex {
 #pragma endregion Sprite 
 };
 
+struct ParticleVertex : public BillBoardVertex {
+
+};
+
+
+
 enum : int {
 	LightType_Point = 1,
 	LightType_Spot = 2,

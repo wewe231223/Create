@@ -29,6 +29,7 @@ private:
 
 	std::shared_ptr<Camera> mMainCamera{ nullptr };
 	std::shared_ptr<class CameraMode> mCurrentCameraMode{ nullptr };
+	
 	std::array<std::shared_ptr<class CameraMode>, CT_END> mCameraModes{ nullptr };
 
 	std::shared_ptr<GameObject> mPlayer{ nullptr };

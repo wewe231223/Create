@@ -135,7 +135,7 @@ void GameScene::InitCameraMode()
 	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
 
 
-	mCurrentCameraMode = mCameraModes[CT_FreeCamera];
+	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
 	mCurrentCameraMode->Enter();
 }
 
@@ -263,7 +263,20 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mBillBoard->MakeBillBoard(vertices);
 
+	int	sign{ NrSampler.Sample() };
 
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::P, sign, [this]() {
+
+		if (mCurrentCameraMode->GetType() == CT_FreeCamera) {
+			mCurrentCameraMode->ChangeCameraMode(mCameraModes[CT_ThirdPersonCamera]);
+			mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
+		}
+		else {
+			mCurrentCameraMode->ChangeCameraMode(mCameraModes[CT_FreeCamera]);
+			mCurrentCameraMode = mCameraModes[CT_FreeCamera];
+		}
+		}
+	);
 
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);

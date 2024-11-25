@@ -91,7 +91,7 @@ void SCRIPT_Player::Update()
 		mOwner->GetChild(5)->GetTransform().Rotate(0.f, -Time.GetSmoothDeltaTime<float>() * 10.f, 0.f);
 	}
 
-	Light->position = mOwner->GetTransform().GetPosition();
+	Light->position = mOwner->GetTransform().GetPosition() + mOwner->GetTransform().GetUp() ;
 	Light->direction = mOwner->GetChild(1)->GetTransform().GetForward();
 	
 }
