@@ -39,6 +39,9 @@ void ResourceManager::ModelContainer::Insert(const std::string& model, std::shar
 	// 적절한 위치에 삽입
 	mModels.insert(it, newModel);
 	mModelMap[model] = newModel;
+
+	//auto it = std::ranges::upper_bound(mNewModels,)
+	
 }
 
 std::shared_ptr<I3DRenderable> ResourceManager::ModelContainer::GetModel(const std::string& name)
@@ -242,6 +245,10 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 			cur->get()->Render(commandList);
 		}
+		// 해당하는 셰이더를 사용하는 모델을 전부 그리고 그 다음 바운딩 박스 셰이더로 바꾸고 그리기? 
+		// | Shader 1 | -> | Model 1 | Model 2 | Model 3 | -> | BBShader | -> | Render | -> | Shader 2 | -> | Model 1 | Model 2 | Model 3 |
+		// 그럼 셰이더가 같은 하나의 범위를 받아서, 그 범위 안에서 1번 오브젝트를 그리고, 셰이더를 바꾸고, ModelContext 를 사용하여 한번 더 그려야 한다. 
+		// 그러한 동작이 가능하기 위해서는 ModelContainer 가 같은 셰이더를 가지는 하나의 범위를 리턴하도록 수정해야 한다. 
 	}
 #else 
 	auto prev = mModelContainer->begin();

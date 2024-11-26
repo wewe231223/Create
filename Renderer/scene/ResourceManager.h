@@ -14,8 +14,14 @@ class ResourceManager {
 		std::shared_ptr<I3DRenderable> GetModel(const std::string& name);
 		std::vector<std::shared_ptr<class Model>>::iterator begin();
 		std::vector<std::shared_ptr<class Model>>::iterator end();
+
+
+
 	private:
 		std::vector<std::shared_ptr<class Model>>						mModels{};
+
+		std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>	mNewModels{};
+		
 		std::unordered_map<std::string, std::shared_ptr<class Model>>	mModelMap{};
 	};
 public:
