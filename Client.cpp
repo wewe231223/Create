@@ -51,8 +51,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
 	SceneManager::GetInstance().Initialize(&dxrenderer);
 
-    SceneManager::GetInstance().ChangeScene<TitleScene>();
-//	SceneManager::GetInstance().ChangeScene<GameScene>();
+//    SceneManager::GetInstance().ChangeScene<TitleScene>();
+    SceneManager::GetInstance().ChangeScene<GameScene>();
     
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     MSG msg{0};

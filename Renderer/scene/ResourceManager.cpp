@@ -25,23 +25,31 @@ ResourceManager::ModelContainer::~ModelContainer()
 
 bool ResourceManager::ModelContainer::Empty() const noexcept
 {
-	return mModels.empty();
-}
+	return ( mModels.empty() and mNewModels.empty() );
+} 
 
 void ResourceManager::ModelContainer::Insert(const std::string& model, std::shared_ptr<Model>&& newModel)
 {
-	// std::lower_bound를 사용하여 새로운 모델이 들어갈 위치를 찾음
-	auto it = std::upper_bound(mModels.begin(), mModels.end(), newModel,
-		[](const std::shared_ptr<Model>& a, const std::shared_ptr<Model>& b) {
-			return a->CompareShaderID(b);
-		});
-
-	// 적절한 위치에 삽입
-	mModels.insert(it, newModel);
 	mModelMap[model] = newModel;
 
-	//auto it = std::ranges::upper_bound(mNewModels,)
-	
+
+
+	auto nIt = std::find_if(mNewModels.begin(), mNewModels.end(), [newModel](const auto& pair) {
+		return pair.first == newModel->GetShaderID();
+		});
+	// 이미 등록된 셰이더이면 
+	if (nIt != mNewModels.end()) {
+		nIt->second.emplace_back(newModel);
+		return;
+	}  
+	// 아니라면 
+	nIt = std::upper_bound(mNewModels.begin(), mNewModels.end(), newModel->GetShaderID(),
+		[](auto& a, auto& b) {
+			return a < b.first;
+		}
+	);
+
+	mNewModels.emplace(nIt, newModel->GetShaderID(), std::vector<std::shared_ptr<Model>>{ newModel });
 }
 
 std::shared_ptr<I3DRenderable> ResourceManager::ModelContainer::GetModel(const std::string& name)
@@ -54,16 +62,15 @@ std::shared_ptr<I3DRenderable> ResourceManager::ModelContainer::GetModel(const s
 	return it->second;
 }
 
-std::vector<std::shared_ptr<Model>>::iterator ResourceManager::ModelContainer::begin()
+std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>::iterator ResourceManager::ModelContainer::begin()
 {
-	return mModels.begin();
+	return mNewModels.begin();
 }
 
-std::vector<std::shared_ptr<Model>>::iterator ResourceManager::ModelContainer::end()
+std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>::iterator ResourceManager::ModelContainer::end()
 {
-	return mModels.end();
+	return mNewModels.end();
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -212,8 +219,16 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
-		std::shared_ptr<Model>& prev = *mModelContainer->begin();
-		prev->SetShader(commandList);
+		//std::shared_ptr<Model>& prev = *mModelContainer->begin();
+		//prev->SetShader(commandList);
+		//commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
+		//ResourceManager::SetGlobals(commandList);
+
+		
+
+		auto prev = mModelContainer->begin();
+		(*prev).second.front()->SetShader(commandList);
+
 		commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 		ResourceManager::SetGlobals(commandList);
 	}
@@ -231,24 +246,14 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
 		auto prev = mModelContainer->begin();
-		auto cur = mModelContainer->begin();
-		if (cur == mModelContainer->end())
-			return;
-
-		cur->get()->Render(commandList);
-		++cur;
-
-		for (; cur != mModelContainer->end(); ++prev, ++cur) {
-			if (cur->get()->CompareEqualShader(*prev)) {
-				cur->get()->SetShader(commandList);
+		auto cur = mModelContainer->end();
+		
+		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
+			(*range).second.front()->SetShader(commandList);
+			for (auto& model : range->second) {
+				model->Render(commandList);
 			}
-
-			cur->get()->Render(commandList);
 		}
-		// 해당하는 셰이더를 사용하는 모델을 전부 그리고 그 다음 바운딩 박스 셰이더로 바꾸고 그리기? 
-		// | Shader 1 | -> | Model 1 | Model 2 | Model 3 | -> | BBShader | -> | Render | -> | Shader 2 | -> | Model 1 | Model 2 | Model 3 |
-		// 그럼 셰이더가 같은 하나의 범위를 받아서, 그 범위 안에서 1번 오브젝트를 그리고, 셰이더를 바꾸고, ModelContext 를 사용하여 한번 더 그려야 한다. 
-		// 그러한 동작이 가능하기 위해서는 ModelContainer 가 같은 셰이더를 가지는 하나의 범위를 리턴하도록 수정해야 한다. 
 	}
 #else 
 	auto prev = mModelContainer->begin();

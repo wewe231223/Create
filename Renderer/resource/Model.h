@@ -23,6 +23,7 @@ public:
 	void AddRef();
 
 	void SetShader(ComPtr<ID3D12GraphicsCommandList> commandList);
+	size_t GetShaderID() const noexcept;
 	bool CompareShaderID(const std::shared_ptr<Model>& other) const noexcept;
 	bool CompareEqualShader(const std::shared_ptr<Model>& other) const noexcept;
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);

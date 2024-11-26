@@ -12,10 +12,9 @@ class ResourceManager {
 		bool Empty() const noexcept;
 		void Insert(const std::string& name,std::shared_ptr<class Model>&& newModel);
 		std::shared_ptr<I3DRenderable> GetModel(const std::string& name);
-		std::vector<std::shared_ptr<class Model>>::iterator begin();
-		std::vector<std::shared_ptr<class Model>>::iterator end();
 
-
+		std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>::iterator begin();
+		std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>::iterator end();
 
 	private:
 		std::vector<std::shared_ptr<class Model>>						mModels{};

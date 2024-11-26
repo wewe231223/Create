@@ -83,6 +83,11 @@ void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
 	mShader->SetShader(commandList);
 }
 
+size_t Model::GetShaderID() const noexcept
+{
+	return mShader->GetShaderID();
+}
+
 bool Model::CompareShaderID(const std::shared_ptr<Model>& other) const noexcept
 {
 	return mShader->GetShaderID() < other->mShader->GetShaderID();
@@ -125,7 +130,7 @@ void Model::CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions)
 //////////////////////////////////////////////////////////////////////////
 //																		//
 //																		//
-//							Terrain										//
+//								Terrain									//
 //																		//
 //																		//
 //////////////////////////////////////////////////////////////////////////
