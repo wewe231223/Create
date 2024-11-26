@@ -251,7 +251,9 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
 			(*range).second.front()->SetShader(commandList);
 			for (auto& model : range->second) {
+				model->SetModelContext(commandList);
 				model->Render(commandList);
+				model->EndRender();
 			}
 		}
 	}

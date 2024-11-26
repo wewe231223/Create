@@ -100,6 +100,15 @@ bool Model::CompareEqualShader(const std::shared_ptr<Model>& other) const noexce
 	return mShader->GetShaderID() != other->mShader->GetShaderID();
 }
 
+void Model::SetModelContext(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	if (mInstanceCount == 0) {
+		return;
+	}
+
+	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
+}
+
 void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	if (mInstanceCount == 0) {
@@ -108,12 +117,15 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 	commandList->IASetVertexBuffers(0, static_cast<UINT>(mVertexBufferViews.size()), mVertexBufferViews.data());
 	commandList->IASetIndexBuffer(&mIndexBufferView);
-	commandList->SetGraphicsRootShaderResourceView(GRP_ObjectConstants, mModelContexts[mMemoryIndex].mBuffer->GetGPUVirtualAddress());
 
 	for (auto& mesh : mMeshes) {
 		mesh->Render(commandList);
 	}
 	
+}
+
+void Model::EndRender()
+{
 	mInstanceCount = 0;
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
 }

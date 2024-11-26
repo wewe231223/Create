@@ -262,5 +262,8 @@
     <FxCompile Include="..\Shaders\HLSLs\Lights.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\BoundingBox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
