@@ -259,27 +259,28 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		
 		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
 			(*range).second.front()->SetShader(commandList);
-			if (mRenderBB) {
-				for (auto& model : range->second) {
-					model->SetModelContext(commandList);
-					model->Render(commandList);
+			
+			for (auto& model : range->second) {
+				model->SetModelContext(commandList);
+				model->Render(commandList);
+				if(not mRenderBB) {
+					model->EndRender();
 				}
+			}			
+		}
 
-				mModelBoundingBoxRenderer->SetShader(commandList);
 
+		if (mRenderBB) {
+			mModelBoundingBoxRenderer->SetShader(commandList);
+
+			for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
 				for (auto& model : range->second) {
 					model->SetModelContext(commandList);
 					mModelBoundingBoxRenderer->Render(commandList, model->GetInstanceCount());
 					model->EndRender();
 				}
 			}
-			else {
-				for (auto& model : range->second) {
-					model->SetModelContext(commandList);
-					model->Render(commandList);
-					model->EndRender();
-				}
-			}
+
 		}
 	}
 #else 
