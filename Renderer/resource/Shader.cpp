@@ -167,21 +167,38 @@ void GraphicsShaderBase::DeleteAllBinarys()
 bool GraphicsShaderBase::CheckParams()
 {
     if (!fs::exists("Shaders/Binarys/Params.cso")) {
-		std::ofstream out{ "Shaders/Binarys/Params.cso", std::ios::trunc };
+        std::ofstream out{ "Shaders/Binarys/Params.cso", std::ios::trunc };
         out << 123;
-		out.close();
+        out.close();
         return true;
     }
 
-	auto result = fs::last_write_time("Shaders/HLSLs/Params.hlsl") > fs::last_write_time("Shaders/Binarys/Params.cso");
-	if (result) {
+    if (!fs::exists("Shaders/Binarys/Lights.cso")) {
+        std::ofstream out{ "Shaders/Binarys/Lights.cso", std::ios::trunc };
+        out << 123;
+        out.close();
+        return true;
+    }
+
+	auto paramResult = fs::last_write_time("Shaders/HLSLs/Params.hlsl") > fs::last_write_time("Shaders/Binarys/Params.cso");
+	if (paramResult) {
         Console.InfoLog("셰이더 Param 이 수정되었습니다. 모든 셰이더를 다시 컴파일합니다.");
         GraphicsShaderBase::DeleteAllBinarys();
         std::ofstream out{ "Shaders/Binarys/Params.cso" };
         out.close();
 	}
 
-    return result;
+    auto lightResult = fs::last_write_time("Shaders/HLSLs/Lights.hlsl") > fs::last_write_time("Shaders/Binarys/Lights.cso");
+    if (lightResult) {
+        Console.InfoLog("셰이더 Light 이 수정되었습니다. 모든 셰이더를 다시 컴파일합니다.");
+        GraphicsShaderBase::DeleteAllBinarys();
+        std::ofstream out{ "Shaders/Binarys/Lights.cso" };
+        out.close();
+    }
+
+
+
+    return ( paramResult and lightResult );
 }
 
 
