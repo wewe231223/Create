@@ -54,7 +54,7 @@ FreeCameraMode::~FreeCameraMode()
 {
 }
 
-constexpr float FREE_CAMERA_SPEED = 0.2f;
+constexpr float FREE_CAMERA_SPEED = 0.5f;
 void FreeCameraMode::Enter()
 {
 	mInputCallBackSign = NrSampler.Sample();

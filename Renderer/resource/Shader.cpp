@@ -1033,3 +1033,126 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
 NormalTexturedObjectShader::~NormalTexturedObjectShader()
 {
 }
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Bounding Box Shader							//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+BoundingBoxShader::BoundingBoxShader(ComPtr<ID3D12Device>& device)
+    : GraphicsShaderBase(device)
+{
+    mAttribute = VertexAttrib_position | VertexAttrib_normal | VertexAttrib_tangent | VertexAttrib_bitangent | VertexAttrib_texcoord1;
+
+    MakeShader(EShaderType::VS, "BoundingBox.hlsl", "BoundingBoxVS", "vs_5_1", nullptr);
+	MakeShader(EShaderType::GS, "BoundingBox.hlsl", "BoundingBoxGS", "gs_5_1", nullptr);
+    MakeShader(EShaderType::PS, "BoundingBox.hlsl", "BoundingBoxPS", "ps_5_1", nullptr);
+
+    // 애는 하나만씀. 
+    D3D12_DESCRIPTOR_RANGE texRange[3];
+    // Tex2D 
+    texRange[0].BaseShaderRegister = 4;
+    texRange[0].NumDescriptors = 1024;
+    texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[0].RegisterSpace = 0;
+    // Tex2DArray
+    texRange[1].BaseShaderRegister = 4;
+    texRange[1].NumDescriptors = 512;
+    texRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    texRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[1].RegisterSpace = 1;
+    // TexCube 
+    texRange[2].BaseShaderRegister = 4;
+    texRange[2].NumDescriptors = 512;
+    texRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    texRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[2].RegisterSpace = 2;
+
+
+    D3D12_ROOT_PARAMETER rootParams[GRP_END]{};
+
+    rootParams[GRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    rootParams[GRP_CameraConstants].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_CameraConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_MeshConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_MeshConstants].Descriptor.ShaderRegister = 0;
+    rootParams[GRP_MeshConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_MeshConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_LightInfo].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_LightInfo].Descriptor.ShaderRegister = 1;
+    rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
+    rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ObjectConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_MaterialSRV].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[GRP_MaterialSRV].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_MaterialSRV].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_MaterialSRV].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParams[GRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
+    rootParams[GRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
+    rootParams[GRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    D3D12_ROOT_SIGNATURE_DESC rootDesc{};
+    rootDesc.NumParameters = _countof(rootParams);
+    rootDesc.pParameters = rootParams;
+    rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
+    rootDesc.pStaticSamplers = mStaticSamplers.data();
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> error;
+
+    auto hr = D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1, signature.GetAddressOf(), error.GetAddressOf());
+    if (FAILED(hr)) {
+        OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+    }
+
+    CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+
+
+    // 파이프라인 상태 객체(PSO) 생성
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr,0 };
+    psoDesc.pRootSignature = mRootSignature.Get();
+    psoDesc.VS = GetShaderByteCode(EShaderType::VS);
+	psoDesc.GS = GetShaderByteCode(EShaderType::GS);
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
+    psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat);
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+
+    Console.InfoLog("BoundingBox Shader 가 성공적으로 로딩되었습니다.");
+}
+
+BoundingBoxShader::~BoundingBoxShader()
+{
+}

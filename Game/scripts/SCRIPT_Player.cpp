@@ -20,6 +20,9 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 	case PlayerColor_B:
 		mOwner->SetMaterial({ resourceMgr->GetMaterial("TankMaterialBlue") });
 		break;
+	case PlayerColor_Y:
+		mOwner->SetMaterial({ resourceMgr->GetMaterial("TankMaterialYellow") });
+		break;
 	default:
 		break;
 	}

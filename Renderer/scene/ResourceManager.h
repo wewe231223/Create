@@ -18,9 +18,7 @@ class ResourceManager {
 
 	private:
 		std::vector<std::shared_ptr<class Model>>						mModels{};
-
 		std::vector<std::pair<size_t, std::vector<std::shared_ptr<class Model>>>>	mNewModels{};
-		
 		std::unordered_map<std::string, std::shared_ptr<class Model>>	mModelMap{};
 	};
 public:
@@ -53,6 +51,8 @@ public:
 	TextureIndex								GetTexture(const std::string& name);
 	std::shared_ptr<I3DRenderable>				GetModel(const std::string& name);
 
+	void ToggleRenderBB();
+
 	// 이 부분들은 렌더링할 때 호출된다. 로드 커맨드 리스트와 다르므로, 이 세 함수는 렌더 커맨드 리스트를 받아야 한다. 
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer);
@@ -77,6 +77,9 @@ private:
 	std::unordered_map<std::string, MaterialIndex>								mMaterialMap{};
 
 	std::unique_ptr<ModelContainer> 					mModelContainer{ nullptr };
+
+	bool mRenderBB{ false };
+	std::unique_ptr<class BoundingBoxRenderer>			mModelBoundingBoxRenderer{ nullptr };
 };
 
 template<typename T>

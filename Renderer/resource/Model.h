@@ -29,6 +29,7 @@ public:
 
 	void SetModelContext(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	UINT GetInstanceCount() const;
 	void EndRender();
 protected:
 	void CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions);

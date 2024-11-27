@@ -22,6 +22,7 @@ enum : WORD {
 	// 이 아래로는 특별한 의미를 갖는 Attribute 들만 위치하게 할 것.
 	// 이 아래 위치하는 정점 속성들은 일반적인 정점 구조를 가지지 않으며, 하나의 Stride 에 정점에 필요한 모든 정보를 가진다.
 	VertexAttrib_BillBoard			= 0b0000'1000'0000'0000,	// Special Attribute 
+	VertexAttrib_BB					= 0b0001'0000'0000'0000,
 };
 
 enum EGlobalConstants : UINT {

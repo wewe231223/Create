@@ -124,6 +124,11 @@ void Model::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	
 }
 
+UINT Model::GetInstanceCount() const
+{
+	return mInstanceCount;
+}
+
 void Model::EndRender()
 {
 	mInstanceCount = 0;

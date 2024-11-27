@@ -36,6 +36,7 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("TankTextureRed", "./Resources/textures/CTF_TankFree_Base_Color_R.png");
 	mResourceManager->CreateTexture("TankTextureGreen", "./Resources/textures/CTF_TankFree_Base_Color_G.png");
 	mResourceManager->CreateTexture("TankTextureBlue", "./Resources/textures/CTF_TankFree_Base_Color_B.png");
+	mResourceManager->CreateTexture("TankTextureYellow", "./Resources/textures/CTF_TankFree_Base_Color_Y.png");
 
 	mResourceManager->CreateTexture("SkyBox_Front", "./Resources/textures/SkyBox_Front_0.dds");
 	mResourceManager->CreateTexture("SkyBox_Back", "./Resources/textures/SkyBox_Back_0.dds");
@@ -77,6 +78,7 @@ void GameScene::CreateMaterials()
 	mResourceManager->CreateMaterial("TankMaterialRed", { mResourceManager->GetTexture("TankTextureRed") });
 	mResourceManager->CreateMaterial("TankMaterialGreen", { mResourceManager->GetTexture("TankTextureGreen") });
 	mResourceManager->CreateMaterial("TankMaterialBlue", { mResourceManager->GetTexture("TankTextureBlue") });
+	mResourceManager->CreateMaterial("TankMaterialYellow", { mResourceManager->GetTexture("TankTextureYellow") });
 }
 
 
@@ -178,7 +180,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mPlayer = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	SCRIPT_Bullet::mPlayer = mPlayer;
 
-	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_B);
+	mPlayer->MakeScript<SCRIPT_Player>(mResourceManager, PlayerColor_Y);
 	mTerrain->MakeObjectOnTerrain(mPlayer);
 	mGameObjects.emplace_back(mPlayer);
 
@@ -257,7 +259,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		vertex.spritable = true;
 		vertex.spriteFrameInCol = 1;
 		vertex.spriteFrameInRow = 16;
-		vertex.spriteDuration = 16.f;
+		vertex.spriteDuration = 3.f;
 
 	}
 
@@ -277,6 +279,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 		}
 		}
 	);
+
+
+	Input.RegisterKeyDownCallBack(DirectX::Keyboard::M, sign, [this]() { mResourceManager->ToggleRenderBB(); });
 
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);

@@ -9,6 +9,7 @@ public:
 	BoundingBoxRenderer(ComPtr<ID3D12Device> device);
 	~BoundingBoxRenderer();
 public:
+	void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, UINT instanceCount);
 private:
 	std::shared_ptr<IGraphicsShader> mShader{ nullptr };

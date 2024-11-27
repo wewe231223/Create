@@ -5,6 +5,7 @@
 #include "resource/Model.h"
 #include "resource/Shader.h"
 #include "ui/Console.h"
+#include "scene/BoundingBoxRenderer.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -31,8 +32,6 @@ bool ResourceManager::ModelContainer::Empty() const noexcept
 void ResourceManager::ModelContainer::Insert(const std::string& model, std::shared_ptr<Model>&& newModel)
 {
 	mModelMap[model] = newModel;
-
-
 
 	auto nIt = std::find_if(mNewModels.begin(), mNewModels.end(), [newModel](const auto& pair) {
 		return pair.first == newModel->GetShaderID();
@@ -90,7 +89,7 @@ ResourceManager::ResourceManager(ComPtr<ID3D12Device>& device)
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 	mModelContainer = std::make_unique<ModelContainer>();
-	
+	mModelBoundingBoxRenderer = std::make_unique<BoundingBoxRenderer>(device);
 	mDevice = device;
 
 	CheckHR(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mCommandAllocator.GetAddressOf())));
@@ -215,6 +214,16 @@ std::shared_ptr<I3DRenderable> ResourceManager::GetModel(const std::string& name
 	return mModelContainer->GetModel(name);
 }
 
+void ResourceManager::ToggleRenderBB()
+{
+	if (mRenderBB) {
+		mRenderBB = false;
+	}
+	else {
+		mRenderBB = true;
+	}
+}
+
 void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
@@ -250,10 +259,26 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		
 		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
 			(*range).second.front()->SetShader(commandList);
-			for (auto& model : range->second) {
-				model->SetModelContext(commandList);
-				model->Render(commandList);
-				model->EndRender();
+			if (mRenderBB) {
+				for (auto& model : range->second) {
+					model->SetModelContext(commandList);
+					model->Render(commandList);
+				}
+
+				mModelBoundingBoxRenderer->SetShader(commandList);
+
+				for (auto& model : range->second) {
+					model->SetModelContext(commandList);
+					mModelBoundingBoxRenderer->Render(commandList, model->GetInstanceCount());
+					model->EndRender();
+				}
+			}
+			else {
+				for (auto& model : range->second) {
+					model->SetModelContext(commandList);
+					model->Render(commandList);
+					model->EndRender();
+				}
 			}
 		}
 	}

@@ -3,6 +3,7 @@ enum PlayerColor {
 	PlayerColor_R,
 	PlayerColor_G,
 	PlayerColor_B,
+	PlayerColor_Y,
 };
 
 

@@ -184,3 +184,20 @@ public:
 	NormalTexturedObjectShader(ComPtr<ID3D12Device>& device);
 	~NormalTexturedObjectShader();
 };
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//							Bounding Box Shader							//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class BoundingBoxShader : public GraphicsShaderBase {
+public:
+	BoundingBoxShader(ComPtr<ID3D12Device>& device);
+	~BoundingBoxShader();
+};
