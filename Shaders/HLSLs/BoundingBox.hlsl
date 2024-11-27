@@ -36,7 +36,11 @@ BoundingBox_GS_IN BoundingBoxVS(BoundingBox_VS_IN input)
     return output;
 }
 
-#define BoundingBoxColor float4(1.f, 0.f, 0.f, 1.f)
+#define BoundingBoxColor    float4(1.f, 0.f, 0.f, 1.f)
+#define ForwardColor        float4(0.f, 0.f, 1.f, 1.f)
+#define RightColor          float4(1.f, 1.f, 0.f, 1.f)
+#define UpColor             float4(0.f, 1.f, 0.f, 1.f)
+#define AxisRenderRatio     1.5f
 
 [maxvertexcount(16)]
 void BoundingBoxGS(point BoundingBox_GS_IN input[1],inout LineStream<BoundingBox_PS_IN> output)
@@ -110,7 +114,7 @@ void BoundingBoxGS(point BoundingBox_GS_IN input[1],inout LineStream<BoundingBox
     
     //
     // 총 점의 개수 5 + 5 + 6 = 16개 
-    //
+    //    
 }
 
 

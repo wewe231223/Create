@@ -140,7 +140,7 @@ void BillBoardGS(point BillBoard_GS_IN input[1], inout TriangleStream<BillBoard_
     positions[3] = float4(input[0].position - right * input[0].halfWidth + up * input[0].height, 1.f);
    
     BillBoard_PS_IN outpoint;
-    [unroll]
+    [unroll(4)]
     for(uint i = 0; i < 4; i++)
     {
         outpoint.positionV = mul(positions[i], viewMatrix).xyz;
