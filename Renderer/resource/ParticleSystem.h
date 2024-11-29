@@ -19,23 +19,53 @@
 // - SO 단계에 사용하는 버퍼는 업로드 힙으로 구성하며, ReadBack 힙으로 읽어온 현재 파티클 개수 뒤에 각 프레임 리소스가 받아온 새로운 파티클을 복사한다.				//
 // - GS 단계에는 SO 단계를 거친 SO 버퍼를 정점 입력으로 사용한다.																						//
 // - 명령어의 순서는 항상 보장되므로, SO 단계의 동기화가 역전되는 현상은 고려할 필요 없다.																	//
-// - 따라서 ParticleSystem 에는 두 개의 버퍼 ( 파티클 정점 버퍼 , ReadBack 버퍼 ) 가 존재한다.															//
 //																																				//
+// 3. ParticleSystem Flow																														//
+// - 파티클 시스템은 다음과 같은 단계를 따라 작동한다.																									//
+//																																				//
+// CounterBuffer Clear -> SO set -> SO Render -> Read From Counter Buffer -> GS Render -> ...													// 
+//																																				//
+// mVertexBuffer 는 모든 pass 의 정점 입력으로 설정되고, mParticleSOBuffer 는 SO 단계에서 사용되는 스트림 출력 버퍼로 사용된다.								//
+// 이를 위해 SO Pass 가 끝난 뒤에 mVertexBuffer 와 mParticleSOBuffer 의 포인터를 swap 하여 SO 버퍼에 담긴 내용을 다음 단계 정점 입력으로 사용된다 			//
+// 그 다음 SO Pass 에서는 이전 GS Pass 에 사용된 정점 입력을 그대로 다시 정점 입력으로 사용한다															//			
+// 																																				// 
 //================================================================================================================================================
 
- 
+
 class ParticleSystem {
-	struct Buffer {
-		ComPtr<ID3D12Resource> mBuffer{ nullptr };
-		ParticleVertex* mBufferPtr{ nullptr };
-	};
+	static constexpr size_t MAX_PARTICLE_COUNT = 9'0000;
+	static constexpr size_t MAX_PARTICLE_COUNT_UPLOAD_ONCE = 300;
 public:
-	ParticleSystem();
+	ParticleSystem(ComPtr<ID3D12Device>& device);
 	~ParticleSystem();
 public:
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
-	ComPtr<ID3D12Resource> mParticleSOBuffer{ nullptr };
+	void CreateParticleDefaultBuffer(ComPtr<ID3D12Device>& device, ID3D12Resource** buffer, D3D12_RESOURCE_STATES initialState);
+	void UpdateParticleVertices();
+	void ReadBackFromBuffer(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void SwapBufferPointer(ComPtr<ID3D12Resource>& resourceA, ComPtr<ID3D12Resource>& resourceB);
+private:
+	D3D12_RESOURCE_BARRIER mSOtoGSBarrier{};
+	D3D12_RESOURCE_BARRIER mGStoSOBarrier{};
 
-	std::array<Buffer, static_cast<size_t>(EGlobalConstants::GC_FrameCount)> mParticleBuffer{};
+	// 정점 버퍼 
+	ComPtr<ID3D12Resource>	mVertexBuffer{ nullptr };
+	// 스트림 출력 버퍼  
+	ComPtr<ID3D12Resource>	mParticleSOBuffer{ nullptr };
+
+	// SO 단계에 set 하기 전 카운터를 초기화 시키는 버퍼 
+	ComPtr<ID3D12Resource>	mStreamCounterUploadBuffer{ nullptr };
+	UINT64*					mStreamCounterUploadPtr{ nullptr };
+
+	// SO 단계에 set 하는데 사용되는 스트림 출력 카운터 버퍼 
+	ComPtr<ID3D12Resource>	mStreamCounterDefaultBuffer{ nullptr };
+	// SO 단계를 거쳐 생성된 점들의 개수를 읽어오는 ReadBack 버퍼 
+	UINT32					mParticleCount{ 0 };
+	ComPtr<ID3D12Resource>	mStreamCounterReadBackBuffer{ nullptr };
+	// 새롭게 추가될 파티클들을 담는 버퍼 
+	std::array<ParticleVertex, MAX_PARTICLE_COUNT_UPLOAD_ONCE> mNewParticles{};
+	// 새롭게 추가될 파티클들을 업로드 하는 버퍼 
+	ComPtr<ID3D12Resource> mNewParticleUploadBuffer{ nullptr };
 };
