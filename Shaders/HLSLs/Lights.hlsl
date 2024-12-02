@@ -20,7 +20,7 @@ float4 SpotLight(int index, float3 position, float3 normal, float3 toCamera)
 {
     // 광원의 위치 및 방향
     float3 lightPos = gLights[index].position; // 광원 위치
-    float3 lightDir = normalize(gLights[index].direction); // 광원의 바라보는 방향 (정규화 필수)
+    float3 lightDir = normalize(gLights[index].direction); // 광원의 바라보는 방향
 
     // 픽셀에서 광원으로의 방향 벡터
     float3 toLight = normalize(position - lightPos);
@@ -60,7 +60,7 @@ float4 SpotLight(int index, float3 position, float3 normal, float3 toCamera)
     float3 specular = gLights[index].specular.rgb * specularFactor;
 
     // 최종 조명 결과 반환 (spotFactor와 거리 감쇠 적용)
-    float3 lightColor = (ambient + (diffuse + Intensity + specular) * spotFactor) * attenuation;
+    float3 lightColor = (ambient + (diffuse + specular) * spotFactor) * attenuation;
     return float4(lightColor, 1.0f);
 }
 
