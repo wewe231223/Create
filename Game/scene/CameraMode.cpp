@@ -123,7 +123,7 @@ void FreeCameraMode::Update()
 
 ECameraType FreeCameraMode::GetType() const
 {
-	return CT_FreeCamera;
+	return CT_FreeCamera;	
 }
 
 

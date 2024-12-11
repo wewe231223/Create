@@ -57,6 +57,6 @@ float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
     float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f);
    
     float depth =  input.PosH.z / input.PosH.w ;
-    return float4(float3(depth,depth,depth) , 1.f);
-    //return Fog(lerp(Color, Lighting(input.PosW,input.Normal),0.3f), input.PosV.z, 50.f, 1000.f);
+   // return float4(float3(depth,depth,depth) , 1.f);
+    return Fog(lerp(Color, Lighting(input.PosW,input.Normal),0.3f), input.PosV.z, 50.f, 1000.f);
 }
