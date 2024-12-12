@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "resource/ParticleSystem.h"
+#include <random>
 
-ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device)
+ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList)
 {
 
 	CD3DX12_HEAP_PROPERTIES	uploadHeap { D3D12_HEAP_TYPE_UPLOAD };
@@ -48,6 +49,79 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device)
 	CreateDefaultBuffer(device, mStreamCounterDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_STREAM_OUT, sizeof(UINT64));
 	
 	mStreamCounterUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mStreamCounterUploadPtr)));
+
+	CD3DX12_RESOURCE_DESC parentBufferDesc{ CD3DX12_RESOURCE_DESC::Buffer(MAX_PARTICLE_PARENT_COUNT * sizeof(DirectX::XMFLOAT3)) };
+	for (auto& buffer : mParticleParentBuffer) {
+		CheckHR(
+			device->CreateCommittedResource(
+				std::addressof(uploadHeap),
+				D3D12_HEAP_FLAG_NONE,
+				std::addressof(parentBufferDesc),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
+				IID_PPV_ARGS(buffer.mBuffer.GetAddressOf())
+			)
+		);
+		
+		buffer.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(buffer.mBufferPtr)));
+	}
+
+
+
+
+}
+
+void ParticleSystem::InitializeRandomBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList)
+{
+	std::random_device rd{};
+	std::default_random_engine dre{ rd() };
+	std::uniform_real_distribution<float> urf{ -1.0f, 1.0f };
+
+	std::array<float, 4096> randomValues{};
+	
+	for (auto& value : randomValues) {
+		value = urf(dre);
+	}
+
+	D3D12_HEAP_PROPERTIES uploadHeap{ CD3DX12_HEAP_PROPERTIES{D3D12_HEAP_TYPE_UPLOAD} };
+	D3D12_HEAP_PROPERTIES defaultHeap{ CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT) };
+
+	D3D12_RESOURCE_DESC randomBufferDesc{ CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * randomValues.size()) };
+
+	CheckHR(
+		device->CreateCommittedResource(
+			std::addressof(uploadHeap),
+			D3D12_HEAP_FLAG_NONE,
+			std::addressof(randomBufferDesc),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(mRandomUploadBuffer.GetAddressOf())
+		)
+	);
+
+
+	CheckHR(
+		device->CreateCommittedResource(
+			std::addressof(defaultHeap),
+			D3D12_HEAP_FLAG_NONE,
+			std::addressof(randomBufferDesc),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(mRandomDefaultBuffer.GetAddressOf())
+		)
+
+	);
+
+	D3D12_SUBRESOURCE_DATA subresources{};
+	subresources.pData = randomValues.data();
+	subresources.SlicePitch = subresources.RowPitch = sizeof(float) * randomValues.size();
+
+	::UpdateSubresources(loadCommandList.Get(), mRandomDefaultBuffer.Get(), mRandomUploadBuffer.Get(), 0, 0, 1, std::addressof(subresources));
+
+
+	D3D12_RESOURCE_BARRIER resourceBarrier{ CD3DX12_RESOURCE_BARRIER::Transition(mRandomDefaultBuffer.Get(),D3D12_RESOURCE_STATE_COPY_DEST,D3D12_RESOURCE_STATE_GENERIC_READ) };
+	loadCommandList->ResourceBarrier(1, std::addressof(resourceBarrier));
+
 }
 
 void ParticleSystem::SyncBuffer(ComPtr<ID3D12GraphicsCommandList>& commandlist, ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES target)

@@ -1,6 +1,6 @@
 #pragma once 
 
-class Transform {
+class Transform : public IRendererTransformBase {
 public:
 	Transform();
 	~Transform();
@@ -29,12 +29,12 @@ public:
 	void SetChild(Transform* child);
 
 	Transform& GetChild(UINT dfsIndex);
-
+		
 	void SetOrientedBoundingBox(DirectX::BoundingOrientedBox box);
 
-	DirectX::SimpleMath::Vector3 GetPosition() const;
-	DirectX::SimpleMath::Quaternion GetRotation() const;
-	DirectX::SimpleMath::Vector3 GetScale() const;
+	virtual DirectX::SimpleMath::Vector3 GetPosition() const override;
+	virtual DirectX::SimpleMath::Quaternion GetRotation() const override;
+	virtual DirectX::SimpleMath::Vector3 GetScale() const override;
 
 	DirectX::SimpleMath::Vector3 GetForward() const;
 	DirectX::SimpleMath::Vector3 GetRight() const;
@@ -43,7 +43,7 @@ public:
 	DirectX::BoundingOrientedBox& GetBB();
 
 	DirectX::SimpleMath::Matrix& CreateWorldMatrix();
-	DirectX::SimpleMath::Matrix GetWorldMatrix();
+	virtual DirectX::SimpleMath::Matrix GetWorldMatrix() const override;
 private:
 	Transform* InternalGetChild(UINT& dfsIndex);
 private:

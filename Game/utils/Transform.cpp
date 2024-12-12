@@ -192,7 +192,7 @@ DirectX::SimpleMath::Matrix& Transform::CreateWorldMatrix()
 	return mWorldMatrix;
 }
 
-DirectX::SimpleMath::Matrix Transform::GetWorldMatrix()
+DirectX::SimpleMath::Matrix Transform::GetWorldMatrix() const  
 {
 	return mWorldMatrix;
 }

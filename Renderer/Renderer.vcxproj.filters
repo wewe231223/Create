@@ -265,5 +265,11 @@
     <FxCompile Include="..\Shaders\HLSLs\BoundingBox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\ParticleGSPass.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSLs\ParticleSOPass.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

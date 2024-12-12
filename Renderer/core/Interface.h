@@ -22,3 +22,11 @@ __interface IGraphicsShader {
 	virtual void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList) PURE;
 	virtual bool CheckAttribute(VertexAttribute attribute) PURE;
 };
+
+__interface IRendererTransformBase {
+	virtual DirectX::SimpleMath::Vector3 GetPosition() const;
+	virtual DirectX::SimpleMath::Quaternion GetRotation() const;
+	virtual DirectX::SimpleMath::Vector3 GetScale() const;
+
+	virtual DirectX::SimpleMath::Matrix GetWorldMatrix() const;
+};
