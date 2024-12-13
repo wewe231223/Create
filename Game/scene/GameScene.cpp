@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Renderer/resource/TerrainImage.h"
 #include "Renderer/resource/BillBoard.h"
+#include "Renderer/resource/ParticleSystem.h"
 #include "Renderer/scene/LightManager.h"
 #include "Game/scene/GameScene.h"
 #include "Game/gameobject/GameObject.h"
@@ -282,6 +283,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::M, sign, [this]() { mResourceManager->ToggleRenderBB(); });
+
+
+	mParticleSystem = std::make_unique<ParticleSystem>(device, mResourceManager->GetLoadCommandList());
 
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);

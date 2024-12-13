@@ -201,3 +201,36 @@ public:
 	BoundingBoxShader(ComPtr<ID3D12Device>& device);
 	~BoundingBoxShader();
 };
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						Particle SO Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class ParticleSOShader : public GraphicsShaderBase {
+public:
+	ParticleSOShader(ComPtr<ID3D12Device>& device);
+	~ParticleSOShader();
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						Particle GS Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class ParticleGSShader : public GraphicsShaderBase {
+public:
+	ParticleGSShader(ComPtr<ID3D12Device>& device);
+	~ParticleGSShader();
+};

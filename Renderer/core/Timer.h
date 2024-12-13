@@ -29,12 +29,13 @@ template<typename T>
 concept TimeUnit = std::chrono::_Is_duration_v<T>;
 
 class GTime {
+public:
 	using clock = std::chrono::high_resolution_clock;
 	using rep = double;
 	using period = std::nano;
 	using time_point = clock::time_point;
 	using duration = std::chrono::duration<double, period>;
-
+private:
 	//sceduled event 가 우선되는 문제가 있다. 
 	struct Event {
 		Event(std::chrono::time_point<clock> time, std::chrono::nanoseconds timeout, std::function<bool()>&& callBack) {
@@ -118,6 +119,8 @@ public:
 	void AddEvent(std::chrono::duration<rep, period> time, std::function<bool()>&& callBack) {
 		mEvents.emplace(clock::now() + time, std::chrono::duration_cast<std::chrono::nanoseconds>(time), std::move(callBack));
 	}
+
+	time_point Now() const;
 
 	[[maybe_unused]]
 	double SetTimeScale(double scale = 1.0);

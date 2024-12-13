@@ -46,4 +46,6 @@ private:
 	std::shared_ptr<class BillBoard> mBillBoard{ nullptr };
 
 	std::shared_ptr<class LightManager> mLightManager{ nullptr };
+
+	std::unique_ptr<class ParticleSystem> mParticleSystem{ nullptr };
 };

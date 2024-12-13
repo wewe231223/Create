@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "resource/ParticleSystem.h"
+#include "resource/Shader.h"
 #include <random>
 
 ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList)
 {
+	mGSPassShader = std::make_unique<ParticleGSShader>(device);
+	mSOPassShader = std::make_unique<ParticleSOShader>(device);
 
 	CD3DX12_HEAP_PROPERTIES	uploadHeap { D3D12_HEAP_TYPE_UPLOAD };
 	CD3DX12_HEAP_PROPERTIES readbackHeap{ D3D12_HEAP_TYPE_READBACK };
@@ -65,10 +68,6 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
 		
 		buffer.mBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(buffer.mBufferPtr)));
 	}
-
-
-
-
 }
 
 void ParticleSystem::InitializeRandomBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList)

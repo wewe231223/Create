@@ -27,7 +27,10 @@
 //																																				//
 // mVertexBuffer 는 모든 pass 의 정점 입력으로 설정되고, mParticleSOBuffer 는 SO 단계에서 사용되는 스트림 출력 버퍼로 사용된다.								//
 // 이를 위해 SO Pass 가 끝난 뒤에 mVertexBuffer 와 mParticleSOBuffer 의 포인터를 swap 하여 SO 버퍼에 담긴 내용을 다음 단계 정점 입력으로 사용된다 			//
-// 그 다음 SO Pass 에서는 이전 GS Pass 에 사용된 정점 입력을 그대로 다시 정점 입력으로 사용한다															//			
+// 그 다음 SO Pass 에서는 이전 GS Pass 에 사용된 정점 입력을 그대로 다시 정점 입력으로 사용한다.															// 
+//																																				//
+// 부모의 위치와 offset 을 사용하여 부모를 따라가는 파티클을 구현한다.																					//
+// 따라서 lifetime 만 CPU 에서 계산하여, lifetime 이 종료된 파티클의 위치는 더 이상 갱신하지 않는다.														//			
 // 																																				// 
 //================================================================================================================================================
 
@@ -63,11 +66,9 @@ private:
 	ComPtr<ID3D12Resource>													mVertexBuffer{ nullptr };
 	// 스트림 출력 버퍼  
 	ComPtr<ID3D12Resource>													mParticleSOBuffer{ nullptr };
-
 	// SO 단계에 set 하기 전 카운터를 초기화 시키는 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterUploadBuffer{ nullptr };
 	UINT64*																	mStreamCounterUploadPtr{ nullptr };
-
 	// SO 단계에 set 하는데 사용되는 스트림 출력 카운터 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterDefaultBuffer{ nullptr };
 	// SO 단계를 거쳐 생성된 점들의 개수를 읽어오는 ReadBack 버퍼 
@@ -79,10 +80,9 @@ private:
 	// 새롭게 추가될 파티클들을 업로드 하는 버퍼 
 	ComPtr<ID3D12Resource>													mNewParticleUploadBuffer{ nullptr };
 	// 부모를 가지며 마치 계층 구조 처럼 행동하는 파티클들을 위한 버퍼. 최대 512개를 지원하기로 한다. 
-	std::array<IRendererTransformBase*, MAX_PARTICLE_PARENT_COUNT>			mParticleParents{};
+	std::array<std::pair<GTime::time_point,IRendererTransformBase*>, MAX_PARTICLE_PARENT_COUNT>			mParticleParents{};
 	std::array<Buffer, static_cast<size_t>(GC_FrameCount)>					mParticleParentBuffer{};
 	UINT																	mCurrentParentBufferIndex{ 0 };
-
 	// SO 에서 새로 생겨나는 파티클에 대한 랜덤한 방향을 지정해줄 랜덤 float 들을 저장할 버퍼가 필요하다. 
 	// 기본적으로 사용자가 입력해주는 파티클 정점들은 초기화 된 방향을 사용하고, SO 에서 새로 생성된 정점들에 대해서 이 랜덤 버퍼를 사용한다. 
 	// 랜덤 버퍼의 크기는 64 * 64 = 4096 개 이다 
@@ -90,7 +90,7 @@ private:
 	// 버퍼에서 참조할 값의 인덱스를 결정한다. 
 	ComPtr<ID3D12Resource>													mRandomUploadBuffer{ nullptr };
 	ComPtr<ID3D12Resource>													mRandomDefaultBuffer{ nullptr };
-
+	// Set 바인딩에 사용되는 View 
 	D3D12_STREAM_OUTPUT_BUFFER_VIEW											mSOBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW												mVertexBufferView{};	
 };

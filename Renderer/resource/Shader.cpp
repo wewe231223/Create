@@ -123,6 +123,7 @@ void GraphicsShaderBase::MakeShader(EShaderType shaderType,const std::string& pa
             ::OutputDebugStringA((char*)errors->GetBufferPointer());
             ::CheckHR(hr);
         }
+        ::CheckHR(D2DERR_SHADER_COMPILE_FAILED);
         return;
     }
     SaveBlobBinary(binaryPath,byteCode);
@@ -833,7 +834,7 @@ BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
         { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
         { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
         { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
-        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,        0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
     };
 
 
@@ -1171,5 +1172,303 @@ BoundingBoxShader::BoundingBoxShader(ComPtr<ID3D12Device>& device)
 }
 
 BoundingBoxShader::~BoundingBoxShader()
+{
+}
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						Particle SO Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+ParticleSOShader::ParticleSOShader(ComPtr<ID3D12Device>& device)
+    : GraphicsShaderBase(device)
+{
+    // Attribute 생략. 
+
+    MakeShader(EShaderType::VS, "ParticleSOPass.hlsl", "ParticleSOPassVS", "vs_5_1", nullptr);
+    MakeShader(EShaderType::GS, "ParticleSOPass.hlsl", "ParticleSOPassGS", "gs_5_1", nullptr);
+
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
+        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
+        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
+        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
+        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
+        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
+        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, 64, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, 68, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, 72, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, 80, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 84, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }  
+    };
+
+    // 텍스쳐 없음. 
+
+    D3D12_ROOT_PARAMETER rootParams[ParticleSORP_END]{};
+
+    rootParams[ParticleSORP_TimeConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[ParticleSORP_TimeConstants].Constants.Num32BitValues = 2;
+	rootParams[ParticleSORP_TimeConstants].Constants.ShaderRegister = 0;
+    rootParams[ParticleSORP_TimeConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[ParticleSORP_RandomBuffer].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[ParticleSORP_RandomBuffer].Descriptor.ShaderRegister = 0;
+    rootParams[ParticleSORP_RandomBuffer].Descriptor.RegisterSpace = 0;
+    rootParams[ParticleSORP_RandomBuffer].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[ParticleSORP_ParentPosition].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+    rootParams[ParticleSORP_ParentPosition].Descriptor.ShaderRegister = 1;
+	rootParams[ParticleSORP_ParentPosition].Descriptor.RegisterSpace = 0;
+	rootParams[ParticleSORP_ParentPosition].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    D3D12_ROOT_SIGNATURE_DESC rootDesc{};
+    rootDesc.NumParameters = _countof(rootParams);
+    rootDesc.pParameters = rootParams;
+    rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
+    rootDesc.pStaticSamplers = mStaticSamplers.data();
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    ComPtr<ID3DBlob> signature{ nullptr };
+    ComPtr<ID3DBlob> error{ nullptr };
+
+    auto hr = D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1, signature.GetAddressOf(), error.GetAddressOf());
+    if (FAILED(hr)) {
+        OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+    }
+
+    CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+
+    // 파이프라인 상태 객체(PSO) 생성
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+    psoDesc.pRootSignature = mRootSignature.Get();
+    psoDesc.VS = GetShaderByteCode(EShaderType::VS);
+    psoDesc.GS = GetShaderByteCode(EShaderType::GS);
+
+    psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+    psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+    psoDesc.RasterizerState.FrontCounterClockwise = FALSE;
+    psoDesc.RasterizerState.DepthBias = 0;
+    psoDesc.RasterizerState.DepthBiasClamp = 0.0f;
+    psoDesc.RasterizerState.SlopeScaledDepthBias = 0.0f;
+    psoDesc.RasterizerState.DepthClipEnable = TRUE;
+    psoDesc.RasterizerState.MultisampleEnable = FALSE;
+    psoDesc.RasterizerState.AntialiasedLineEnable = FALSE;
+    psoDesc.RasterizerState.ForcedSampleCount = 0;
+    psoDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+    
+    psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
+    psoDesc.BlendState.IndependentBlendEnable = FALSE;
+    psoDesc.BlendState.RenderTarget[0].BlendEnable = TRUE;
+    psoDesc.BlendState.RenderTarget[0].LogicOpEnable = FALSE;
+    psoDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+    psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+    psoDesc.BlendState.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+    psoDesc.BlendState.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
+    psoDesc.BlendState.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+    psoDesc.BlendState.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    psoDesc.BlendState.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
+    psoDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+    psoDesc.DepthStencilState.DepthEnable = FALSE;
+    psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+    psoDesc.DepthStencilState.StencilEnable = FALSE;
+    psoDesc.DepthStencilState.StencilReadMask = 0x00;
+    psoDesc.DepthStencilState.StencilWriteMask = 0x00;
+    psoDesc.DepthStencilState.FrontFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.FrontFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_NEVER;
+    psoDesc.DepthStencilState.BackFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.BackFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.BackFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+    psoDesc.DepthStencilState.BackFace.StencilFunc = D3D12_COMPARISON_FUNC_NEVER;
+    
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+    psoDesc.NumRenderTargets = 0;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+    
+    // SO Decl 
+    D3D12_SO_DECLARATION_ENTRY soEntries[] = {
+        { 0, "POSITION",         0, 0, 3, 0 }, // POSITION,             3 component (float3)
+        //{ 0, "WIDTH",            0, 0, 1, 0 }, // WIDTH,                1 component (float)
+        //{ 0, "HEIGHT",           0, 0, 1, 0 }, // HEIGHT,               1 component (float)
+        //{ 0, "UP",               0, 0, 3, 0 }, // UP,                   3 component (float3)
+        //{ 0, "TEXTUREINDEX",     0, 0, 1, 0 }, // TEXTUREINDEX,         1 component (uint)
+        //{ 0, "SPRITABLE",        0, 0, 1, 0 }, // SPRITABLE,            1 component (uint8)
+        //{ 0, "SPRITEFRAMEINROW", 0, 0, 1, 0 }, // SPRITEFRAMEINROW,     1 component (uint)
+        //{ 0, "SPRITEFRAMEINCOL", 0, 0, 1, 0 }, // SPRITEFRAMEINCOL,     1 component (uint)
+        //{ 0, "SPRITEDURATION",   0, 0, 1, 0 }, // SPRITEDURATION,       1 component (float)
+        //{ 0, "DIRECTION",        0, 0, 3, 0 }, // DIRECTION,            3 component (float3)
+        //{ 0, "VELOCITY",         0, 0, 1, 0 }, // VELOCITY,             1 component (float)
+        //{ 0, "LIFETIME",         0, 0, 1, 0 }, // LIFETIME,             1 component (float)
+        //{ 0, "PARTICLETYPE",     0, 0, 1, 0 }, // PARTICLETYPE,         1 component (uint)
+        //{ 0, "EMITTYPE",         0, 0, 1, 0 }, // EMITTYPE,             1 component (uint)
+        //{ 0, "PARENTID",         0, 0, 1, 0 }, // PARENTID,             1 component (uint)
+        //{ 0, "PARENTOFFSET",     0, 0, 3, 0 }  // PARENTOFFSET,         3 component (float3)
+    };
+
+    UINT strides[] = { 12 };
+    
+    psoDesc.StreamOutput.NumEntries = _countof(soEntries);
+	psoDesc.StreamOutput.pSODeclaration = soEntries;
+    psoDesc.StreamOutput.NumStrides = 1;
+    psoDesc.StreamOutput.pBufferStrides = strides;
+	psoDesc.StreamOutput.RasterizedStream = D3D12_SO_NO_RASTERIZED_STREAM;
+
+    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+
+}
+
+ParticleSOShader::~ParticleSOShader()
+{
+}
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//						Particle GS Shader								//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+ParticleGSShader::ParticleGSShader(ComPtr<ID3D12Device>& device)
+    :GraphicsShaderBase(device)
+{
+
+    // Attribute 생략. 
+
+    MakeShader(EShaderType::VS, "ParticleGSPass.hlsl", "ParticleGSPassVS", "vs_5_1", nullptr);
+    MakeShader(EShaderType::GS, "ParticleGSPass.hlsl", "ParticleGSPassGS", "gs_5_1", nullptr);
+    MakeShader(EShaderType::PS, "ParticleGSPass.hlsl", "ParticleGSPassPS", "ps_5_1", nullptr);
+
+
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
+        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
+        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
+        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
+        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
+        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
+        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, 64, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, 68, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, 72, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, 80, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 84, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    
+    D3D12_DESCRIPTOR_RANGE texRange[1];
+    // Tex2D 
+    texRange[0].BaseShaderRegister = 0;
+    texRange[0].NumDescriptors = 1024;
+    texRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+    texRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+    texRange[0].RegisterSpace = 0;
+
+
+    D3D12_ROOT_PARAMETER rootParams[ParticleGSRP_END]{};
+	rootParams[ParticleGSRP_TimeConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[ParticleGSRP_TimeConstants].Constants.Num32BitValues = 2;
+	rootParams[ParticleGSRP_TimeConstants].Constants.ShaderRegister = 0;
+	rootParams[ParticleGSRP_TimeConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	rootParams[ParticleGSRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParams[ParticleGSRP_CameraConstants].Descriptor.ShaderRegister = 1;
+	rootParams[ParticleGSRP_CameraConstants].Descriptor.RegisterSpace = 0;
+	rootParams[ParticleGSRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[ParticleGSRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParams[ParticleGSRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);
+	rootParams[ParticleGSRP_Texture].DescriptorTable.pDescriptorRanges = texRange;
+	rootParams[ParticleGSRP_Texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    D3D12_ROOT_SIGNATURE_DESC rootDesc{};
+    rootDesc.NumParameters = _countof(rootParams);
+    rootDesc.pParameters = rootParams;
+    rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
+    rootDesc.pStaticSamplers = mStaticSamplers.data();
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    ComPtr<ID3DBlob> signature{ nullptr };
+    ComPtr<ID3DBlob> error{ nullptr };
+
+    auto hr = D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1, signature.GetAddressOf(), error.GetAddressOf());
+    if (FAILED(hr)) {
+        OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+    }
+
+    CheckHR(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+
+    // 파이프라인 상태 객체(PSO) 생성
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+    psoDesc.pRootSignature = mRootSignature.Get();
+    psoDesc.VS = GetShaderByteCode(EShaderType::VS);
+    psoDesc.GS = GetShaderByteCode(EShaderType::GS);
+	psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
+    psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
+
+    psoDesc.BlendState.AlphaToCoverageEnable = false;
+    psoDesc.BlendState.IndependentBlendEnable = false;
+    psoDesc.BlendState.RenderTarget[0].BlendEnable = true;
+    psoDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+    psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+    psoDesc.BlendState.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+    psoDesc.BlendState.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+    psoDesc.BlendState.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+    psoDesc.BlendState.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    psoDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(EGlobalConstants::GC_RenderTargetFormat);
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+
+    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+
+}
+
+ParticleGSShader::~ParticleGSShader()
 {
 }

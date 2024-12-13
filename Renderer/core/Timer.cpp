@@ -9,7 +9,12 @@ GTime::~GTime()
 {
 }
 
-double GTime::SetTimeScale(double scale) 
+GTime::time_point GTime::Now() const
+{
+	return clock::now();
+}
+
+double GTime::SetTimeScale(double scale)
 {
 	auto temp = mTimeScale;
 	mTimeScale = scale;

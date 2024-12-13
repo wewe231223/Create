@@ -222,8 +222,9 @@ struct ParticleVertex : public BillBoardVertex {
 	DirectX::XMFLOAT3 direction{ 0.f,0.f,0.f };
 	float velocity{ 0.f };
 	float lifeTime{ 0.f };
-	UINT type{};
+	UINT type{ ParticleType_ember };
 	
+	UINT emitType{ ParticleType_ember };
 	UINT parentID{ 0xFF'FF'FF'FF };
 	DirectX::XMFLOAT3 offset{ 0.f,0.f,0.f };
 };
@@ -276,4 +277,17 @@ enum BillBoardRootParamIndex : UINT {
 	BRP_END
 };
 
+enum ParticleSORootParamIndex : UINT {
+	ParticleSORP_TimeConstants = 0,
+	ParticleSORP_RandomBuffer = 1,
+	ParticleSORP_ParentPosition = 2,
+	ParticleSORP_END,
+};
+
+enum ParticleGSRootParamIndex : UINT {
+	ParticleGSRP_TimeConstants = 0,
+	ParticleGSRP_CameraConstants = 1,
+	ParticleGSRP_Texture = 2,
+	ParticleGSRP_END,
+};
 
