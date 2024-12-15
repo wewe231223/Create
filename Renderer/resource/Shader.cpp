@@ -1199,24 +1199,25 @@ ParticleSOShader::ParticleSOShader(ComPtr<ID3D12Device>& device)
     MakeShader(EShaderType::GS, "ParticleSOPass.hlsl", "ParticleSOPassGS", "gs_5_1", nullptr);
 
     D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
-        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
-        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
-        { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
-        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
-        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
-        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
-        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
-        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
-        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, 64, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, 68, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, 72, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, 80, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 84, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }  
+        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
+        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
+        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
+        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
+        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TOTALLIFETIME",      0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, 
+        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "REMAINEMIT",         0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
-
+    
     // 텍스쳐 없음. 
 
     D3D12_ROOT_PARAMETER rootParams[ParticleSORP_END]{};
@@ -1241,7 +1242,7 @@ ParticleSOShader::ParticleSOShader(ComPtr<ID3D12Device>& device)
     rootDesc.pParameters = rootParams;
     rootDesc.NumStaticSamplers = static_cast<UINT>(mStaticSamplers.size());
     rootDesc.pStaticSamplers = mStaticSamplers.data();
-    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
 
     ComPtr<ID3DBlob> signature{ nullptr };
     ComPtr<ID3DBlob> error{ nullptr };
@@ -1312,24 +1313,27 @@ ParticleSOShader::ParticleSOShader(ComPtr<ID3D12Device>& device)
     // SO Decl 
     D3D12_SO_DECLARATION_ENTRY soEntries[] = {
         { 0, "POSITION",         0, 0, 3, 0 }, // POSITION,             3 component (float3)
-        //{ 0, "WIDTH",            0, 0, 1, 0 }, // WIDTH,                1 component (float)
-        //{ 0, "HEIGHT",           0, 0, 1, 0 }, // HEIGHT,               1 component (float)
-        //{ 0, "UP",               0, 0, 3, 0 }, // UP,                   3 component (float3)
-        //{ 0, "TEXTUREINDEX",     0, 0, 1, 0 }, // TEXTUREINDEX,         1 component (uint)
-        //{ 0, "SPRITABLE",        0, 0, 1, 0 }, // SPRITABLE,            1 component (uint8)
-        //{ 0, "SPRITEFRAMEINROW", 0, 0, 1, 0 }, // SPRITEFRAMEINROW,     1 component (uint)
-        //{ 0, "SPRITEFRAMEINCOL", 0, 0, 1, 0 }, // SPRITEFRAMEINCOL,     1 component (uint)
-        //{ 0, "SPRITEDURATION",   0, 0, 1, 0 }, // SPRITEDURATION,       1 component (float)
-        //{ 0, "DIRECTION",        0, 0, 3, 0 }, // DIRECTION,            3 component (float3)
-        //{ 0, "VELOCITY",         0, 0, 1, 0 }, // VELOCITY,             1 component (float)
-        //{ 0, "LIFETIME",         0, 0, 1, 0 }, // LIFETIME,             1 component (float)
-        //{ 0, "PARTICLETYPE",     0, 0, 1, 0 }, // PARTICLETYPE,         1 component (uint)
-        //{ 0, "EMITTYPE",         0, 0, 1, 0 }, // EMITTYPE,             1 component (uint)
-        //{ 0, "PARENTID",         0, 0, 1, 0 }, // PARENTID,             1 component (uint)
-        //{ 0, "PARENTOFFSET",     0, 0, 3, 0 }  // PARENTOFFSET,         3 component (float3)
+        { 0, "WIDTH",            0, 0, 1, 0 }, // WIDTH,                1 component (float)
+        { 0, "HEIGHT",           0, 0, 1, 0 }, // HEIGHT,               1 component (float)
+        { 0, "TEXTUREINDEX",     0, 0, 1, 0 }, // TEXTUREINDEX,         1 component (uint)
+        { 0, "SPRITABLE",        0, 0, 1, 0 }, // SPRITABLE,            1 component (uint8)
+        { 0, "SPRITEFRAMEINROW", 0, 0, 1, 0 }, // SPRITEFRAMEINROW,     1 component (uint)
+        { 0, "SPRITEFRAMEINCOL", 0, 0, 1, 0 }, // SPRITEFRAMEINCOL,     1 component (uint)
+        { 0, "SPRITEDURATION",   0, 0, 1, 0 }, // SPRITEDURATION,       1 component (float)
+        { 0, "DIRECTION",        0, 0, 3, 0 }, // DIRECTION,            3 component (float3)
+        { 0, "VELOCITY",         0, 0, 1, 0 }, // VELOCITY,             1 component (float)
+        { 0, "TOTALLIFETIME",    0, 0, 1, 0 }, // TOTALLIFETIME         1 component (float) 
+        { 0, "LIFETIME",         0, 0, 1, 0 }, // LIFETIME,             1 component (float)
+        { 0, "PARTICLETYPE",     0, 0, 1, 0 }, // PARTICLETYPE,         1 component (uint)
+        { 0, "EMITTYPE",         0, 0, 1, 0 }, // EMITTYPE,             1 component (uint)
+        { 0, "REMAINEMIT",       0, 0, 1, 0 }, // REMAINEMIT,           1 component (uint)     
+        { 0, "PARENTID",         0, 0, 1, 0 }, // PARENTID,             1 component (uint)
+        { 0, "PARENTOFFSET",     0, 0, 3, 0 }  // PARENTOFFSET,         3 component (float3)
     };
 
-    UINT strides[] = { 12 };
+    UINT strides[] = { 
+        sizeof(ParticleVertex)
+    };
     
     psoDesc.StreamOutput.NumEntries = _countof(soEntries);
 	psoDesc.StreamOutput.pSODeclaration = soEntries;
@@ -1372,24 +1376,24 @@ ParticleGSShader::ParticleGSShader(ComPtr<ID3D12Device>& device)
 
 
     D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
-        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
-        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
-        { "UP",                 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // up
-        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
-        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
-        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
-        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
-        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
-        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, 64, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, 68, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, 72, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, 80, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 84, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        { "POSITION",           0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // position
+        { "WIDTH",              0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // halfWidth
+        { "HEIGHT",             0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // height
+        { "TEXTUREINDEX",       0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // texture
+        { "SPRITABLE",          0, DXGI_FORMAT_R8_UINT,         0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spritable
+        { "SPRITEFRAMEINROW",   0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInRow
+        { "SPRITEFRAMEINCOL",   0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteFrameInCol
+        { "SPRITEDURATION",     0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }, // spriteDuration
+        { "DIRECTION",          0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "VELOCITY",           0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TOTALLIFETIME",      0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "LIFETIME",           0, DXGI_FORMAT_R32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARTICLETYPE",       0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "EMITTYPE",           0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "REMAINEMIT",         0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTID",           0, DXGI_FORMAT_R32_UINT,        0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "PARENTOFFSET",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
-
     
     D3D12_DESCRIPTOR_RANGE texRange[1];
     // Tex2D 
@@ -1401,15 +1405,16 @@ ParticleGSShader::ParticleGSShader(ComPtr<ID3D12Device>& device)
 
 
     D3D12_ROOT_PARAMETER rootParams[ParticleGSRP_END]{};
-	rootParams[ParticleGSRP_TimeConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-    rootParams[ParticleGSRP_TimeConstants].Constants.Num32BitValues = 2;
-	rootParams[ParticleGSRP_TimeConstants].Constants.ShaderRegister = 0;
-	rootParams[ParticleGSRP_TimeConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	rootParams[ParticleGSRP_CameraConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParams[ParticleGSRP_CameraConstants].Descriptor.ShaderRegister = 1;
+	rootParams[ParticleGSRP_CameraConstants].Descriptor.ShaderRegister = 0;
 	rootParams[ParticleGSRP_CameraConstants].Descriptor.RegisterSpace = 0;
 	rootParams[ParticleGSRP_CameraConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[ParticleGSRP_TimeConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	rootParams[ParticleGSRP_TimeConstants].Constants.Num32BitValues = 1;
+	rootParams[ParticleGSRP_TimeConstants].Constants.ShaderRegister = 1;
+	rootParams[ParticleGSRP_TimeConstants].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[ParticleGSRP_Texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
     rootParams[ParticleGSRP_Texture].DescriptorTable.NumDescriptorRanges = _countof(texRange);

@@ -171,6 +171,11 @@ void ResourceManager::SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootDescriptorTable(GRP_Texture, mTexHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
+void ResourceManager::SetTexDescriptorHeap(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
+}
+
 D3D12_GPU_DESCRIPTOR_HANDLE ResourceManager::GetTexHandle()
 {
 	return mTexHeap->GetGPUDescriptorHandleForHeapStart();
@@ -237,8 +242,6 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 
 		auto prev = mModelContainer->begin();
 		(*prev).second.front()->SetShader(commandList);
-
-		commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 		ResourceManager::SetGlobals(commandList);
 	}
 #else 

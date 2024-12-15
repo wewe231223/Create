@@ -64,10 +64,10 @@ void DxRenderer::UnloadScene()
 
 void DxRenderer::StartRender()
 {
-	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<UINT>(EGlobalConstants::GC_FrameCount);
+	// mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<UINT>(EGlobalConstants::GC_FrameCount);
 	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
 	
-	frameMemory->CheckCommandCompleted(mFence);
+	// frameMemory->CheckCommandCompleted(mFence);
 	
 	frameMemory->Reset();
 	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
@@ -184,7 +184,9 @@ void DxRenderer::EndRender()
 	mSwapChain->Present();
 	
 	mFrameMemories[mCurrentFrameMemoryIndex]->SetFenceValue(++mFenceValue);
-	mCommandQueue->Signal(mFence.Get(), mFenceValue);
+	// mCommandQueue->Signal(mFence.Get(), mFenceValue);
+	DxRenderer::FlushCommandQueue();
+	
 }
 
 void DxRenderer::Initialize()

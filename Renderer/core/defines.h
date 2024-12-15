@@ -218,13 +218,24 @@ enum : UINT {
 // 만약 parentID 가 활성화 되어 있는 경우, 방향&속도 에 따른 위치 계산을 하지 않고, 부모의 위치 + offset 을 위치로 삼는다.
 // 이 외의 계산 과정은 동일. 
 
-struct ParticleVertex : public BillBoardVertex {
+struct ParticleVertex {
+	DirectX::XMFLOAT3 position{ 0.f,0.f,0.f };
+	float halfWidth{ 0.f };
+	float halfheight{ 0.f };
+	TextureIndex texture{};
+#pragma region Sprite 
+	bool spritable{ false };
+	UINT spriteFrameInRow{ 0 };
+	UINT spriteFrameInCol{ 0 };
+	float spriteDuration{ 0 };
+#pragma endregion Sprite 
 	DirectX::XMFLOAT3 direction{ 0.f,0.f,0.f };
 	float velocity{ 0.f };
+	float totalLifeTime{ 0.f };
 	float lifeTime{ 0.f };
 	UINT type{ ParticleType_ember };
-	
 	UINT emitType{ ParticleType_ember };
+	UINT remainEmit{ 0 };
 	UINT parentID{ 0xFF'FF'FF'FF };
 	DirectX::XMFLOAT3 offset{ 0.f,0.f,0.f };
 };
@@ -285,8 +296,9 @@ enum ParticleSORootParamIndex : UINT {
 };
 
 enum ParticleGSRootParamIndex : UINT {
-	ParticleGSRP_TimeConstants = 0,
-	ParticleGSRP_CameraConstants = 1,
+	ParticleGSRP_CameraConstants = 0,
+	// SO PASS 의 시간 정보의 구성, 단위, 자료형이 다르다. 주의할 것. 
+	ParticleGSRP_TimeConstants = 1,
 	ParticleGSRP_Texture = 2,
 	ParticleGSRP_END,
 };

@@ -1,10 +1,4 @@
-cbuffer GlobalCB : register(b0)
-{
-    uint globalTime;
-    uint deltaTime;
-}
-
-cbuffer CameraCB : register(b1)
+cbuffer CameraCB : register(b0)
 {
     matrix viewMatrix;
     matrix projectionMatrix;
@@ -12,6 +6,10 @@ cbuffer CameraCB : register(b1)
     float3 cameraPosition;
 };
 
+cbuffer GlobalCB : register(b1)
+{
+    uint globalTime; // 밀리초 단위 
+}
 
 Texture2D gTextures[1024] : register(t0, space0);
 
@@ -22,12 +20,11 @@ SamplerState linearClampSampler : register(s3);
 SamplerState anisotropicWrapSampler : register(s4);
 SamplerState anisotropicClampSampler : register(s5);
 
-struct Particle_VS_IN
+struct ParticleVertex
 {
     float3 position : POSITION;
     float halfWidth : WIDTH;
     float halfHeight : HEIGHT;
-    float3 up : UP;
     uint textureIndex : TEXTUREINDEX;
     bool spritable : SPRITABLE;
     uint spriteFrameInRow : SPRITEFRAMEINROW;
@@ -36,33 +33,12 @@ struct Particle_VS_IN
     
     float3 direction : DIRECTION;
     float velocity : VELOCITY;
+    float totalLifetime : TOTALLIFETIME;
     float lifetime : LIFETIME;
     
     uint type : PARTICLETYPE;
     uint emitType : EMITTYPE;
-    uint parentID : PARENTID;
-    float3 offset : PARENTOFFSET;
-};
-
-// 좀 줄이자. 
-struct Particle_GS_IN
-{
-    float3 position : POSITION;
-    float halfWidth : WIDTH;
-    float halfHeight : HEIGHT;
-    float3 up : UP;
-    uint textureIndex : TEXTUREINDEX;
-    bool spritable : SPRITABLE;
-    uint spriteFrameInRow : SPRITEFRAMEINROW;
-    uint spriteFrameInCol : SPRITEFRAMEINCOL;
-    float spriteDuration : SPRITEDURATION;
-    
-    float3 direction : DIRECTION;
-    float velocity : VELOCITY;
-    float lifetime : LIFETIME;
-    
-    uint type : PARTICLETYPE;
-    uint emitType : EMITTYPE;
+    uint remainEmit : REMAINEMIT;
     uint parentID : PARENTID;
     float3 offset : PARENTOFFSET;
 };
@@ -76,42 +52,83 @@ struct Particle_PS_IN
 };
 
 
-Particle_GS_IN ParticleGSPassVS(Particle_VS_IN input)
-{
-    Particle_GS_IN output = (Particle_GS_IN) 0;
-    
-    output.position = input.position;
-    output.halfWidth = input.halfWidth;
-    output.halfHeight = input.halfHeight;
-    output.up = input.up;
-    output.textureIndex = input.textureIndex;
-    output.spritable = input.spritable;
-    output.spriteFrameInRow = input.spriteFrameInRow;
-    output.spriteFrameInCol = input.spriteFrameInCol;
-    output.spriteDuration = input.spriteDuration;
-    output.direction = input.direction;
-    output.velocity = input.velocity;
-    output.lifetime = input.lifetime;
-    output.type = input.type;
-    output.parentID = input.parentID;
-    output.offset = input.offset;
-    
-    return output;
+ParticleVertex ParticleGSPassVS(ParticleVertex input)
+{   
+    return input;
 }
 
-[maxvertexcount(4)]
-void ParticleGSPassGS(point Particle_GS_IN input[1], inout TriangleStream<Particle_PS_IN> output)
+uint GetSpriteIndex(float TimeSinceStarted, float SpriteDuration, uint TotalSpriteCount)
 {
-    Particle_PS_IN outPoint = (Particle_PS_IN) 0;
+    float frame_duration_ms = (1000.0 * SpriteDuration) / TotalSpriteCount; // 각 그림이 표시되는 시간 (밀리초 단위)
+    return ((uint) (TimeSinceStarted / frame_duration_ms) % TotalSpriteCount); // 현재 그림 번호
+}
+
+
+void CreateBillBoard(ParticleVertex vertex,inout TriangleStream<Particle_PS_IN> stream)
+{
+    float3 forward, right, up;
+
     
-    output.Append(outPoint);
-    output.Append(outPoint);
-    output.Append(outPoint);
+    forward = normalize(cameraPosition - vertex.position);
+    right = normalize(cross(float3(0.f, 1.f, 0.f), forward));
+    up = normalize(cross(forward, right));
     
+    float3x3 uvTransform = float3x3(
+                                    1.f, 0.f, 0.f,
+                                    0.f, 1.f, 0.f,
+                                    0.f, 0.f, 1.f
+                                    );
+    
+    if (vertex.spritable)
+    {
+        uint spriteIndex = GetSpriteIndex(globalTime, vertex.spriteDuration, vertex.spriteFrameInRow * vertex.spriteFrameInCol);
+        
+        float spriteWidthRatio = 1.f / vertex.spriteFrameInRow;
+        float spriteHeightRatio = 1.f / vertex.spriteFrameInCol;
+        
+        uvTransform = float3x3(
+                            spriteWidthRatio, 0.f, (spriteIndex % vertex.spriteFrameInRow) * spriteWidthRatio,
+                            0.f, spriteHeightRatio, (spriteIndex / vertex.spriteFrameInCol) * spriteHeightRatio,
+                            0.f, 0.f, 1.f
+                            );
+    }
+    
+    
+    float2 uvs[4];
+    uvs[1] = float2(0.f, 0.f);
+    uvs[0] = float2(0.f, 1.f);
+    uvs[3] = float2(1.f, 0.f);
+    uvs[2] = float2(1.f, 1.f);
+    
+    
+    float4 positions[4];
+    positions[0] = float4(vertex.position + right * vertex.halfWidth - up * vertex.halfHeight, 1.f);
+    positions[1] = float4(vertex.position + right * vertex.halfWidth + up * vertex.halfHeight, 1.f);
+    positions[2] = float4(vertex.position - right * vertex.halfWidth - up * vertex.halfHeight, 1.f);
+    positions[3] = float4(vertex.position - right * vertex.halfWidth + up * vertex.halfHeight, 1.f);
+   
+    Particle_PS_IN outpoint;
+    [unroll(4)]
+    for (uint i = 0; i < 4; i++)
+    {
+        outpoint.positionV = mul(positions[i], viewMatrix).xyz;
+        outpoint.positionH = mul(positions[i], viewProjectionMatrix);
+        outpoint.textureIndex = vertex.textureIndex;
+        outpoint.uv = mul(uvTransform, float3(uvs[i], 1.f)).xy;
+        stream.Append(outpoint);
+    }
+    
+    
+}
+
+
+[maxvertexcount(4)]
+void ParticleGSPassGS(point ParticleVertex input[1], inout TriangleStream<Particle_PS_IN> output)
+{
+    CreateBillBoard(input[0], output);    
 }
 
 float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
 {
-   // return gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
-    return float4(0.f, 0.f, 0.f, 0.f);
+    return gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
 }

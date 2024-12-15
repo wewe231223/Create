@@ -41,21 +41,22 @@ class ParticleSystem {
 		DirectX::XMFLOAT3* mBufferPtr{ nullptr };
 	};
 public:
-	static constexpr size_t MAX_PARTICLE_COUNT = 9'0000;
+	static constexpr size_t MAX_PARTICLE_COUNT = 9'000;
 	static constexpr size_t MAX_PARTICLE_COUNT_UPLOAD_ONCE = 300;
 	static constexpr size_t MAX_PARTICLE_PARENT_COUNT = 512;
 public:
-	ParticleSystem(ComPtr<ID3D12Device>& device,ComPtr<ID3D12GraphicsCommandList>& loadCommandList);
+	ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList);
 	~ParticleSystem();
 public:
+	void MakeParticle(const ParticleVertex& particle);
+
 	void RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList);
-	void RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer, D3D12_GPU_DESCRIPTOR_HANDLE texHandle);
+	void UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	void InitializeRandomBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList);
 	void SyncBuffer(ComPtr<ID3D12GraphicsCommandList>& commandlist, ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES target);
 	void CreateDefaultBuffer(ComPtr<ID3D12Device>& device, ID3D12Resource** buffer, D3D12_RESOURCE_STATES initialState, size_t size = MAX_PARTICLE_COUNT * sizeof(ParticleVertex));
-	void UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& commandList);
-	void ReadBackFromBuffer(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void SwapBufferPointer(ComPtr<ID3D12Resource>& resourceA, ComPtr<ID3D12Resource>& resourceB);
 private:
 	// 첫 번째 Stream Output 단계를 위한 셰이더 ( PSO ) 
@@ -68,17 +69,18 @@ private:
 	ComPtr<ID3D12Resource>													mParticleSOBuffer{ nullptr };
 	// SO 단계에 set 하기 전 카운터를 초기화 시키는 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterUploadBuffer{ nullptr };
-	UINT64*																	mStreamCounterUploadPtr{ nullptr };
+	UINT64* mStreamCounterUploadPtr{ nullptr };
 	// SO 단계에 set 하는데 사용되는 스트림 출력 카운터 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterDefaultBuffer{ nullptr };
 	// SO 단계를 거쳐 생성된 점들의 개수를 읽어오는 ReadBack 버퍼 
 	UINT32																	mParticleCount{ 0 };
 	ComPtr<ID3D12Resource>													mStreamCounterReadBackBuffer{ nullptr };
 	// 새롭게 추가될 파티클들을 담는 버퍼 
-	std::array<ParticleVertex, MAX_PARTICLE_COUNT_UPLOAD_ONCE>				mNewParticles{};
-	std::array<ParticleVertex, MAX_PARTICLE_COUNT_UPLOAD_ONCE>::iterator	mNewParticlePos{};
+	std::array<ParticleVertex, MAX_PARTICLE_COUNT>				mNewParticles{};
+	std::array<ParticleVertex, MAX_PARTICLE_COUNT>::iterator	mNewParticlePos{ mNewParticles.begin() };
 	// 새롭게 추가될 파티클들을 업로드 하는 버퍼 
 	ComPtr<ID3D12Resource>													mNewParticleUploadBuffer{ nullptr };
+	void*																	mNewParticleUploadBufferPtr{ nullptr };
 	// 부모를 가지며 마치 계층 구조 처럼 행동하는 파티클들을 위한 버퍼. 최대 512개를 지원하기로 한다. 
 	std::array<std::pair<GTime::time_point,IRendererTransformBase*>, MAX_PARTICLE_PARENT_COUNT>			mParticleParents{};
 	std::array<Buffer, static_cast<size_t>(GC_FrameCount)>					mParticleParentBuffer{};
@@ -90,6 +92,7 @@ private:
 	// 버퍼에서 참조할 값의 인덱스를 결정한다. 
 	ComPtr<ID3D12Resource>													mRandomUploadBuffer{ nullptr };
 	ComPtr<ID3D12Resource>													mRandomDefaultBuffer{ nullptr };
+
 	// Set 바인딩에 사용되는 View 
 	D3D12_STREAM_OUTPUT_BUFFER_VIEW											mSOBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW												mVertexBufferView{};	

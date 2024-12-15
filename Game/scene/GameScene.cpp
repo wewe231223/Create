@@ -46,14 +46,6 @@ void GameScene::LoadTextures()
 	mResourceManager->CreateTexture("SkyBox_Left", "./Resources/textures/SkyBox_Left_0.dds");
 	mResourceManager->CreateTexture("SkyBox_Right", "./Resources/textures/SkyBox_Right_0.dds");
 
-
-	mResourceManager->CreateTexture("DarkSkyBox_Front", "./Resources/textures/DarkStorm4K_front.png");
-	mResourceManager->CreateTexture("DarkSkyBox_Back", "./Resources/textures/DarkStorm4K_back.png");
-	mResourceManager->CreateTexture("DarkSkyBox_Top", "./Resources/textures/DarkStorm4K_top.png");
-	mResourceManager->CreateTexture("DarkSkyBox_Bottom", "./Resources/textures/DarkStorm4K_bottom.png");
-	mResourceManager->CreateTexture("DarkSkyBox_Left", "./Resources/textures/DarkStorm4K_left.png");
-	mResourceManager->CreateTexture("DarkSkyBox_Right", "./Resources/textures/DarkStorm4K_right.png");
-
 	mResourceManager->CreateTexture("Cliff", "./Resources/textures/CaveCrystal1_Base_Diffuse.png");
 	mResourceManager->CreateTexture("CliffNormal", "./Resources/textures/CaveCrystal1_Base_Normal.png");
 
@@ -287,6 +279,27 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	mParticleSystem = std::make_unique<ParticleSystem>(device, mResourceManager->GetLoadCommandList());
 
+
+	ParticleVertex v{};
+	v.position = { 10.f,100.f,10.f };
+	v.halfheight = 500.f;
+	v.halfWidth = 500.f;
+	v.texture = mResourceManager->GetTexture("Grass");
+	v.spritable = false;
+	v.direction = { 4.f,12.f,2.f };
+	v.velocity = 0.5f;
+	v.totalLifeTime = 100.f;
+	v.lifeTime = 100.f;
+	v.type = ParticleType_emit;
+	v.emitType = ParticleType_ember;
+	v.remainEmit = 10000000;
+
+
+	mParticleSystem->MakeParticle(v);
+	mParticleSystem->UpdateParticleVertices(mResourceManager->GetLoadCommandList());
+
+
+
 	GameScene::InitCameraMode();
 	mResourceManager->ExecuteUpload(commandQueue);
 }
@@ -372,12 +385,18 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 
 	mMainCamera->RenderSkyBox();
 
+	mResourceManager->SetTexDescriptorHeap(commandList);
+
+
 	mResourceManager->PrepareRender(commandList,mMainCamera->GetCameraBufferAddress());
 	mLightManager->SetLight(commandList);
 	mResourceManager->Render(commandList);
 
 
 	mBillBoard->Render(commandList, mResourceManager->GetTexHandle(), mMainCamera->GetCameraBufferAddress());
+
+	mParticleSystem->RenderSO(commandList);
+	mParticleSystem->RenderGS(commandList, mMainCamera->GetCameraBufferAddress(), mResourceManager->GetTexHandle());
 
 #ifndef STAND_ALONE
 	mChatWindow->Render();
