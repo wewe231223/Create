@@ -216,9 +216,6 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->CopyResource(mStreamCounterReadBackBuffer.Get(), mStreamCounterDefaultBuffer.Get());
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_STREAM_OUT);
 
-
-	std::this_thread::sleep_for(100ms);
-
 	mCurrentParentBufferIndex = (mCurrentParentBufferIndex + 1) % static_cast<size_t>(GC_FrameCount);
 }
 
@@ -254,13 +251,12 @@ void ParticleSystem::RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3
 	// Draw Call 
 	commandList->DrawInstanced(mParticleCount, 1, 0, 0);
 
-
 	UINT64* streamCount = nullptr;
 	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
 	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
 	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
-	Console.InfoLog("{}", *streamCount);
 
+	if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
 }
 
 void ParticleSystem::UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& commandList)

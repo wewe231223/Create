@@ -121,53 +121,56 @@ ParticleVertex ParticleSOPassVS(ParticleVertex input)
 void ParticleSOPassGS(point ParticleVertex input[1], inout PointStream<ParticleVertex> output, uint primitiveID : SV_PrimitiveID)
 {    
     ParticleVertex outPoint = input[0];
-    // outPoint.lifetime -= deltaTime;
+    outPoint.lifetime -= deltaTime;
         
-    //if (outPoint.parentID & 0xFFFFFFFF == 0xFFFFFFFF)
-    //{
-    //    outPoint.position += outPoint.direction * outPoint.velocity * deltaTime;
-    //}
-    //else
-    //{
-    //    outPoint.position = ParentPosition[outPoint.parentID] + outPoint.offset;
-    //}
+    if (outPoint.parentID & 0xFFFFFFFF == 0xFFFFFFFF)
+    {
+         outPoint.position += outPoint.direction * outPoint.velocity * deltaTime;
+    }
+    else
+    {
+        outPoint.position = ParentPosition[outPoint.parentID] + outPoint.offset;
+    }
+        output.Append(outPoint);
 
-    output.Append(outPoint);
-
     
-    //if (outPoint.type == ParticleType_emit)
-    //{
-    //    if (outPoint.lifetime <= 0.f)
-    //    {
-    //        ParticleVertex newParticle = (ParticleVertex) 0;
+    if (outPoint.type == ParticleType_emit)
+    {
+        if (outPoint.lifetime <= 0.f)
+        {
+            ParticleVertex newParticle = (ParticleVertex) 0;
     
-    //        newParticle.position = outPoint.position;
-    //        newParticle.halfWidth = outPoint.halfWidth;
-    //        newParticle.halfHeight = outPoint.halfHeight;
-    //        float Lifetime = GenerateRandomInRange(0.5f, 1.5f, primitiveID);
-    //        newParticle.totalLifetime = Lifetime;
-    //        newParticle.lifetime = Lifetime;
-    //        newParticle.velocity = GenerateRandomInRange(0.3f, 1.f, primitiveID);
-    //        newParticle.textureIndex = outPoint.textureIndex;
+            newParticle.position = outPoint.position + GenerateRandomDirection(primitiveID);
+            newParticle.halfWidth = 10.f;
+            newParticle.halfHeight = 10.f;
+            float Lifetime = GenerateRandomInRange(0.5f, 1.5f, primitiveID);
+            newParticle.totalLifetime = Lifetime;
+            newParticle.lifetime = Lifetime;
+            newParticle.velocity = 1.f;
+            newParticle.textureIndex = outPoint.textureIndex;
     
-    //        newParticle.direction = GenerateRandomDirection(primitiveID);
-    //        newParticle.type = ParticleType_ember;
-    //        newParticle.parentID = 0xFFFFFFFF;
+            newParticle.direction = GenerateRandomDirection(primitiveID);
+            newParticle.type = ParticleType_ember;
+            newParticle.parentID = 0xFFFFFFFF;
     
-    //        output.Append(newParticle);
+            output.Append(newParticle);
             
-    //        outPoint.remainEmit--;
-    //        outPoint.lifetime = outPoint.totalLifetime;
-    //    }
-    //}
-    //else if (outPoint.type == ParticleType_shell)
-    //{
+            outPoint.remainEmit--;
+            outPoint.lifetime = outPoint.totalLifetime;
+        }
 
-    //}
-    //else if (outPoint.type == ParticleType_ember)
-    //{
+    }
+    else if (outPoint.type == ParticleType_shell)
+    {
 
-    //}
+    }
+    else if (outPoint.type == ParticleType_ember)
+    {
+        if (outPoint.lifetime >= 0.f)
+        {
+            // output.Append(outPoint);
+        }
+    }
 
 
     

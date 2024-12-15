@@ -280,13 +280,16 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mParticleSystem = std::make_unique<ParticleSystem>(device, mResourceManager->GetLoadCommandList());
 
 
+	auto dir = DirectX::SimpleMath::Vector3{ 0.1f,0.1f,0.1f };
+	dir.Normalize();
+
 	ParticleVertex v{};
 	v.position = { 10.f,100.f,10.f };
 	v.halfheight = 500.f;
 	v.halfWidth = 500.f;
 	v.texture = mResourceManager->GetTexture("Grass");
 	v.spritable = false;
-	v.direction = { 4.f,12.f,2.f };
+	v.direction = dir;
 	v.velocity = 0.5f;
 	v.totalLifeTime = 100.f;
 	v.lifeTime = 100.f;
