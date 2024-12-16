@@ -204,9 +204,9 @@ struct BillBoardVertex {
 
 
 enum : UINT {
-	ParticleType_emit,
-	ParticleType_shell,
-	ParticleType_ember
+	ParticleType_emit = 1,
+	ParticleType_shell = 2,
+	ParticleType_ember = 3,
 };
 
 

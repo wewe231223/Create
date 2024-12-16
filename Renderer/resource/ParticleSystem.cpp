@@ -48,13 +48,13 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
 		)
 	);
 
-	mNewParticleUploadBuffer->Map(0, nullptr, std::addressof(mNewParticleUploadBufferPtr));
+	CheckHR(mNewParticleUploadBuffer->Map(0, nullptr, std::addressof(mNewParticleUploadBufferPtr)));
 
 	CreateDefaultBuffer(device, mVertexBuffer.GetAddressOf(),					D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	CreateDefaultBuffer(device, mParticleSOBuffer.GetAddressOf(),				D3D12_RESOURCE_STATE_STREAM_OUT);
 	CreateDefaultBuffer(device, mStreamCounterDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_STREAM_OUT, sizeof(UINT64));
 	
-	mStreamCounterUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mStreamCounterUploadPtr)));
+	CheckHR(mStreamCounterUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mStreamCounterUploadPtr))));
 
 	CD3DX12_RESOURCE_DESC parentBufferDesc{ CD3DX12_RESOURCE_DESC::Buffer(MAX_PARTICLE_PARENT_COUNT * sizeof(DirectX::XMFLOAT3)) };
 	for (auto& buffer : mParticleParentBuffer) {
@@ -165,10 +165,7 @@ void ParticleSystem::MakeParticle(const ParticleVertex& particle)
 
 }
 
-struct TimeBuffer {
-	float globalTime{};
-	float deltaTime{};
-};
+
 
 void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
@@ -203,13 +200,12 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SOSetTargets(0, 1, std::addressof(mSOBufferView));
 	commandList->IASetVertexBuffers(0, 1, std::addressof(mVertexBufferView));
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	
+	mTimeBuffer.deltaTime = Time.GetSmoothDeltaTime<float>();
+	mTimeBuffer.globalTime = Time.GetTimeSinceStarted<float>();
 
-	// Console.InfoLog("{}", Time.GetDeltaTime<float>());
-	TimeBuffer time{ Time.GetTimeSinceStarted<float>(), Time.GetDeltaTime<float,std::chrono::microseconds>() };
-
-	commandList->SetGraphicsRoot32BitConstants(ParticleSORP_TimeConstants, 2, std::addressof(time), 0);
+	commandList->SetGraphicsRoot32BitConstants(ParticleSORP_TimeConstants, 2, std::addressof(mTimeBuffer), 0);
 	commandList->SetGraphicsRootShaderResourceView(ParticleSORP_RandomBuffer, mRandomDefaultBuffer->GetGPUVirtualAddress());
-
 	auto& curr = mParticleParentBuffer[mCurrentParentBufferIndex];
 	commandList->SetGraphicsRootShaderResourceView(ParticleSORP_ParentPosition, curr.mBuffer->GetGPUVirtualAddress());
 
@@ -261,6 +257,7 @@ void ParticleSystem::RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3
 	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
 	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
 	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
+	
 	if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
 	Console.InfoLog("{}", mParticleCount);
 }

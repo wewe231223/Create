@@ -290,9 +290,9 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	v.texture = mResourceManager->GetTexture("Grass");
 	v.spritable = false;
 	v.direction = dir;
-	v.velocity = 0.5f;
-	v.totalLifeTime = 100.f;
-	v.lifeTime = 100.f;
+	v.velocity = 1.f;
+	v.totalLifeTime = 5.f;
+	v.lifeTime = 5.f;
 	v.type = ParticleType_emit;
 	v.emitType = ParticleType_ember;
 	v.remainEmit = 10000000;

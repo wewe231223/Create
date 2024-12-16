@@ -1,6 +1,6 @@
-#define ParticleType_emit 0
-#define ParticleType_shell 1
-#define ParticleType_ember 2
+#define ParticleType_emit 1
+#define ParticleType_shell 2
+#define ParticleType_ember 3
 
 #define ember_LifeTime 2.f
 
@@ -163,11 +163,51 @@ ParticleSO_GS_IN ParticleSOPassVS(ParticleVertex input, uint vertedID : SV_Verte
     return output;
 }
 
-[maxvertexcount(3)]
-void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<ParticleVertex> output, uint primitiveID : SV_PrimitiveID)
+
+void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointStream<ParticleVertex> stream)
+{
+    stream.Append(vertex);
+    if (vertex.lifetime <= 0.f)
+    {
+        ParticleVertex newParticle = (ParticleVertex) 0;
+        newParticle.position = vertex.position;
+        newParticle.halfWidth = 10.f;
+        newParticle.halfHeight = 10.f;
+        newParticle.textureIndex = vertex.textureIndex;
+        newParticle.spritable = false;
+        newParticle.spriteFrameInRow = 1;
+        newParticle.spriteFrameInCol = 1;
+        newParticle.spriteDuration = 0.f;
+        newParticle.direction = GenerateRandomDirection(vertexID);
+        newParticle.velocity = GenerateRandomInRange(0.1f, 1.f, vertexID);
+        newParticle.totalLifetime = GenerateRandomInRange(1.f, 2.f, vertexID);
+        newParticle.lifetime = newParticle.totalLifetime;
+        newParticle.type = ParticleType_ember;
+        newParticle.emitType = ParticleType_ember;
+        newParticle.remainEmit = 0;
+        newParticle.parentID = NULL_PARENT_ID;
+        newParticle.offset = float3(0.f, 0.f, 0.f);
+        
+        stream.Append(newParticle);
+        
+        // vertex.remainEmit--;
+        vertex.lifetime = vertex.totalLifetime;
+    }
+}
+
+void EmberParticleUpdate(ParticleVertex vertex, inout PointStream<ParticleVertex> stream)
+{
+    if (vertex.lifetime >= 0.f)
+    {
+        stream.Append(vertex);
+    }
+}
+
+[maxvertexcount(41)]
+void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<ParticleVertex> output)
 {    
     ParticleVertex outPoint = (ParticleVertex)0;
-    outPoint.position = input[0].position;
+    outPoint.position = input[0].position + input[0].direction * input[0].velocity ;
     outPoint.halfWidth = input[0].halfWidth;
     outPoint.halfHeight = input[0].halfHeight;
     outPoint.textureIndex = input[0].textureIndex;
@@ -178,66 +218,14 @@ void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<Particl
     outPoint.direction = input[0].direction;
     outPoint.velocity = input[0].velocity;
     outPoint.totalLifetime = input[0].totalLifetime;
-    outPoint.lifetime = input[0].lifetime;
+    outPoint.lifetime = input[0].lifetime - deltaTime;
     outPoint.type = input[0].type;
     outPoint.emitType = input[0].emitType;
     outPoint.remainEmit = input[0].remainEmit;
     outPoint.parentID = input[0].parentID;
     outPoint.offset = input[0].offset;
-    
-    
-    outPoint.lifetime -= deltaTime;
-        
-    if (outPoint.parentID & 0xFFFFFFFF == 0xFFFFFFFF)
-    {
-         outPoint.position += outPoint.direction * outPoint.velocity ;
-    }
-    else
-    {
-        outPoint.position = ParentPosition[outPoint.parentID] + outPoint.offset;
-    }
-    output.Append(outPoint);
 
-    
-    if (outPoint.type == ParticleType_emit)
-    {
-        if (outPoint.lifetime <= 0.f)
-        {
-            ParticleVertex newParticle = (ParticleVertex) 0;
-    
-            newParticle.position = outPoint.position + GenerateRandomDirection(primitiveID);
-            newParticle.halfWidth = 10.f;
-            newParticle.halfHeight = 10.f;
-            float Lifetime = GenerateRandomInRange(0.5f, 1.5f, primitiveID);
-            newParticle.totalLifetime = Lifetime;
-            newParticle.lifetime = Lifetime;
-            newParticle.velocity = GenerateRandomInRange(0.3f, 1.f, input[0].VertexID);
-            newParticle.textureIndex = outPoint.textureIndex;
-    
-            newParticle.direction = GenerateRandomDirection(input[0].VertexID);
-            newParticle.type = ParticleType_ember;
-            newParticle.parentID = 0xFFFFFFFF;
-    
-            output.Append(newParticle);
-            
-            outPoint.remainEmit--;
-            outPoint.lifetime = outPoint.totalLifetime;
-        }
-
-    }
-    else if (outPoint.type == ParticleType_shell)
-    {
-
-    }
-    else if (outPoint.type == ParticleType_ember)
-    {
-        if (outPoint.lifetime >= 0.f)
-        {
-            // output.Append(outPoint);
-        }
-    }
-
-
-    
- 
+    if (outPoint.type == ParticleType_emit) EmitParticleUpdate(outPoint, input[0].VertexID, output);
+    else if (outPoint.type == ParticleType_ember) EmberParticleUpdate(outPoint, output);
+     
 }

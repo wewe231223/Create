@@ -40,6 +40,11 @@ class ParticleSystem {
 		ComPtr<ID3D12Resource> mBuffer{ nullptr };
 		DirectX::XMFLOAT3* mBufferPtr{ nullptr };
 	};
+
+	struct TimeBuffer {
+		float globalTime{};
+		float deltaTime{};
+	};
 public:
 	static constexpr size_t MAX_PARTICLE_COUNT = 9'000;
 	static constexpr size_t MAX_PARTICLE_COUNT_UPLOAD_ONCE = 300;
@@ -96,4 +101,6 @@ private:
 	// Set 바인딩에 사용되는 View 
 	D3D12_STREAM_OUTPUT_BUFFER_VIEW											mSOBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW												mVertexBufferView{};	
+
+	TimeBuffer																mTimeBuffer{};
 };
