@@ -1,3 +1,7 @@
+#define ParticleType_emit 1
+#define ParticleType_shell 2
+#define ParticleType_ember 3
+
 cbuffer CameraCB : register(b0)
 {
     matrix viewMatrix;
@@ -49,6 +53,7 @@ struct Particle_PS_IN
     float3 positionV : POSITION;
     uint textureIndex : TEXTUREINDEX;
     float2 uv : TEXCOORD;
+    float4 color : Color;
 };
 
 
@@ -115,6 +120,16 @@ void CreateBillBoard(ParticleVertex vertex,inout TriangleStream<Particle_PS_IN> 
         outpoint.positionH = mul(positions[i], viewProjectionMatrix);
         outpoint.textureIndex = vertex.textureIndex;
         outpoint.uv = mul(uvTransform, float3(uvs[i], 1.f)).xy;
+        
+        if (vertex.type == ParticleType_ember)
+        {
+            outpoint.color = float4(1.f,1.f,1.f,1.f) * (vertex.lifetime / vertex.totalLifetime);
+        }
+        else
+        {
+            outpoint.color = float4(1.f, 1.f, 1.f, 1.f);
+        }
+        
         stream.Append(outpoint);
     }
     
@@ -130,5 +145,7 @@ void ParticleGSPassGS(point ParticleVertex input[1], inout TriangleStream<Partic
 
 float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
 {
-    return gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
+    float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
+    Color.a *= input.color.a;
+    return Color;
 }
