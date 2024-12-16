@@ -51,6 +51,31 @@ struct ParticleVertex
     float3 offset : PARENTOFFSET;
 };
 
+struct ParticleSO_GS_IN
+{
+    float3 position : POSITION;
+    float halfWidth : WIDTH;
+    float halfHeight : HEIGHT;
+    uint textureIndex : TEXTUREINDEX;
+    bool spritable : SPRITABLE;
+    uint spriteFrameInRow : SPRITEFRAMEINROW;
+    uint spriteFrameInCol : SPRITEFRAMEINCOL;
+    float spriteDuration : SPRITEDURATION;
+    
+    float3 direction : DIRECTION;
+    float velocity : VELOCITY;
+    float totalLifetime : TOTALLIFETIME;
+    float lifetime : LIFETIME;
+    
+    uint type : PARTICLETYPE;
+    uint emitType : EMITTYPE;
+    uint remainEmit : REMAINEMIT;
+    uint parentID : PARENTID;
+    float3 offset : PARENTOFFSET;
+    uint VertexID : VERTEXID;
+};
+
+
 //----------------------------------------------------------[ Random ]----------------------------------------------------------
 // 해시 함수
 uint FastHash(uint seed)
@@ -112,26 +137,66 @@ float3 GenerateRandomDirection(uint seed)
 }
 //----------------------------------------------------------[ Random ]----------------------------------------------------------
 
-ParticleVertex ParticleSOPassVS(ParticleVertex input)
+ParticleSO_GS_IN ParticleSOPassVS(ParticleVertex input, uint vertedID : SV_VertexID)
 {    
-    return input;
+    ParticleSO_GS_IN output = (ParticleSO_GS_IN) 0;
+    
+    output.position = input.position;
+    output.halfWidth = input.halfWidth;
+    output.halfHeight = input.halfHeight;
+    output.textureIndex = input.textureIndex;
+    output.spritable = input.spritable;
+    output.spriteFrameInRow = input.spriteFrameInRow;
+    output.spriteFrameInCol = input.spriteFrameInCol;
+    output.spriteDuration = input.spriteDuration;
+    output.direction = input.direction;
+    output.velocity = input.velocity;
+    output.totalLifetime = input.totalLifetime;
+    output.lifetime = input.lifetime;
+    output.type = input.type;
+    output.emitType = input.emitType;
+    output.remainEmit = input.remainEmit;
+    output.parentID = input.parentID;
+    output.offset = input.offset;
+    output.VertexID = vertedID;
+    
+    return output;
 }
 
 [maxvertexcount(3)]
-void ParticleSOPassGS(point ParticleVertex input[1], inout PointStream<ParticleVertex> output, uint primitiveID : SV_PrimitiveID)
+void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<ParticleVertex> output, uint primitiveID : SV_PrimitiveID)
 {    
-    ParticleVertex outPoint = input[0];
+    ParticleVertex outPoint = (ParticleVertex)0;
+    outPoint.position = input[0].position;
+    outPoint.halfWidth = input[0].halfWidth;
+    outPoint.halfHeight = input[0].halfHeight;
+    outPoint.textureIndex = input[0].textureIndex;
+    outPoint.spritable = input[0].spritable;
+    outPoint.spriteFrameInRow = input[0].spriteFrameInRow;
+    outPoint.spriteFrameInCol = input[0].spriteFrameInCol;
+    outPoint.spriteDuration = input[0].spriteDuration;
+    outPoint.direction = input[0].direction;
+    outPoint.velocity = input[0].velocity;
+    outPoint.totalLifetime = input[0].totalLifetime;
+    outPoint.lifetime = input[0].lifetime;
+    outPoint.type = input[0].type;
+    outPoint.emitType = input[0].emitType;
+    outPoint.remainEmit = input[0].remainEmit;
+    outPoint.parentID = input[0].parentID;
+    outPoint.offset = input[0].offset;
+    
+    
     outPoint.lifetime -= deltaTime;
         
     if (outPoint.parentID & 0xFFFFFFFF == 0xFFFFFFFF)
     {
-         outPoint.position += outPoint.direction * outPoint.velocity * deltaTime;
+         outPoint.position += outPoint.direction * outPoint.velocity ;
     }
     else
     {
         outPoint.position = ParentPosition[outPoint.parentID] + outPoint.offset;
     }
-        output.Append(outPoint);
+    output.Append(outPoint);
 
     
     if (outPoint.type == ParticleType_emit)
@@ -146,10 +211,10 @@ void ParticleSOPassGS(point ParticleVertex input[1], inout PointStream<ParticleV
             float Lifetime = GenerateRandomInRange(0.5f, 1.5f, primitiveID);
             newParticle.totalLifetime = Lifetime;
             newParticle.lifetime = Lifetime;
-            newParticle.velocity = 1.f;
+            newParticle.velocity = GenerateRandomInRange(0.3f, 1.f, input[0].VertexID);
             newParticle.textureIndex = outPoint.textureIndex;
     
-            newParticle.direction = GenerateRandomDirection(primitiveID);
+            newParticle.direction = GenerateRandomDirection(input[0].VertexID);
             newParticle.type = ParticleType_ember;
             newParticle.parentID = 0xFFFFFFFF;
     
