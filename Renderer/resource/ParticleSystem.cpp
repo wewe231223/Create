@@ -53,6 +53,7 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
 	CreateDefaultBuffer(device, mVertexBuffer.GetAddressOf(),					D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	CreateDefaultBuffer(device, mParticleSOBuffer.GetAddressOf(),				D3D12_RESOURCE_STATE_STREAM_OUT);
 	CreateDefaultBuffer(device, mStreamCounterDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_STREAM_OUT, sizeof(UINT64));
+	CreateDefaultBuffer(device, mStreamClearDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_COPY_SOURCE);
 	
 	CheckHR(mStreamCounterUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mStreamCounterUploadPtr))));
 
@@ -185,6 +186,10 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->CopyResource(mStreamCounterDefaultBuffer.Get(), mStreamCounterUploadBuffer.Get());
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
 
+	ParticleSystem::SyncBuffer(commandList, mParticleSOBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_DEST);
+	commandList->CopyResource(mParticleSOBuffer.Get(), mStreamClearDefaultBuffer.Get());
+	ParticleSystem::SyncBuffer(commandList, mParticleSOBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
+
 	// 셰이더 바인딩 
 	mSOPassShader->SetShader(commandList);
 
@@ -194,8 +199,8 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	mSOBufferView.BufferFilledSizeLocation = mStreamCounterDefaultBuffer->GetGPUVirtualAddress();
 
 	mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
-	mVertexBufferView.SizeInBytes = sizeof(ParticleVertex) * ParticleSystem::MAX_PARTICLE_COUNT;
 	mVertexBufferView.StrideInBytes = sizeof(ParticleVertex);
+	mVertexBufferView.SizeInBytes = sizeof(ParticleVertex) * ParticleSystem::MAX_PARTICLE_COUNT;
 
 	commandList->SOSetTargets(0, 1, std::addressof(mSOBufferView));
 	commandList->IASetVertexBuffers(0, 1, std::addressof(mVertexBufferView));
@@ -210,8 +215,7 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootShaderResourceView(ParticleSORP_ParentPosition, curr.mBuffer->GetGPUVirtualAddress());
 
 	// Draw Call 
-	commandList->DrawInstanced(mParticleCount, 1, 0, 0);
-
+	commandList->DrawInstanced(mParticleCount + 1, 1, 0, 0);
 
 	// ReadBack 힙에 스트림 출력 카운터 결과를 복사한다. 
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -251,14 +255,14 @@ void ParticleSystem::RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3
 	commandList->SetGraphicsRootDescriptorTable(ParticleGSRP_Texture, texHandle );
 
 	// Draw Call 
-	commandList->DrawInstanced(mParticleCount, 1, 0, 0);
+	commandList->DrawInstanced(mParticleCount + 1, 1, 0, 0);
 
 	UINT64* streamCount = nullptr;
 	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
 	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
 	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
 	
-	if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
+	// if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
 	Console.InfoLog("{}", mParticleCount);
 }
 

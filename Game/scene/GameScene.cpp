@@ -53,6 +53,8 @@ void GameScene::LoadTextures()
 
 	mResourceManager->CreateTexture("Grass", "./Resources/textures/Grass01.png");
 	mResourceManager->CreateTexture("Tree", "./Resources/textures/Tree.png");
+	mResourceManager->CreateTexture("Smoke", "./Resources/textures/Smoke.png");
+
 }
 
 void GameScene::CreateMaterials()
@@ -67,11 +69,13 @@ void GameScene::CreateMaterials()
 	mResourceManager->CreateMaterial("CliffMaterial", { mResourceManager->GetTexture("Cliff"), mResourceManager->GetTexture("CliffNormal") });
 
 	mResourceManager->CreateMaterial("BulletMaterial", { mResourceManager->GetTexture("Bullet") });
+	mResourceManager->CreateMaterial("SmokeMaterial", { mResourceManager->GetTexture("Smoke") });
 
 	mResourceManager->CreateMaterial("TankMaterialRed", { mResourceManager->GetTexture("TankTextureRed") });
 	mResourceManager->CreateMaterial("TankMaterialGreen", { mResourceManager->GetTexture("TankTextureGreen") });
 	mResourceManager->CreateMaterial("TankMaterialBlue", { mResourceManager->GetTexture("TankTextureBlue") });
 	mResourceManager->CreateMaterial("TankMaterialYellow", { mResourceManager->GetTexture("TankTextureYellow") });
+
 }
 
 
@@ -287,15 +291,19 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	v.position = { 10.f,100.f,10.f };
 	v.halfheight = 500.f;
 	v.halfWidth = 500.f;
-	v.texture = mResourceManager->GetTexture("Grass");
-	v.spritable = false;
+	v.texture = mResourceManager->GetTexture("Smoke");
+	v.spritable = 1;
+	v.spriteFrameInCol = 2;
+	v.spriteFrameInRow = 2;
+	v.spriteDuration = 0.5f;
 	v.direction = dir;
-	v.velocity = 0.05f;
-	v.totalLifeTime = 5.f;
-	v.lifeTime = 5.f;
+	v.velocity = 30.f;
+	v.totalLifeTime = 0.01f;
+	v.lifeTime = 100.f;
 	v.type = ParticleType_emit;
 	v.emitType = ParticleType_ember;
-	v.remainEmit = 10000000;
+	v.remainEmit = 300;
+	v.parentID = 0xFFFFFFFE;
 
 
 	mParticleSystem->MakeParticle(v);
@@ -386,7 +394,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		bullet->Render(mMainCamera, commandList);
 	}
 
-	//mMainCamera->RenderSkyBox();
+	// mMainCamera->RenderSkyBox();
 
 	mResourceManager->SetTexDescriptorHeap(commandList);
 

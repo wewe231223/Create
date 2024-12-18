@@ -84,7 +84,7 @@ void CreateBillBoard(ParticleVertex vertex,inout TriangleStream<Particle_PS_IN> 
                                     0.f, 0.f, 1.f
                                     );
     
-    if (vertex.spritable)
+    if (vertex.spritable == 1)
     {
         uint spriteIndex = GetSpriteIndex(globalTime, vertex.spriteDuration, vertex.spriteFrameInRow * vertex.spriteFrameInCol);
         
@@ -146,6 +146,15 @@ void ParticleGSPassGS(point ParticleVertex input[1], inout TriangleStream<Partic
 float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
 {
     float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
+    
+    if (Color.a < 0.5f)
+    {
+        discard;
+    }
+    
+    
     // Color.a *= input.color.a;
+    
+    
     return Color;
 }

@@ -74,6 +74,10 @@ private:
 	ComPtr<ID3D12Resource>													mParticleSOBuffer{ nullptr };
 	// SO 단계에 set 하기 전 카운터를 초기화 시키는 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterUploadBuffer{ nullptr };
+
+	ComPtr<ID3D12Resource>													mStreamClearDefaultBuffer{ nullptr };
+	ComPtr<ID3D12Resource>													mStreamClearUploadBuffer{ nullptr };
+
 	UINT64* mStreamCounterUploadPtr{ nullptr };
 	// SO 단계에 set 하는데 사용되는 스트림 출력 카운터 버퍼 
 	ComPtr<ID3D12Resource>													mStreamCounterDefaultBuffer{ nullptr };

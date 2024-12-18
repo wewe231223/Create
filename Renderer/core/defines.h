@@ -224,7 +224,7 @@ struct ParticleVertex {
 	float halfheight{ 0.f };
 	TextureIndex texture{};
 #pragma region Sprite 
-	bool spritable{ false };
+	UINT spritable{ 0 };
 	UINT spriteFrameInRow{ 0 };
 	UINT spriteFrameInCol{ 0 };
 	float spriteDuration{ 0 };
@@ -236,7 +236,7 @@ struct ParticleVertex {
 	UINT type{ ParticleType_ember };
 	UINT emitType{ ParticleType_ember };
 	UINT remainEmit{ 0 };
-	UINT parentID{ 0xFF'FF'FF'FF };
+	UINT parentID{ 0xFF'FF'FF'FE };
 	DirectX::XMFLOAT3 offset{ 0.f,0.f,0.f };
 };
 
