@@ -95,10 +95,10 @@ float GenerateRandom(uint seed)
 {
     // 시간을 밀리초 단위로 변환하고 정수화
     uint timeSeed = uint(globalTime * 1000.f);
-    uint deltaSeed = uint(deltaTime * 1000.f);
+ //   uint deltaSeed = uint(deltaTime * 1000.f);
 
     // 시드 결합 후 해시 생성
-    uint combinedSeed = FastHash(seed) ^ FastHash(timeSeed) ^ FastHash(deltaSeed);
+    uint combinedSeed = FastHash(seed) ^ FastHash(timeSeed);
     return FetchRandomValue(combinedSeed); // [0, 1] 범위의 난수 반환
 }
 
@@ -167,7 +167,8 @@ ParticleSO_GS_IN ParticleSOPassVS(ParticleVertex input, uint vertedID : SV_Verte
 void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointStream<ParticleVertex> stream)
 {
     stream.Append(vertex);
-    if (vertex.lifetime <= 0.f)
+    
+    if (vertex.lifetime <= 0.f && vertex.remainEmit >= 0)
     {
         ParticleVertex newParticle = (ParticleVertex) 0;
         newParticle.position = vertex.position;
@@ -179,7 +180,7 @@ void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointS
         newParticle.spriteFrameInCol = 1;
         newParticle.spriteDuration = 0.f;
         newParticle.direction = GenerateRandomDirection(vertexID);
-        newParticle.velocity = GenerateRandomInRange(0.1f, 1.f, vertexID);
+        newParticle.velocity = GenerateRandomInRange(0.1f, 0.2f, vertexID);
         newParticle.totalLifetime = GenerateRandomInRange(3.f, 4.f, vertexID);
         newParticle.lifetime = newParticle.totalLifetime;
         newParticle.type = ParticleType_ember;
@@ -188,26 +189,26 @@ void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointS
         newParticle.parentID = NULL_PARENT_ID;
         newParticle.offset = float3(0.f, 0.f, 0.f);
         
+        vertex.remainEmit--;
         stream.Append(newParticle);
-        
-        // vertex.remainEmit--;
         vertex.lifetime = vertex.totalLifetime;
     }
 }
 
 void EmberParticleUpdate(ParticleVertex vertex, inout PointStream<ParticleVertex> stream)
 {
-    if (vertex.lifetime >= 0.f)
-    {
-        stream.Append(vertex);
-    }
+    stream.Append(vertex);
+    //if (vertex.lifetime >= 0.f)
+    //{
+    //}
 }
 
 [maxvertexcount(41)]
 void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<ParticleVertex> output)
 {    
     ParticleVertex outPoint = (ParticleVertex)0;
-    outPoint.position = input[0].position + input[0].direction * input[0].velocity ;
+    
+    outPoint.position = input[0].position + input[0].direction * input[0].velocity;
     outPoint.halfWidth = input[0].halfWidth;
     outPoint.halfHeight = input[0].halfHeight;
     outPoint.textureIndex = input[0].textureIndex;
@@ -218,14 +219,15 @@ void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<Particl
     outPoint.direction = input[0].direction;
     outPoint.velocity = input[0].velocity;
     outPoint.totalLifetime = input[0].totalLifetime;
-    outPoint.lifetime = input[0].lifetime - deltaTime;
+    outPoint.lifetime = input[0].lifetime - 0.01f;
     outPoint.type = input[0].type;
     outPoint.emitType = input[0].emitType;
     outPoint.remainEmit = input[0].remainEmit;
     outPoint.parentID = input[0].parentID;
     outPoint.offset = input[0].offset;
+   
+    // output.Append(outPoint);
 
     if (outPoint.type == ParticleType_emit) EmitParticleUpdate(outPoint, input[0].VertexID, output);
     else if (outPoint.type == ParticleType_ember) EmberParticleUpdate(outPoint, output);
-     
 }

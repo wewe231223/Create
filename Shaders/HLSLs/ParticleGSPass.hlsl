@@ -146,6 +146,6 @@ void ParticleGSPassGS(point ParticleVertex input[1], inout TriangleStream<Partic
 float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
 {
     float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
-    Color.a *= input.color.a;
+    // Color.a *= input.color.a;
     return Color;
 }

@@ -290,7 +290,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	v.texture = mResourceManager->GetTexture("Grass");
 	v.spritable = false;
 	v.direction = dir;
-	v.velocity = 1.f;
+	v.velocity = 0.05f;
 	v.totalLifeTime = 5.f;
 	v.lifeTime = 5.f;
 	v.type = ParticleType_emit;
@@ -386,7 +386,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		bullet->Render(mMainCamera, commandList);
 	}
 
-	mMainCamera->RenderSkyBox();
+	//mMainCamera->RenderSkyBox();
 
 	mResourceManager->SetTexDescriptorHeap(commandList);
 
