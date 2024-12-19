@@ -132,6 +132,9 @@
     <ClInclude Include="scene\BoundingBoxRenderer.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="scene\ShadowCaster.h">
+      <Filter>scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -228,6 +231,9 @@
       <Filter>resource</Filter>
     </ClCompile>
     <ClCompile Include="scene\BoundingBoxRenderer.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\ShadowCaster.cpp">
       <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>

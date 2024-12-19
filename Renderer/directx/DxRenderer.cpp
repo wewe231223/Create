@@ -66,9 +66,7 @@ void DxRenderer::StartRender()
 {
 	mCurrentFrameMemoryIndex = (mCurrentFrameMemoryIndex + 1) % static_cast<UINT>(EGlobalConstants::GC_FrameCount);
 	auto& frameMemory = mFrameMemories[mCurrentFrameMemoryIndex];
-	
-//	frameMemory->CheckCommandCompleted(mFence);
-	
+
 	frameMemory->Reset();
 	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
 	auto backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
@@ -93,42 +91,10 @@ void DxRenderer::StartRender()
 
 	mCommandList->RSSetViewports(1, &vp);
 	mCommandList->RSSetScissorRects(1, &scissorRect);
+
 	DxRenderer::StartRenderImGui();
 
 }
-//std::vector<std::string> chatLog;
-//
-//void AddChatMessage(const std::string& message) {
-//	chatLog.push_back(message);
-//}
-//
-//
-//void ShowChatWindow() {
-//	ImGui::Begin("Chat Window", nullptr, 0);
-//
-//	ImGui::BeginChild("ChatLog", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
-//	for (const auto& message : chatLog) {
-//		ImGui::TextWrapped("%s", message.c_str());
-//	}
-//	ImGui::EndChild();
-//
-//	static char inputBuffer[256] = "";
-//	if (ImGui::InputText("##ChatInput", inputBuffer, IM_ARRAYSIZE(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-//		if (strlen(inputBuffer) > 0) {
-//			AddChatMessage(inputBuffer);
-//			ZeroMemory(inputBuffer, sizeof(inputBuffer));
-//			ImGui::SetKeyboardFocusHere(-1); // 입력 창에 포커스 유지
-//
-//		}
-//	}
-//	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-//		ImGui::SetScrollHereY(1.0f);
-//	}
-//	ImGui::End();
-//}
-//
-//char mID[256]{};
-//char mPw[256]{};
 
 void DxRenderer::Render()
 {

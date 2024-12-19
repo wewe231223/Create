@@ -188,6 +188,7 @@
     <ClInclude Include="scene\LightManager.h" />
     <ClInclude Include="scene\ResourceManager.h" />
     <ClInclude Include="scene\Scene.h" />
+    <ClInclude Include="scene\ShadowCaster.h" />
     <ClInclude Include="ui\Console.h" />
     <ClInclude Include="ui\HexColors.h" />
     <ClInclude Include="ui\UIRenderer.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="scene\LightManager.cpp" />
     <ClCompile Include="scene\ResourceManager.cpp" />
     <ClCompile Include="scene\Scene.cpp" />
+    <ClCompile Include="scene\ShadowCaster.cpp" />
     <ClCompile Include="ui\Console.cpp" />
     <ClCompile Include="ui\HexColors.cpp" />
     <ClCompile Include="ui\UIRenderer.cpp" />
