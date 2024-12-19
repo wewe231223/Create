@@ -153,7 +153,7 @@ float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
     }
     
     
-    // Color.a *= input.color.a;
+    Color.a *= input.color.a;
     
     
     return Color;
