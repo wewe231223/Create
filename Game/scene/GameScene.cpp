@@ -405,7 +405,7 @@ void GameScene::SetShadowCaster(IShadowCasterBase* shadowCaster)
 	mResourceManager->CreateTexture("ShadowMap", mShadowCaster->GetShadowMap());
 	
 	mCanvas->CreateUIImage("ShadowMap", shadowCaster->GetShadowMap(), DXGI_FORMAT_R32_FLOAT);
-	mCanvas->CreateUIObject<Image>("ShadowMap", POINT{ 0, 200 }, 300,  300);
+	mCanvas->CreateUIObject<Image>("ShadowMap", POINT{ 0, 700 }, 300,  300);
 
 	SCRIPT_Player::ShadowCaster = mShadowCaster;
 

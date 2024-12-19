@@ -31,7 +31,7 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 		break;
 	}
 
-	static constexpr int SPEED = 50.f;
+	static constexpr int SPEED = 10.f;
 
 	int sign{ NrSampler.Sample() };
 
