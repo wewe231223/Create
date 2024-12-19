@@ -1,3 +1,4 @@
+#include "ParticleSystem.h"
 #include "pch.h"
 #include "resource/ParticleSystem.h"
 #include "resource/Shader.h"
@@ -166,7 +167,7 @@ void ParticleSystem::MakeParticle(const ParticleVertex& particle)
 
 }
 
-
+std::ofstream particlelog{ "ParticleLog.txt" };
 
 void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
@@ -257,13 +258,7 @@ void ParticleSystem::RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3
 	// Draw Call 
 	commandList->DrawInstanced(mParticleCount + 1, 1, 0, 0);
 
-	UINT64* streamCount = nullptr;
-	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
-	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
-	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
-	
-	// if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
-	Console.InfoLog("{}", mParticleCount);
+
 }
 
 void ParticleSystem::UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& commandList)
@@ -289,6 +284,19 @@ void ParticleSystem::UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& c
 	mParticleCount += static_cast<UINT32>(newParticleCount);
 	//입력 피봇을 맨 앞으로 초기화 
 	mNewParticlePos = mNewParticles.begin();
+}
+
+void ParticleSystem::PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	UINT64* streamCount = nullptr;
+	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
+	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
+	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
+
+	// if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
+	Console.InfoLog("{}", mParticleCount);
+
+	particlelog << mParticleCount << std::endl;
 }
 
 void ParticleSystem::SwapBufferPointer(ComPtr<ID3D12Resource>& resourceA, ComPtr<ID3D12Resource>& resourceB)

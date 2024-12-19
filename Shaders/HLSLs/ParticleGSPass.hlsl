@@ -147,7 +147,7 @@ float4 ParticleGSPassPS(Particle_PS_IN input) : SV_TARGET
 {
     float4 Color = gTextures[input.textureIndex].Sample(linearWrapSampler, input.uv);
     
-    if (Color.a < 0.5f)
+    if (Color.a < 0.01f)
     {
         discard;
     }

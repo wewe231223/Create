@@ -10,6 +10,7 @@ public:
 	
 	virtual void Update();
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+	virtual void PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:
 	void LoadTextures();
 	void CreateMaterials();

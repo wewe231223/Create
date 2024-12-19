@@ -58,6 +58,7 @@ public:
 	void RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer, D3D12_GPU_DESCRIPTOR_HANDLE texHandle);
 	void UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList);
 private:
 	void InitializeRandomBuffer(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& loadCommandList);
 	void SyncBuffer(ComPtr<ID3D12GraphicsCommandList>& commandlist, ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES prev, D3D12_RESOURCE_STATES target);

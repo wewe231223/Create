@@ -207,11 +207,11 @@ void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointS
     
 }
 
-void EmberParticleUpdate(ParticleVertex vertex, inout PointStream<ParticleVertex> stream)
+void EmberParticleUpdate(inout ParticleVertex vertex, inout PointStream<ParticleVertex> stream)
 {
-        stream.Append(vertex);
     if (vertex.lifetime >= 0.f)
     {
+        stream.Append(vertex);
     }
 }
 

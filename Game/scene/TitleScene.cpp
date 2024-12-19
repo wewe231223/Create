@@ -41,3 +41,7 @@ void TitleScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	mCanvas->Render(commandList);
 }
+
+void TitleScene::PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+}

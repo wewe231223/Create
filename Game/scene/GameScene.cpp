@@ -299,7 +299,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	v.direction = dir;
 	v.velocity = 30.f;
 	v.totalLifeTime = 0.01f;
-	v.lifeTime = 100.f;
+	v.lifeTime = 1.f;
 	v.type = ParticleType_emit;
 	v.emitType = ParticleType_ember;
 	v.remainEmit = 300;
@@ -414,6 +414,11 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 #endif 
 
 	mCanvas->Render(commandList);
+}
+
+void GameScene::PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	mParticleSystem->PostRender(commandList);
 }
 
 
