@@ -271,10 +271,11 @@ enum EGraphicRootParamIndex : UINT {
 	GRP_MeshConstants = 1,
 	GRP_LightInfo = 2,
 	GRP_ShadowMap = 3,
-	GRP_ObjectConstants = 4,
-	GRP_MaterialSRV = 5,
-	GRP_Texture = 6,
-	GRP_END = 7,
+	GRP_ShadowTransform = 4,
+	GRP_ObjectConstants = 5,
+	GRP_MaterialSRV = 6,
+	GRP_Texture = 7,
+	GRP_END = 8,
 };
 
 enum UIRootParamIndex : UINT {

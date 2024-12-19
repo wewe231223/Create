@@ -72,6 +72,35 @@ void DxRenderer::StartRender()
 
 	frameMemory->Reset();
 	mCommandList->Reset(frameMemory->GetAllocator().Get(),nullptr);
+	{
+		D3D12_VIEWPORT vp{};
+		vp.Height = 1000.f;
+		vp.Width = 1000.f;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		vp.TopLeftX = 0.0f;
+		vp.TopLeftY = 0.0f;
+
+		D3D12_RECT scissorRect{};
+		scissorRect.left = 0;
+		scissorRect.top = 0;
+		scissorRect.right = 1000;
+		scissorRect.bottom = 1000;
+
+		mCommandList->RSSetViewports(1, &vp);
+		mCommandList->RSSetScissorRects(1, &scissorRect);
+
+		mDirectionalShadowCaster->Clear(mCommandList);
+		mDirectionalShadowCaster->SetShadowMap(mCommandList);
+
+		mDirectionalShadowCaster->UpdateCameraContext();
+
+		mScene->ShadowCast(mCommandList);
+
+		mDirectionalShadowCaster->Sync(mCommandList);
+	}
+	mCommandList->OMSetRenderTargets(0, nullptr, false, nullptr);
+
 	auto backBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
 	mSwapChainRTGroup->SetRTState(mCommandList, backBufferIndex, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -288,10 +317,13 @@ void DxRenderer::InitCommandList()
 void DxRenderer::InitShadowCaster()
 {
 	// 임시 그림자 정보 
-	DirectX::SimpleMath::Vector3 pos = { 0.0f, 100.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 dir = DirectX::SimpleMath::Vector3{ 0.0f, 0.0f, 0.0f } - pos;
+	DirectX::SimpleMath::Vector3 pos = { -20.f,10.f,20.f };
+	DirectX::SimpleMath::Vector3 focus = { 600.f,50.f,600.f };
 
-	mDirectionalShadowCaster = std::make_unique<DirectionalShadowCaster>(mDevice, 1024, 1024, DirectX::SimpleMath::Vector3{ 0.0f, 100.0f, 0.0f }, DirectX::SimpleMath::Vector3{ 0.0f, -1.0f, 0.0f });
+	DirectX::SimpleMath::Vector3 dir = focus - pos;
+	dir.Normalize();
+
+	mDirectionalShadowCaster = std::make_unique<DirectionalShadowCaster>(mDevice, 600, 600, pos,focus);
 	mDirectionalShadowCaster->UpdateCameraContext();
 }
 

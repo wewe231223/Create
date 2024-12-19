@@ -131,7 +131,7 @@ void GameScene::InitUI(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsComman
 void GameScene::InitCameraMode()
 {
 	mCameraModes[CT_FreeCamera] = std::make_shared<FreeCameraMode>(mMainCamera);
-	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 1.f, -3.f));
+	mCameraModes[CT_ThirdPersonCamera] = std::make_shared<TPPCameraMode>(mMainCamera, mPlayer->GetChild(1)->GetTransform(), DirectX::SimpleMath::Vector3(0.f, 10.f, -30.f));
 
 
 	mCurrentCameraMode = mCameraModes[CT_ThirdPersonCamera];
@@ -282,8 +282,58 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::M, sign, [this]() { mResourceManager->ToggleRenderBB(); });
 
+	//static DirectX::SimpleMath::Vector3 pos = { -20.f,10.f,20.f };
+	//static DirectX::SimpleMath::Vector3 focus = { 0.f,0.f,0.f };
 
-	
+	//static float lightSpeed = 2.f;
+
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::J, sign, [this]() {
+	//	pos.x += lightSpeed;
+	//	focus.x += lightSpeed;
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+	//
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::L, sign, [this]() {
+	//	pos.x -= lightSpeed;
+	//	focus.x -= lightSpeed;
+
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::I, sign, [this]() {
+	//	pos.z += lightSpeed;
+	//	focus.z += lightSpeed;
+
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::K, sign, [this]() {
+	//	pos.z -= lightSpeed;
+	//	focus.z -= lightSpeed;
+
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::U, sign, [this]() {
+	//	pos.y += lightSpeed;
+	//	focus.y += lightSpeed;
+
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+
+	//Input.RegisterKeyPressCallBack(DirectX::Keyboard::O, sign, [this]() {
+	//	pos.y -= lightSpeed;
+	//	focus.y -= lightSpeed;
+
+	//	mShadowCaster->SetPosition(pos);
+	//	}
+	//);
+
 
 
 	auto dir = DirectX::SimpleMath::Vector3{ 0.1f,0.1f,0.1f };
@@ -355,7 +405,10 @@ void GameScene::SetShadowCaster(IShadowCasterBase* shadowCaster)
 	mResourceManager->CreateTexture("ShadowMap", mShadowCaster->GetShadowMap());
 	
 	mCanvas->CreateUIImage("ShadowMap", shadowCaster->GetShadowMap(), DXGI_FORMAT_R32_FLOAT);
-	mCanvas->CreateUIObject<Image>("ShadowMap", POINT{ 0, 200 }, 300, 300);
+	mCanvas->CreateUIObject<Image>("ShadowMap", POINT{ 0, 200 }, 300,  300);
+
+	SCRIPT_Player::ShadowCaster = mShadowCaster;
+
 
 }
 
@@ -371,16 +424,17 @@ void GameScene::ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		bullet->Render(mMainCamera, commandList);
 	}
 
-	mMainCamera->SetCameraContext(mShadowCaster->GetCameraContext());
 
 	mResourceManager->SetTexDescriptorHeap(commandList);
 
-	mResourceManager->PrepareRender(commandList, mMainCamera->GetCameraBufferAddress());
+
+	mResourceManager->PrepareRender(commandList, mMainCamera->GetCameraBufferAddress(), true);
 	mLightManager->SetLight(commandList);
 
+	mShadowCaster->SetCameraContext(commandList);
 	commandList->SetGraphicsRoot32BitConstant(GRP_ShadowMap, mResourceManager->GetTexture("ShadowMap"), 0);
 
-	mResourceManager->Render(commandList);
+	mResourceManager->Render(commandList,true);
 }
 
 void GameScene::UpdateShaderVariables()
@@ -410,6 +464,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 			bullet->Render(mMainCamera, commandList);
 		}
 	}
+
+	mShadowCaster->SetShadowTransform(commandList);
 
 	mMainCamera->SetCameraContext();
 	mMainCamera->RenderSkyBox();

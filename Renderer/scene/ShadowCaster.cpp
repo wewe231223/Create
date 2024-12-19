@@ -24,7 +24,7 @@ DirectionalShadowCaster::DirectionalShadowCaster(ComPtr<ID3D12Device>& device, U
         std::addressof(heapProperties), 
         D3D12_HEAP_FLAG_NONE, 
         &desc, 
-        D3D12_RESOURCE_STATE_DEPTH_WRITE, 
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
         std::addressof(clearValue), 
         IID_PPV_ARGS(mShadowMap.GetAddressOf()))
     );
@@ -38,15 +38,45 @@ DirectionalShadowCaster::DirectionalShadowCaster(ComPtr<ID3D12Device>& device, U
 	CheckHR(device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mShadowMapHeap.GetAddressOf())));
 
 	device->CreateDepthStencilView(mShadowMap.Get(), nullptr, mShadowMapHeap->GetCPUDescriptorHandleForHeapStart());
+    {
+        D3D12_RESOURCE_DESC desc{};
+        desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+        desc.Alignment = 0;
+        desc.Width = static_cast<UINT64>(GetCBVSize<CameraContext>());
+        desc.Height = 1;
+        desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+        desc.DepthOrArraySize = 1;
+        desc.MipLevels = 1;
+        desc.Format = DXGI_FORMAT_UNKNOWN;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+        desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+        CD3DX12_HEAP_PROPERTIES heapProperties{ D3D12_HEAP_TYPE_UPLOAD };
+
+		CheckHR(device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(mShadowCameraBuffer.GetAddressOf()))
+		);
+
+        CheckHR(mShadowCameraBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mShadowCameraBufferPtr))));
+    }
 }
 
 DirectionalShadowCaster::~DirectionalShadowCaster()
 {
+    mShadowCameraBuffer->Unmap(0, nullptr);
 }
 
 void DirectionalShadowCaster::Clear(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	D3D12_RESOURCE_BARRIER resourceBarrier{ CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE) };
+	commandList->ResourceBarrier(1, &resourceBarrier);
 	commandList->ClearDepthStencilView(mShadowMapHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
@@ -61,20 +91,43 @@ ComPtr<ID3D12Resource>& DirectionalShadowCaster::GetShadowMap()
     return mShadowMap;
 }
 
+void DirectionalShadowCaster::Sync(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+    D3D12_RESOURCE_BARRIER resourceBarrier{ CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap.Get(),D3D12_RESOURCE_STATE_DEPTH_WRITE,D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE) };
+	commandList->ResourceBarrier(1, &resourceBarrier);
+}
+
 
 void DirectionalShadowCaster::UpdateCameraContext()
 {
+    mViewMatrix = DirectX::XMMatrixLookAtLH(mPosition, mDirection, DirectX::SimpleMath::Vector3::Up);
+    mProjectionMatrix = DirectX::XMMatrixOrthographicLH(static_cast<float>(mShadowMapWidth), static_cast<float>(mShadowMapHeight), 1.f, 500.f);
+
     mCameraContext.CameraPosition = mPosition;
-
-    mViewMatrix = DirectX::XMMatrixLookAtLH(mPosition, mPosition + mDirection, DirectX::SimpleMath::Vector3::Up);
-    mProjectionMatrix = DirectX::XMMatrixOrthographicLH(static_cast<float>(mShadowMapWidth), static_cast<float>(mShadowMapHeight), 1.01f, 1000.f);
-
     mCameraContext.View = mViewMatrix.Transpose();
     mCameraContext.Projection = mProjectionMatrix.Transpose();
     mCameraContext.ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
 }
 
-CameraContext& DirectionalShadowCaster::GetCameraContext()
+void DirectionalShadowCaster::SetCameraContext(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-    return mCameraContext;
+    ::memcpy(mShadowCameraBufferPtr, std::addressof(mCameraContext), sizeof(CameraContext));
+    commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, mShadowCameraBuffer->GetGPUVirtualAddress());
 }
+
+void DirectionalShadowCaster::SetShadowTransform(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+    commandList->SetGraphicsRootConstantBufferView(GRP_ShadowTransform, mShadowCameraBuffer->GetGPUVirtualAddress());
+}
+
+void DirectionalShadowCaster::SetFocus(DirectX::SimpleMath::Vector3 focus)
+{
+    mDirection = focus;
+}
+
+void DirectionalShadowCaster::SetPosition(DirectX::SimpleMath::Vector3 position)
+{
+    mPosition = position;
+}
+
+

@@ -78,9 +78,9 @@ void Model::AddRef()
 	mRefCount++;
 }
 
-void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList, bool shadow)
+bool Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList, bool shadow)
 {
-	mShader->SetShader(commandList, shadow);
+	return mShader->SetShader(commandList, shadow);
 }
 
 size_t Model::GetShaderID() const noexcept
@@ -133,6 +133,11 @@ void Model::EndRender()
 {
 	mInstanceCount = 0;
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
+
+	for (auto& mesh : mMeshes) {
+		mesh->EndRender();
+	}
+
 }
 
 void Model::CreateBBFromMeshes(std::vector<DirectX::XMFLOAT3>& positions)

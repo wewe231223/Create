@@ -32,6 +32,9 @@ __interface IRendererTransformBase {
 };
 
 __interface IShadowCasterBase {
-	ComPtr<ID3D12Resource>& GetShadowMap();
-	CameraContext& GetCameraContext(); 
+	ComPtr<ID3D12Resource>& GetShadowMap() PURE;
+	void SetCameraContext(ComPtr<ID3D12GraphicsCommandList>& commandList) PURE;
+	void SetShadowTransform(ComPtr<ID3D12GraphicsCommandList>& commandList) PURE;
+	void SetFocus(DirectX::SimpleMath::Vector3 focus) PURE;
+	void SetPosition(DirectX::SimpleMath::Vector3 position) PURE;
 };

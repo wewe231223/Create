@@ -23,6 +23,7 @@ public:
 	static Light Light;
 	static std::shared_ptr<class ParticleSystem> Particle;
 	static TextureIndex ParticleTexture;
+	static IShadowCasterBase* ShadowCaster;
 private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };

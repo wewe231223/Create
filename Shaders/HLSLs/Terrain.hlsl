@@ -17,6 +17,7 @@ struct Terrain_VS_OUT
     float4  PosH      : SV_POSITION;
     float3  PosV      : POSITION1;
     float3  PosW       : POSITION2;
+    float4  PosLight : POSITION3;
     nointerpolation uint MateialID : TEXCOORD0;
     float2  Tex1     : TEXCOORD1;
     float2  Tex2     : TEXCOORD2;
@@ -31,10 +32,10 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
     
     pos = mul(pos, gObjects[input.InstanceID].worldMatrix);
     output.PosW = pos.xyz;
+    output.PosLight = mul(pos, viewproj);
     pos = mul(pos, viewMatrix);
     output.PosV = pos.xyz;
     output.PosH = mul(pos, projectionMatrix);
-    
     
     // Pass through other data.
     output.Tex1 = input.Tex1;
@@ -50,13 +51,13 @@ Terrain_VS_OUT TerrainVS(Terrain_VS_IN input)
 
 float4 TerrainPS(Terrain_VS_OUT input) : SV_Target
 {
-    
     float4 baseColor = gTextures[gMaterials[input.MateialID].Textures[0]].Sample(linearWrapSampler, input.Tex1);
     float4 detailColor = gTextures[gMaterials[input.MateialID].Textures[1]].Sample(linearWrapSampler, input.Tex2);
     
     float4 Color = saturate(baseColor * 0.5f + detailColor * 0.5f);
+
    
-    float depth =  input.PosH.z / input.PosH.w ;
+    
    // return float4(float3(depth,depth,depth) , 1.f);
-    return Fog(lerp(Color, Lighting(input.PosW,input.Normal),0.3f), input.PosV.z, 50.f, 1000.f);
+    return Fog(lerp(Color, Lighting(input.PosW,input.Normal),0.3f), input.PosV.z, 50.f, 1000.f) ;
 }

@@ -382,6 +382,11 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
     rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowTransform].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    rootParams[GRP_ShadowTransform].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_ShadowTransform].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ShadowTransform].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -517,6 +522,11 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
     rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
     rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_ShadowTransform].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParams[GRP_ShadowTransform].Descriptor.ShaderRegister = 3;
+	rootParams[GRP_ShadowTransform].Descriptor.RegisterSpace = 0;
+	rootParams[GRP_ShadowTransform].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
@@ -656,6 +666,11 @@ SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
     rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
     rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_ShadowTransform].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    rootParams[GRP_ShadowTransform].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_ShadowTransform].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ShadowTransform].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
@@ -923,7 +938,6 @@ BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
     psoDesc.pRootSignature = mRootSignature.Get();
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
 	psoDesc.GS = GetShaderByteCode(EShaderType::GS);
-    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     
@@ -947,6 +961,10 @@ BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
     psoDesc.SampleDesc.Quality = 0;
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
+
+	CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mShadowPipelineState.GetAddressOf())));
+
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
     CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("BillBoard Shader 가 성공적으로 로딩되었습니다.");
@@ -1029,6 +1047,11 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
     rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
     rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_ShadowTransform].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    rootParams[GRP_ShadowTransform].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_ShadowTransform].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ShadowTransform].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
@@ -1159,6 +1182,11 @@ BoundingBoxShader::BoundingBoxShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
 	rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
     rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+    rootParams[GRP_ShadowTransform].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    rootParams[GRP_ShadowTransform].Descriptor.ShaderRegister = 3;
+    rootParams[GRP_ShadowTransform].Descriptor.RegisterSpace = 0;
+    rootParams[GRP_ShadowTransform].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;

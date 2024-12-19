@@ -53,6 +53,10 @@ void Mesh::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->IASetPrimitiveTopology(mTopology);
 	commandList->DrawIndexedInstanced(mIndexCount, mInstanceCount, mIndexBegin, 0, 0);
 
+}
+
+void Mesh::EndRender()
+{
 	mMemoryIndex = (mMemoryIndex + 1) % static_cast<UINT>(GC_FrameCount);
 	mInstanceCount = 0;
 }

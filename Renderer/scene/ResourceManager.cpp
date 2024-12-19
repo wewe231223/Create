@@ -252,9 +252,24 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
-		auto prev = mModelContainer->begin();
-		(*prev).second.front()->SetShader(commandList, shadow);
-		ResourceManager::SetGlobals(commandList);
+		if (shadow) {
+			for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
+				if ((*range).second.front()->SetShader(commandList, shadow)) {
+					break;
+				}
+			}
+
+			ResourceManager::SetGlobals(commandList);
+
+
+		}
+		else {
+			auto prev = mModelContainer->begin();
+		
+			bool res = (*prev).second.front()->SetShader(commandList, shadow);
+			ResourceManager::SetGlobals(commandList);
+			commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, cameraBuffer);
+		}
 	}
 #else 
 	std::shared_ptr<Model>& prev = *mModelContainer->begin();
@@ -262,40 +277,57 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 	commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
 	ResourceManager::SetGlobals(commandList);
 #endif 
-	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, cameraBuffer);
 }
 
 void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow)
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
-		auto prev = mModelContainer->begin();
-		auto cur = mModelContainer->end();
-		
-		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
-			(*range).second.front()->SetShader(commandList, shadow);
-			
-			for (auto& model : range->second) {
-				model->SetModelContext(commandList);
-				model->Render(commandList);
-				if(not mRenderBB) {
-					model->EndRender();
-				}
-			}			
-		}
-
-
-		if (mRenderBB) {
-			mModelBoundingBoxRenderer->SetShader(commandList);
+		if (shadow) {
+			auto prev = mModelContainer->begin();
+			auto cur = mModelContainer->end();
 
 			for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
+				if (not (*range).second.front()->SetShader(commandList, shadow)) {
+					continue;
+				}
+
 				for (auto& model : range->second) {
 					model->SetModelContext(commandList);
-					mModelBoundingBoxRenderer->Render(commandList, model->GetInstanceCount());
-					model->EndRender();
+					model->Render(commandList);
+				}
+			}
+		
+		}
+		else {
+			auto prev = mModelContainer->begin();
+			auto cur = mModelContainer->end();
+
+			for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
+				(*range).second.front()->SetShader(commandList, shadow);
+
+				for (auto& model : range->second) {
+					model->SetModelContext(commandList);
+					model->Render(commandList);
+					if (not mRenderBB) {
+						model->EndRender();
+					}
 				}
 			}
 
+
+			if (mRenderBB) {
+				mModelBoundingBoxRenderer->SetShader(commandList);
+
+				for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
+					for (auto& model : range->second) {
+						model->SetModelContext(commandList);
+						mModelBoundingBoxRenderer->Render(commandList, model->GetInstanceCount());
+						model->EndRender();
+					}
+				}
+
+			}
 		}
 	}
 #else 

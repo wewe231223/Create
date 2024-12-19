@@ -12,8 +12,15 @@ public:
 	// 그림자 맵 리소스 Getter ( 2nd Pass 에 리소스로 바인딩하거나 그림자 맵의 내용을 그리는데 사용한다. ) 
 	ComPtr<ID3D12Resource>& GetShadowMap();
 
+	void Sync(ComPtr<ID3D12GraphicsCommandList>& commandList);
+
 	void UpdateCameraContext();
-	CameraContext& GetCameraContext();
+	void SetCameraContext(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+	void SetShadowTransform(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+
+	void SetFocus(DirectX::SimpleMath::Vector3 focus) override;
+	void SetPosition(DirectX::SimpleMath::Vector3 position) override;
+
 private:
 	DirectX::SimpleMath::Vector3 mPosition{};
 	DirectX::SimpleMath::Vector3 mDirection{};
@@ -28,4 +35,7 @@ private:
 	// 그림자 맵
 	ComPtr<ID3D12Resource> mShadowMap{ nullptr };
 	ComPtr<ID3D12DescriptorHeap> mShadowMapHeap{ nullptr };
+
+	ComPtr<ID3D12Resource> mShadowCameraBuffer{ nullptr };
+	CameraContext* mShadowCameraBufferPtr{ nullptr };
 };

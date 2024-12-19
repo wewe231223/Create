@@ -59,6 +59,14 @@ cbuffer ShadowMapIndex : register(b2)
     uint shadowmapIndex;
 }
 
+cbuffer ShadowTransform : register(b3)
+{
+    matrix view;
+    matrix proj;
+    matrix viewproj;
+    float3 campos;
+};
+
 // t0 : Root Descriptor Static SRV ( CB )
 StructuredBuffer<uint>              gMaterialIndices    : register(t0);
 // t1 : Root Descriptor Dynamic SRV ( CB )

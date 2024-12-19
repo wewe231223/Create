@@ -119,6 +119,9 @@ void FreeCameraMode::Update()
 	
 	mCamera->GetTransform().Rotate(yaw, pitch, 0.f);
 
+	auto pos = mCamera->GetTransform().GetPosition();
+	Console.InfoLog(" {} {} {} ", pos.x, pos.y, pos.z);
+
 }
 
 ECameraType FreeCameraMode::GetType() const

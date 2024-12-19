@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "Game/scripts/SCRIPT_Player.h"
 #include "Renderer/resource/ParticleSystem.h"
+
 std::shared_ptr<Slider> SCRIPT_Player::HPBar = nullptr;
 std::shared_ptr<Slider> SCRIPT_Player::CoolTimeBar = nullptr;
 ObjectPool<GameObject, 64>* SCRIPT_Player::BulletPool = nullptr;
 Light SCRIPT_Player::Light{};
 std::shared_ptr<ParticleSystem> SCRIPT_Player::Particle = nullptr;
 TextureIndex SCRIPT_Player::ParticleTexture = 0;
+IShadowCasterBase* SCRIPT_Player::ShadowCaster = nullptr;
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -29,18 +31,20 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 		break;
 	}
 
+	static constexpr int SPEED = 50.f;
+
 	int sign{ NrSampler.Sample() };
 
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::Q, sign, [this]() { mOwner->GetTransform().Rotate(-Time.GetSmoothDeltaTime<float>()); });
 	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::E, sign, [this]() { mOwner->GetTransform().Rotate(Time.GetSmoothDeltaTime<float>()); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() {  mIsMovingForward = true;   mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * 10.f); });
-	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mIsMovingBackward = true; mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * 10.f); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::W, sign, [this]() {  mIsMovingForward = true;   mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * Time.GetSmoothDeltaTime<float>() * SPEED); });
+	Input.RegisterKeyPressCallBack(DirectX::Keyboard::Keys::S, sign, [this]() { mIsMovingBackward = true; mOwner->GetTransform().Translate(mOwner->GetTransform().GetForward() * -Time.GetSmoothDeltaTime<float>() * SPEED); });
 
 	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::W, sign, [this]() { mIsMovingForward = false; });
 	Input.RegisterKeyReleaseCallBack(DirectX::Keyboard::S, sign, [this]() { mIsMovingBackward = false; });
 
 	mOwner->GetTransform().SetPosition({ 10.f,100.f,10.f });
-	mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
+	// mOwner->GetTransform().Scale({ 0.1f,0.1f,0.1f });
 	
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::Keys::Space, sign, [this]() {
 			if (CoolTimeBar->mValue < 99.f) return;
@@ -121,6 +125,9 @@ void SCRIPT_Player::Update()
 	Light->position = mOwner->GetTransform().GetPosition() + mOwner->GetTransform().GetUp() + mOwner->GetChild(1)->GetTransform().GetForward();
 	Light->direction = mOwner->GetChild(1)->GetTransform().GetForward();
 	
+	ShadowCaster->SetPosition(mOwner->GetTransform().GetPosition() + DirectX::SimpleMath::Vector3{-70.f,30.f,0.f});
+	ShadowCaster->SetFocus(mOwner->GetTransform().GetPosition());
+
 }
 
 void SCRIPT_Player::OnEnable()

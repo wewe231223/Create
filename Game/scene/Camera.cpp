@@ -91,8 +91,7 @@ void Camera::Update()
 {
 	mViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(mTransform.GetPosition(), mTransform.GetPosition() + mTransform.GetForward(),DirectX::SimpleMath::Vector3::Up);
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
-	
-	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
+
 }
 
 void Camera::RenderSkyBox()
