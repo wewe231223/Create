@@ -48,5 +48,5 @@ private:
 
 	std::shared_ptr<class LightManager> mLightManager{ nullptr };
 
-	std::unique_ptr<class ParticleSystem> mParticleSystem{ nullptr };
+	std::shared_ptr<class ParticleSystem> mParticleSystem{ nullptr };
 };

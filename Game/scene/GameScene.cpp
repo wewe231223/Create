@@ -145,7 +145,7 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	mResourceManager = std::make_shared<ResourceManager>(device);
 	mCanvas = std::make_shared<Canvas>(device, mResourceManager->GetLoadCommandList(), window);
 	mLightManager = std::make_shared<LightManager>(device);
-
+	mParticleSystem = std::make_shared<ParticleSystem>(device, mResourceManager->GetLoadCommandList());
 
 	mResourceManager->CreateShader<TerrainShader>("TerrainShader");
 	mResourceManager->CreateShader<TexturedObjectShader>("TexturedObjectShader");
@@ -173,6 +173,8 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	SCRIPT_Player::BulletPool = &mBulletPool;
 	SCRIPT_Bullet::mTerrainCollider = mTerrain;
 	SCRIPT_Player::Light = mLightManager->GetLight();
+	SCRIPT_Player::Particle = mParticleSystem;
+	SCRIPT_Player::ParticleTexture = mResourceManager->GetTexture("Smoke");
 
 	mPlayer = std::make_shared<TexturedObject>(mResourceManager, "./Resources/bins/Tank.bin");
 	SCRIPT_Bullet::mPlayer = mPlayer;
@@ -281,33 +283,11 @@ void GameScene::Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& c
 	Input.RegisterKeyDownCallBack(DirectX::Keyboard::M, sign, [this]() { mResourceManager->ToggleRenderBB(); });
 
 
-	mParticleSystem = std::make_unique<ParticleSystem>(device, mResourceManager->GetLoadCommandList());
+	
 
 
 	auto dir = DirectX::SimpleMath::Vector3{ 0.1f,0.1f,0.1f };
 	dir.Normalize();
-
-	ParticleVertex v{};
-	v.position = { 10.f,100.f,10.f };
-	v.halfheight = 500.f;
-	v.halfWidth = 500.f;
-	v.texture = mResourceManager->GetTexture("Smoke");
-	v.spritable = 1;
-	v.spriteFrameInCol = 2;
-	v.spriteFrameInRow = 2;
-	v.spriteDuration = 0.5f;
-	v.direction = dir;
-	v.velocity = 30.f;
-	v.totalLifeTime = 0.01f;
-	v.lifeTime = 1.f;
-	v.type = ParticleType_emit;
-	v.emitType = ParticleType_ember;
-	v.remainEmit = 300;
-	v.parentID = 0xFFFFFFFE;
-
-
-	mParticleSystem->MakeParticle(v);
-	mParticleSystem->UpdateParticleVertices(mResourceManager->GetLoadCommandList());
 
 
 
@@ -394,7 +374,7 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		bullet->Render(mMainCamera, commandList);
 	}
 
-	// mMainCamera->RenderSkyBox();
+	mMainCamera->RenderSkyBox();
 
 	mResourceManager->SetTexDescriptorHeap(commandList);
 

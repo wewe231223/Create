@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "Game/scripts/SCRIPT_Player.h"
-
+#include "Renderer/resource/ParticleSystem.h"
 std::shared_ptr<Slider> SCRIPT_Player::HPBar = nullptr;
 std::shared_ptr<Slider> SCRIPT_Player::CoolTimeBar = nullptr;
 ObjectPool<GameObject, 64>* SCRIPT_Player::BulletPool = nullptr;
 Light SCRIPT_Player::Light{};
+std::shared_ptr<ParticleSystem> SCRIPT_Player::Particle = nullptr;
+TextureIndex SCRIPT_Player::ParticleTexture = 0;
 
 SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<ResourceManager>& resourceMgr, PlayerColor color)
 	: Script(owner)
@@ -45,7 +47,29 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 			auto bullet = BulletPool->Acquire();
 			bullet->SetActive(true);
 			CoolTimeBar->mValue = 0.f;
+			
+			ParticleVertex v{};
+			
+			v.position = { 10.f,100.f,10.f };
+			v.halfheight = 10.f;
+			v.halfWidth = 10.f;
+			v.texture = ParticleTexture;
+			v.spritable = 1;
+			v.spriteFrameInCol = 2;
+			v.spriteFrameInRow = 2;
+			v.spriteDuration = 0.5f;
+			v.direction = mOwner->GetTransform().GetForward();
+			v.velocity = 100.f;
+			v.totalLifeTime = 0.01f;
+			v.lifeTime = 0.01f;
+			v.type = ParticleType_emit;
+			v.emitType = ParticleType_ember;
+			v.remainEmit = 300;
+			v.parentID = 0xFFFFFFFE;
+
+			Particle->MakeParticle(v);
 		}
+		
 	);
 
 	Light->ambient = { 0.f,0.f,0.f,1.f };

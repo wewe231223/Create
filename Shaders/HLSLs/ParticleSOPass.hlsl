@@ -188,7 +188,7 @@ void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointS
         newParticle.spriteDuration = vertex.spriteDuration;
         newParticle.direction = GenerateRandomDirection(vertexID);
         newParticle.velocity = GenerateRandomInRange(50.f, 55.f, vertexID);
-        newParticle.totalLifetime = GenerateRandomInRange(1.f, 4.f, vertexID);
+        newParticle.totalLifetime = GenerateRandomInRange(2.f, 5.f, vertexID);
         newParticle.lifetime = newParticle.totalLifetime;
         newParticle.type = ParticleType_ember;
         newParticle.emitType = ParticleType_ember;

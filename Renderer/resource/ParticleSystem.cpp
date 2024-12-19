@@ -43,7 +43,7 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
 			std::addressof(uploadHeap),
 			D3D12_HEAP_FLAG_NONE,
 			std::addressof(newParticleBufferDesc),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_COPY_SOURCE,
 			nullptr,
 			IID_PPV_ARGS(mNewParticleUploadBuffer.GetAddressOf())
 		)
@@ -274,8 +274,14 @@ void ParticleSystem::UpdateParticleVertices(ComPtr<ID3D12GraphicsCommandList>& c
 	ParticleSystem::SyncBuffer(commandList, mVertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	// 업로드 힙에 복사한 파티클 데이터들을 디폴트 힙에 복사 
-	// commandList->CopyBufferRegion(mVertexBuffer.Get(), mParticleCount, mNewParticleUploadBuffer.Get(), 0, static_cast<UINT64>(newParticleCount) * sizeof(ParticleVertex));
-	commandList->CopyResource(mVertexBuffer.Get(), mNewParticleUploadBuffer.Get());
+
+	UINT64 destOffset = (mParticleCount + 255) & ~255;
+	UINT64 srcOffset = 0;
+	UINT64 size = newParticleCount * sizeof(ParticleVertex);
+
+	commandList->CopyBufferRegion( mVertexBuffer.Get(), static_cast<UINT64>(mParticleCount) * sizeof(ParticleVertex), mNewParticleUploadBuffer.Get(), 0, static_cast<UINT64>(newParticleCount) * sizeof(ParticleVertex));
+	
+	// commandList->CopyResource(mVertexBuffer.Get(), mNewParticleUploadBuffer.Get());
 
 	// 다시 원상태로 복구 
 	ParticleSystem::SyncBuffer(commandList, mVertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);

@@ -19,8 +19,10 @@ public:
 public:
 	static std::shared_ptr<Slider> HPBar;
 	static std::shared_ptr<Slider> CoolTimeBar;
-	static ObjectPool<GameObject,64>* BulletPool;
+	static ObjectPool<GameObject, 64>* BulletPool;
 	static Light Light;
+	static std::shared_ptr<class ParticleSystem> Particle;
+	static TextureIndex ParticleTexture;
 private:
 	bool mIsMovingForward{ false };
 	bool mIsMovingBackward{ false };
