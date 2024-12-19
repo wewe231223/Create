@@ -117,6 +117,7 @@ struct ModelContext2D {
 
 
 	UINT ImageIndex{ 0 };
+	UINT GreyScale{ 0 };
 };
 
 
@@ -269,10 +270,11 @@ enum EGraphicRootParamIndex : UINT {
 	GRP_CameraConstants = 0,
 	GRP_MeshConstants = 1,
 	GRP_LightInfo = 2,
-	GRP_ObjectConstants = 3,
-	GRP_MaterialSRV = 4,
-	GRP_Texture = 5,
-	GRP_END = 6,
+	GRP_ShadowMap = 3,
+	GRP_ObjectConstants = 4,
+	GRP_MaterialSRV = 5,
+	GRP_Texture = 6,
+	GRP_END = 7,
 };
 
 enum UIRootParamIndex : UINT {

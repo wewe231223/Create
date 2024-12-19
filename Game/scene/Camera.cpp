@@ -52,8 +52,8 @@ Camera::Camera(ComPtr<ID3D12Device>& device, std::shared_ptr<Window> window)
 
 	mParam.FOV = DirectX::XMConvertToRadians(60.f);
 	mParam.aspectRatio = window->GetWindowWidth<float>() / window->GetWindowHeight<float>();
-	mParam.nearPlane = 0.1f;
-	mParam.farPlane = 2000.f;
+	mParam.nearPlane = 1.01f;
+	mParam.farPlane = 1000.f;
 
 	Camera::MakeProjectionMatrix();
 }
@@ -93,13 +93,6 @@ void Camera::Update()
 	mViewFrustum.Transform(mWorldFrustum,mViewMatrix.Invert());
 	
 	mMemoryIndex = (mMemoryIndex + 1) % GC_FrameCount;
-
-	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
-
-	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
-	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
-	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
-	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
 }
 
 void Camera::RenderSkyBox()
@@ -113,4 +106,20 @@ void Camera::RenderSkyBox()
 D3D12_GPU_VIRTUAL_ADDRESS Camera::GetCameraBufferAddress()
 {
 	return mCameraBuffers[mMemoryIndex].buffer->GetGPUVirtualAddress();
+}
+
+void Camera::SetCameraContext()
+{
+	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
+
+	CameraBuffer.bufferptr->View = mViewMatrix.Transpose();
+	CameraBuffer.bufferptr->Projection = mProjectionMatrix.Transpose();
+	CameraBuffer.bufferptr->ViewProjection = (mViewMatrix * mProjectionMatrix).Transpose();
+	CameraBuffer.bufferptr->CameraPosition = mTransform.GetPosition();
+}
+
+void Camera::SetCameraContext(CameraContext& cameraContext)
+{
+	auto& CameraBuffer = mCameraBuffers[mMemoryIndex];
+	::memcpy(CameraBuffer.bufferptr, &cameraContext, sizeof(CameraContext));
 }

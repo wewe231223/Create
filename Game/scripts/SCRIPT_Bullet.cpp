@@ -31,7 +31,7 @@ void SCRIPT_Bullet::Update()
 	}
 
 	if (mTerrainCollider->TerrainCollision(mOwner->GetTransform())) {
-		mOwner->SetActive(false);
+		// mOwner->SetActive(false);
 	}
 
 	mOwner->GetTransform().Translate(mDirection * Time.GetSmoothDeltaTime<float>() * 100.f);

@@ -3,6 +3,7 @@ struct UIObjectCB
     float3x3 Transform;
     float3x3 UVTransform;
     uint ImageIndex;
+    uint GreyScale;
 };
 
 

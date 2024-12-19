@@ -19,6 +19,7 @@ public:
 
 public:
 	void CreateUIImage(const std::string& name,const fs::path& path);
+	void CreateUIImage(const std::string& name, ComPtr<ID3D12Resource>& resource,DXGI_FORMAT format = DXGI_FORMAT_R32_FLOAT);
 	TextureIndex GetUIImage(const std::string& name);
 
 	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);

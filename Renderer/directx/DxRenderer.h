@@ -28,6 +28,7 @@ private:
 	void InitRenderTargets();
 	void InitFrameMemories();
 	void InitCommandList();
+	void InitShadowCaster();
 
 #ifdef UI_RENDER
 	void InitImGui();
@@ -63,4 +64,6 @@ private:
 	std::shared_ptr<class Window> mWindow{ nullptr };
 
 	std::shared_ptr<class Scene> mScene{ nullptr };
+
+	std::unique_ptr<class DirectionalShadowCaster> mDirectionalShadowCaster{ nullptr };
 };

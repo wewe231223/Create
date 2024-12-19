@@ -170,6 +170,11 @@ void Canvas::Load()
 	}
 }
 
+void Canvas::CreateUIImage(const std::string& name, ComPtr<ID3D12Resource>& resource, DXGI_FORMAT foramt)
+{
+	mUIRenderer->CreateUIImage(name, resource, foramt);
+}
+
 std::shared_ptr<UIModel> Canvas::CreateUIModel(TextureIndex imageIndex)
 {
 	return mUIModels.emplace_back(std::make_shared<UIModel>(mUIRenderer, imageIndex));
@@ -310,3 +315,44 @@ void Slider::Update()
 }
 
 
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								Image									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+Image::Image(Canvas* canvas, const std::string& image, POINT LT, UINT width, UINT height)
+	: mModel(canvas->CreateUIModel(image))
+{
+	mModel->GetUIRect().LTx = static_cast<float>(LT.x);
+	mModel->GetUIRect().LTy = static_cast<float>(LT.y);
+	mModel->GetUIRect().width = static_cast<float>(width);
+	mModel->GetUIRect().height = static_cast<float>(height);
+}
+
+Image::~Image()
+{
+}
+
+void Image::SetActiveState(bool state)
+{
+	mModel->SetActiveState(state);
+}
+
+void Image::ChangeImage(TextureIndex image)
+{
+	mModel->ChangeImage(image);
+}
+
+void Image::Update()
+{
+}

@@ -19,7 +19,7 @@ __interface I2DRenderable {
 
 __interface IGraphicsShader {
 	virtual size_t GetShaderID() const PURE;
-	virtual void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList) PURE;
+	virtual bool SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow = false) PURE;
 	virtual bool CheckAttribute(VertexAttribute attribute) PURE;
 };
 
@@ -29,4 +29,9 @@ __interface IRendererTransformBase {
 	virtual DirectX::SimpleMath::Vector3 GetScale() const;
 
 	virtual DirectX::SimpleMath::Matrix GetWorldMatrix() const;
+};
+
+__interface IShadowCasterBase {
+	ComPtr<ID3D12Resource>& GetShadowMap();
+	CameraContext& GetCameraContext(); 
 };

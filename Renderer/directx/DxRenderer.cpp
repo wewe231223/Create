@@ -8,6 +8,8 @@
 #include "resource/Shader.h"
 #include "scene/Scene.h"
 #include "buffer/DefaultBuffer.h"
+#include "scene/ShadowCaster.h"
+
 // 주석을 셋중 하나는 제거하고 사용할 것 
 // constexpr const char* KoreanFontPath = "C://Windows//Fonts//malgun.ttf";
 // constexpr const char* KoreanFontPath = "Resources/font/MaruBuri-Regular.ttf";
@@ -50,6 +52,7 @@ void DxRenderer::LoadScene(std::shared_ptr<class Scene> scene)
 	Console.InfoLog("Scene : {} 을 로드합니다.", scene->GetName());
 
 	scene->Load(mDevice, mCommandQueue, mWindow);
+	scene->SetShadowCaster(mDirectionalShadowCaster.get());
 	mScene = scene;
 
 	DxRenderer::FlushCommandQueue();
@@ -131,6 +134,7 @@ void DxRenderer::Render()
 
 #endif 
 	if (mScene)
+
 		mScene->Render(mCommandList);
 }
 
@@ -171,6 +175,7 @@ void DxRenderer::Initialize()
 	DxRenderer::InitRenderTargets();
 	DxRenderer::InitFrameMemories();
 	DxRenderer::InitCommandList();
+	DxRenderer::InitShadowCaster();
 #ifdef UI_RENDER
 	DxRenderer::InitImGui();
 #endif 
@@ -278,6 +283,16 @@ void DxRenderer::InitCommandList()
 		IID_PPV_ARGS(&mCommandList))
 	);
 	mCommandList->Close();
+}
+
+void DxRenderer::InitShadowCaster()
+{
+	// 임시 그림자 정보 
+	DirectX::SimpleMath::Vector3 pos = { 0.0f, 100.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 dir = DirectX::SimpleMath::Vector3{ 0.0f, 0.0f, 0.0f } - pos;
+
+	mDirectionalShadowCaster = std::make_unique<DirectionalShadowCaster>(mDevice, 1024, 1024, DirectX::SimpleMath::Vector3{ 0.0f, 100.0f, 0.0f }, DirectX::SimpleMath::Vector3{ 0.0f, -1.0f, 0.0f });
+	mDirectionalShadowCaster->UpdateCameraContext();
 }
 
 void DxRenderer::InitImGui()

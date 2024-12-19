@@ -37,6 +37,10 @@ void TitleScene::Update()
 	mCanvas->Update();
 }
 
+void TitleScene::SetShadowCaster(IShadowCasterBase* shadowCaster)
+{
+}
+
 void TitleScene::ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 }

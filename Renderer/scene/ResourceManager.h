@@ -31,6 +31,7 @@ public:
 	template<typename T>
 	void CreateShader(const std::string& name);
 	void CreateTexture(const std::string& name, const fs::path& path);
+	void CreateTexture(const std::string& name, ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format = DXGI_FORMAT_R32_FLOAT);
 	void CreateMaterial(const std::string& name, const Material& material);
 	
 	template<typename T,typename... Args> 
@@ -56,8 +57,8 @@ public:
 	// 이 부분들은 렌더링할 때 호출된다. 로드 커맨드 리스트와 다르므로, 이 세 함수는 렌더 커맨드 리스트를 받아야 한다. 
 	void SetGlobals(ComPtr<ID3D12GraphicsCommandList>& commandList);
 	void SetTexDescriptorHeap(ComPtr<ID3D12GraphicsCommandList>& commandList);
-	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer);
-	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	void PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer, bool shadow = false);
+	void Render(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow = false);
 private:
 	void Reset();
 	void UploadMaterial();

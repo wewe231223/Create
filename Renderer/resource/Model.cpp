@@ -78,9 +78,9 @@ void Model::AddRef()
 	mRefCount++;
 }
 
-void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList)
+void Model::SetShader(ComPtr<ID3D12GraphicsCommandList> commandList, bool shadow)
 {
-	mShader->SetShader(commandList);
+	mShader->SetShader(commandList, shadow);
 }
 
 size_t Model::GetShaderID() const noexcept

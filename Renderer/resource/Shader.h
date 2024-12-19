@@ -27,7 +27,10 @@ public:
 	virtual ~GraphicsShaderBase();
 
 	virtual size_t GetShaderID() const noexcept override;
-	virtual void SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
+	
+	[[maybe_unused]] 
+	virtual bool SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow) override;
+	
 	bool CheckAttribute(VertexAttribute attribute);
 protected:
 	void MakeShader(EShaderType shaderType,const std::string& path, const std::string& entryPoint, const std::string& shaderModel,const D3D_SHADER_MACRO* defines = nullptr);
@@ -42,8 +45,9 @@ protected:
 	std::array<ComPtr<ID3DBlob>, static_cast<size_t>(EShaderType::END)> mShaderBlobs;
 	size_t mShaderID{};
 
-	ComPtr<ID3D12PipelineState> mPipelineState;
-	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mRenderPipelineState{ nullptr };
+	ComPtr<ID3D12PipelineState> mShadowPipelineState{ nullptr };
+	ComPtr<ID3D12RootSignature> mRootSignature{ nullptr };
 
 	std::array<CD3DX12_STATIC_SAMPLER_DESC, 6> mStaticSamplers{};
 

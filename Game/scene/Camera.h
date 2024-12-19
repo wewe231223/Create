@@ -48,6 +48,9 @@ public:
 	void Update();
 	void RenderSkyBox();
 	D3D12_GPU_VIRTUAL_ADDRESS GetCameraBufferAddress();
+
+	void SetCameraContext();
+	void SetCameraContext(CameraContext& cameraContext);
 private:
 	Transform mTransform{};
 	CameraParam mParam{};

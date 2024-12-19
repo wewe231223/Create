@@ -90,6 +90,21 @@ void UIRenderer::CreateUIImage(const std::string& name, const fs::path& path)
 	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() - 1);
 }
 
+void UIRenderer::CreateUIImage(const std::string& name, ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE texheapHandle{ mTexHeap->GetCPUDescriptorHandleForHeapStart() };
+	texheapHandle.Offset(static_cast<UINT>(mTextures.size() - 1), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	mDevice->CreateShaderResourceView(resource.Get(), &srvDesc, texheapHandle);
+
+	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() - 1);
+}
+
 TextureIndex UIRenderer::GetUIImage(const std::string& name)
 {
 	if (mTextureMap.find(name) == mTextureMap.end()) {

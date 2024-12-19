@@ -9,6 +9,7 @@ public:
 	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window) override;
 	
 	virtual void Update();
+	virtual void SetShadowCaster(IShadowCasterBase* shadowCaster) override;
 	virtual void ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 	virtual void PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
@@ -50,4 +51,7 @@ private:
 	std::shared_ptr<class LightManager> mLightManager{ nullptr };
 
 	std::shared_ptr<class ParticleSystem> mParticleSystem{ nullptr };
+
+	IShadowCasterBase* mShadowCaster{ nullptr };
+	bool mShadowPassed{ false };
 };

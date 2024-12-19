@@ -131,11 +131,30 @@ void ResourceManager::CreateTexture(const std::string& name, const fs::path& pat
 	// TODO : 밉레벨은? 
 	srvDesc.Texture2D.MipLevels = 1;
 
+	Console.InfoLog("{}", static_cast<UINT>(srvDesc.Format));
+
 	CD3DX12_CPU_DESCRIPTOR_HANDLE texheapHandle{ mTexHeap->GetCPUDescriptorHandleForHeapStart() };
 	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	mDevice->CreateShaderResourceView(newTexture.Get(), &srvDesc, texheapHandle);
 
 	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size() );
+}
+
+void ResourceManager::CreateTexture(const std::string& name, ComPtr<ID3D12Resource>& resource, DXGI_FORMAT format)
+{
+	mTextures.emplace_back(nullptr);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE texheapHandle{ mTexHeap->GetCPUDescriptorHandleForHeapStart() };
+	texheapHandle.Offset(static_cast<UINT>(mTextures.size()), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	mDevice->CreateShaderResourceView(resource.Get(), &srvDesc, texheapHandle);
+
+	mTextureMap[name] = static_cast<TextureIndex>(mTextures.size());
 }
 
 void ResourceManager::CreateMaterial(const std::string& name, const Material& material)
@@ -229,19 +248,12 @@ void ResourceManager::ToggleRenderBB()
 	}
 }
 
-void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer)
+void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandList, D3D12_GPU_VIRTUAL_ADDRESS cameraBuffer, bool shadow)
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
-		//std::shared_ptr<Model>& prev = *mModelContainer->begin();
-		//prev->SetShader(commandList);
-		//commandList->SetDescriptorHeaps(1, mTexHeap.GetAddressOf());
-		//ResourceManager::SetGlobals(commandList);
-
-		
-
 		auto prev = mModelContainer->begin();
-		(*prev).second.front()->SetShader(commandList);
+		(*prev).second.front()->SetShader(commandList, shadow);
 		ResourceManager::SetGlobals(commandList);
 	}
 #else 
@@ -253,7 +265,7 @@ void ResourceManager::PrepareRender(ComPtr<ID3D12GraphicsCommandList>& commandLi
 	commandList->SetGraphicsRootConstantBufferView(GRP_CameraConstants, cameraBuffer);
 }
 
-void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
+void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow)
 {
 #ifdef MODEL_CONT_CHECK_EMPTY 
 	if (not mModelContainer->Empty()) {
@@ -261,7 +273,7 @@ void ResourceManager::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 		auto cur = mModelContainer->end();
 		
 		for (auto range = mModelContainer->begin(); range != mModelContainer->end(); ++range) {
-			(*range).second.front()->SetShader(commandList);
+			(*range).second.front()->SetShader(commandList, shadow);
 			
 			for (auto& model : range->second) {
 				model->SetModelContext(commandList);

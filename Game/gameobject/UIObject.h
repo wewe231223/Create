@@ -80,6 +80,8 @@ public:
 public:
 	void Load();
 
+	void CreateUIImage(const std::string& name, ComPtr<ID3D12Resource>& resource, DXGI_FORMAT foramt);
+
 	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex);
 	std::shared_ptr<UIModel> CreateUIModel(TextureIndex imageIndex, const std::pair<UINT, UINT>& imageWidthHeight, const std::pair<UINT, UINT>& imageUnit);
 
@@ -88,7 +90,6 @@ public:
 
 	template<typename T, typename... Args> requires std::derived_from<T, IUIObject>
 	std::shared_ptr<T> CreateUIObject(Args&&... args);
-
 
 	// 여기서 각 IUIObject 의 Update 도 호출하고, UIModel 의 Render 도 호출한다. 
 	void Update();
@@ -173,4 +174,24 @@ private:
 	std::shared_ptr<UIModel> mSlider{ nullptr };
 
 	float mUnit{ 0.f };
+};
+
+//////////////////////////////////////////////////////////////////////////
+//																		//
+//																		//
+//								Image									//
+//																		//
+//																		//
+//////////////////////////////////////////////////////////////////////////
+
+class Image : public IUIObject {
+public:
+	Image(Canvas* canvas, const std::string& image, POINT LT, UINT width, UINT height);
+	~Image();
+public:
+	void SetActiveState(bool state);
+	void ChangeImage(TextureIndex image);
+	virtual void Update() override;
+private:
+	std::shared_ptr<UIModel> mModel{ nullptr };
 };

@@ -348,8 +348,39 @@ void GameScene::Update()
 	GameScene::UpdateShaderVariables();
 }
 
+void GameScene::SetShadowCaster(IShadowCasterBase* shadowCaster)
+{
+	mShadowCaster = shadowCaster;
+
+	mResourceManager->CreateTexture("ShadowMap", mShadowCaster->GetShadowMap());
+	
+	mCanvas->CreateUIImage("ShadowMap", shadowCaster->GetShadowMap(), DXGI_FORMAT_R32_FLOAT);
+	mCanvas->CreateUIObject<Image>("ShadowMap", POINT{ 0, 200 }, 300, 300);
+
+}
+
 void GameScene::ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	mShadowPassed = true;
+
+	for (auto& object : mGameObjects) {
+		object->Render(mMainCamera, commandList);
+	}
+
+	for (auto& bullet : mBulletPool) {
+		bullet->Render(mMainCamera, commandList);
+	}
+
+	mMainCamera->SetCameraContext(mShadowCaster->GetCameraContext());
+
+	mResourceManager->SetTexDescriptorHeap(commandList);
+
+	mResourceManager->PrepareRender(commandList, mMainCamera->GetCameraBufferAddress());
+	mLightManager->SetLight(commandList);
+
+	commandList->SetGraphicsRoot32BitConstant(GRP_ShadowMap, mResourceManager->GetTexture("ShadowMap"), 0);
+
+	mResourceManager->Render(commandList);
 }
 
 void GameScene::UpdateShaderVariables()
@@ -370,14 +401,17 @@ void GameScene::UpdateShaderVariables()
 
 void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
-	for (auto& object : mGameObjects) {
-		object->Render(mMainCamera, commandList);
+	if (not mShadowPassed) {
+		for (auto& object : mGameObjects) {
+			object->Render(mMainCamera, commandList);
+		}
+
+		for (auto& bullet : mBulletPool) {
+			bullet->Render(mMainCamera, commandList);
+		}
 	}
 
-	for (auto& bullet : mBulletPool) {
-		bullet->Render(mMainCamera, commandList);
-	}
-
+	mMainCamera->SetCameraContext();
 	mMainCamera->RenderSkyBox();
 
 	mResourceManager->SetTexDescriptorHeap(commandList);
@@ -398,6 +432,8 @@ void GameScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 #endif 
 
 	mCanvas->Render(commandList);
+
+	mShadowPassed = false;
 }
 
 void GameScene::PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList)

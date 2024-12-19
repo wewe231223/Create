@@ -45,12 +45,26 @@ size_t GraphicsShaderBase::GetShaderID() const noexcept
     return mShaderID;
 }
 
-void GraphicsShaderBase::SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList)
+bool GraphicsShaderBase::SetShader(ComPtr<ID3D12GraphicsCommandList>& commandList, bool shadow)
 {
-	assert( mPipelineState.Get() && mRootSignature.Get() );
-	commandList->SetGraphicsRootSignature(mRootSignature.Get());
-	commandList->SetPipelineState(mPipelineState.Get());
-
+    // 그림자 매핑을 위한 Set 함수. 여기서는 픽셀 셰이더를 제외한 파이프라인을 생성자에서 정의한 경우, 그것을 set 한다. 그렇지 않다면 아무행위도 하지 않는다. 
+   
+    if (shadow) {
+        if (not mShadowPipelineState) {
+            // 이 경로에서만 유일하게 false 를 리턴한다. 이는 shadow casting 을 하지 않을 객체들은 불필요하게 pipelinestate 를 정의하지 않고, 그리지 않기 위함이다. 
+            return false;
+        }
+        assert(mRootSignature.Get());
+        commandList->SetGraphicsRootSignature(mRootSignature.Get());
+		commandList->SetPipelineState(mShadowPipelineState.Get());
+        return true;
+    }
+    else {
+	    assert( mRenderPipelineState.Get() && mRootSignature.Get() );
+	    commandList->SetGraphicsRootSignature(mRootSignature.Get());
+	    commandList->SetPipelineState(mRenderPipelineState.Get());
+    }
+    return true;
 }
 
 bool GraphicsShaderBase::CheckAttribute(VertexAttribute attribute)
@@ -362,6 +376,12 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
     rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowMap].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[GRP_ShadowMap].Constants.Num32BitValues = 1;
+    rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
+    rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
+    rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -402,7 +422,6 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
     psoDesc.pRootSignature = mRootSignature.Get();
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
-    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
@@ -414,9 +433,10 @@ TerrainShader::TerrainShader(ComPtr<ID3D12Device>& device)
     psoDesc.SampleDesc.Quality = 0;
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
+	CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mShadowPipelineState.GetAddressOf())));
 
-
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("Terrain Shader 가 성공적으로 로딩되었습니다.");
 
@@ -492,6 +512,12 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
     rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowMap].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[GRP_ShadowMap].Constants.Num32BitValues = 1;
+    rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
+    rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
+    rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -534,7 +560,6 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
     psoDesc.pRootSignature = mRootSignature.Get();
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
-    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
@@ -547,8 +572,10 @@ TexturedObjectShader::TexturedObjectShader(ComPtr<ID3D12Device>& device) : Graph
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mShadowPipelineState.GetAddressOf())));
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("TexturedObject Shader 가 성공적으로 로딩되었습니다.");
 
@@ -624,6 +651,12 @@ SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
 	rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
 	rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowMap].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[GRP_ShadowMap].Constants.Num32BitValues = 1;
+    rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
+    rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
+    rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -681,7 +714,7 @@ SkyBoxShader::SkyBoxShader(ComPtr<ID3D12Device>& device)
 
 
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("SkyBox Shader 가 성공적으로 로딩되었습니다.");
 }
@@ -785,7 +818,7 @@ UIShader::UIShader(ComPtr<ID3D12Device>& device)
 
 
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("UI Shader 가 성공적으로 로딩되었습니다.");
 }
@@ -914,7 +947,7 @@ BillBoardShader::BillBoardShader(ComPtr<ID3D12Device>& device)
     psoDesc.SampleDesc.Quality = 0;
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("BillBoard Shader 가 성공적으로 로딩되었습니다.");
 
@@ -991,6 +1024,12 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
     rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowMap].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[GRP_ShadowMap].Constants.Num32BitValues = 1;
+    rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
+    rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
+    rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -1030,7 +1069,6 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     psoDesc.InputLayout = { inputDescs, _countof(inputDescs) };
     psoDesc.pRootSignature = mRootSignature.Get();
     psoDesc.VS = GetShaderByteCode(EShaderType::VS);
-    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC{ D3D12_DEFAULT };
     psoDesc.BlendState = CD3DX12_BLEND_DESC{ D3D12_DEFAULT };
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC{ D3D12_DEFAULT };
@@ -1042,7 +1080,10 @@ NormalTexturedObjectShader::NormalTexturedObjectShader(ComPtr<ID3D12Device>& dev
     psoDesc.SampleDesc.Quality = 0;
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mShadowPipelineState.GetAddressOf())));
+
+    psoDesc.PS = GetShaderByteCode(EShaderType::PS);
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("Normal TexturedObject Shader 가 성공적으로 로딩되었습니다.");
 }
@@ -1113,6 +1154,12 @@ BoundingBoxShader::BoundingBoxShader(ComPtr<ID3D12Device>& device)
     rootParams[GRP_LightInfo].Descriptor.RegisterSpace = 0;
     rootParams[GRP_LightInfo].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+    rootParams[GRP_ShadowMap].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+    rootParams[GRP_ShadowMap].Constants.Num32BitValues = 1;
+    rootParams[GRP_ShadowMap].Constants.ShaderRegister = 2;
+	rootParams[GRP_ShadowMap].Constants.RegisterSpace = 0;
+    rootParams[GRP_ShadowMap].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
     rootParams[GRP_ObjectConstants].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
     rootParams[GRP_ObjectConstants].Descriptor.ShaderRegister = 2;
     rootParams[GRP_ObjectConstants].Descriptor.RegisterSpace = 0;
@@ -1165,7 +1212,7 @@ BoundingBoxShader::BoundingBoxShader(ComPtr<ID3D12Device>& device)
     psoDesc.SampleDesc.Quality = 0;
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
     Console.InfoLog("BoundingBox Shader 가 성공적으로 로딩되었습니다.");
 }
@@ -1340,7 +1387,7 @@ ParticleSOShader::ParticleSOShader(ComPtr<ID3D12Device>& device)
     psoDesc.StreamOutput.pBufferStrides = strides;
 	psoDesc.StreamOutput.RasterizedStream = D3D12_SO_NO_RASTERIZED_STREAM;
 
-    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
 }
 
@@ -1469,7 +1516,7 @@ ParticleGSShader::ParticleGSShader(ComPtr<ID3D12Device>& device)
     psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
 
-    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mPipelineState.GetAddressOf())));
+    CheckHR(device->CreateGraphicsPipelineState(std::addressof(psoDesc), IID_PPV_ARGS(mRenderPipelineState.GetAddressOf())));
 
 }
 
