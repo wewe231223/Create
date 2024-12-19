@@ -37,6 +37,10 @@ void TitleScene::Update()
 	mCanvas->Update();
 }
 
+void TitleScene::ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+}
+
 void TitleScene::Render(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	mCanvas->Render(commandList);

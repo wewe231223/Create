@@ -54,8 +54,7 @@ ParticleSystem::ParticleSystem(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
 	CreateDefaultBuffer(device, mVertexBuffer.GetAddressOf(),					D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	CreateDefaultBuffer(device, mParticleSOBuffer.GetAddressOf(),				D3D12_RESOURCE_STATE_STREAM_OUT);
 	CreateDefaultBuffer(device, mStreamCounterDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_STREAM_OUT, sizeof(UINT64));
-	CreateDefaultBuffer(device, mStreamClearDefaultBuffer.GetAddressOf(),		D3D12_RESOURCE_STATE_COPY_SOURCE);
-	
+
 	CheckHR(mStreamCounterUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(mStreamCounterUploadPtr))));
 
 	CD3DX12_RESOURCE_DESC parentBufferDesc{ CD3DX12_RESOURCE_DESC::Buffer(MAX_PARTICLE_PARENT_COUNT * sizeof(DirectX::XMFLOAT3)) };
@@ -167,8 +166,6 @@ void ParticleSystem::MakeParticle(const ParticleVertex& particle)
 
 }
 
-std::ofstream particlelog{ "ParticleLog.txt" };
-
 void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	// SO 렌더 단계 
@@ -186,10 +183,6 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_DEST);
 	commandList->CopyResource(mStreamCounterDefaultBuffer.Get(), mStreamCounterUploadBuffer.Get());
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
-
-	ParticleSystem::SyncBuffer(commandList, mParticleSOBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_DEST);
-	commandList->CopyResource(mParticleSOBuffer.Get(), mStreamClearDefaultBuffer.Get());
-	ParticleSystem::SyncBuffer(commandList, mParticleSOBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
 
 	// 셰이더 바인딩 
 	mSOPassShader->SetShader(commandList);
@@ -216,7 +209,7 @@ void ParticleSystem::RenderSO(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	commandList->SetGraphicsRootShaderResourceView(ParticleSORP_ParentPosition, curr.mBuffer->GetGPUVirtualAddress());
 
 	// Draw Call 
-	commandList->DrawInstanced(mParticleCount + 1, 1, 0, 0);
+	commandList->DrawInstanced(mParticleCount , 1, 0, 0);
 
 	// ReadBack 힙에 스트림 출력 카운터 결과를 복사한다. 
 	ParticleSystem::SyncBuffer(commandList, mStreamCounterDefaultBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -256,7 +249,7 @@ void ParticleSystem::RenderGS(ComPtr<ID3D12GraphicsCommandList>& commandList, D3
 	commandList->SetGraphicsRootDescriptorTable(ParticleGSRP_Texture, texHandle );
 
 	// Draw Call 
-	commandList->DrawInstanced(mParticleCount + 1, 1, 0, 0);
+	commandList->DrawInstanced(mParticleCount, 1, 0, 0);
 
 
 }
@@ -298,11 +291,6 @@ void ParticleSystem::PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	CheckHR(mStreamCounterReadBackBuffer->Map(0, nullptr, reinterpret_cast<void**>(std::addressof(streamCount))));
 	mParticleCount = static_cast<UINT32>((*streamCount) / sizeof(ParticleVertex));
 	mStreamCounterReadBackBuffer->Unmap(0, nullptr);
-
-	// if (mParticleCount == 0 or mParticleCount >= MAX_PARTICLE_COUNT) mParticleCount = 1;
-	Console.InfoLog("{}", mParticleCount);
-
-	particlelog << mParticleCount << std::endl;
 }
 
 void ParticleSystem::SwapBufferPointer(ComPtr<ID3D12Resource>& resourceA, ComPtr<ID3D12Resource>& resourceB)

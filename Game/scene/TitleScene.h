@@ -9,6 +9,7 @@ public:
 	virtual void Load(ComPtr<ID3D12Device>& device, ComPtr<ID3D12CommandQueue>& commandQueue, std::shared_ptr<Window> window) override;
 
 	virtual void Update();
+	virtual void ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 	virtual void PostRender(ComPtr<ID3D12GraphicsCommandList>& commandList) override;
 private:

@@ -55,9 +55,9 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 			v.halfWidth = 10.f;
 			v.texture = ParticleTexture;
 			v.spritable = 1;
-			v.spriteFrameInCol = 2;
-			v.spriteFrameInRow = 2;
-			v.spriteDuration = 0.5f;
+			v.spriteFrameInCol = 5;
+			v.spriteFrameInRow = 5;
+			v.spriteDuration = 1.f;
 			v.direction = mOwner->GetChild(1)->GetTransform().GetForward();
 			v.velocity = 100.f;
 			v.totalLifeTime = 0.01f;

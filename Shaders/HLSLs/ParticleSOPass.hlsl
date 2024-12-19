@@ -148,7 +148,7 @@ ParticleSO_GS_IN ParticleSOPassVS(ParticleVertex input, uint vertedID : SV_Verte
     output.spritable = input.spritable;
     output.spriteFrameInRow = input.spriteFrameInRow;
     output.spriteFrameInCol = input.spriteFrameInCol;
-    output.spriteDuration = input.spriteDuration;
+    output.spriteDuration = input.totalLifetime;
     output.direction = input.direction;
     output.velocity = input.velocity;
     output.totalLifetime = input.totalLifetime;
@@ -179,15 +179,15 @@ void EmitParticleUpdate(inout ParticleVertex vertex, uint vertexID, inout PointS
     if (vertex.lifetime <= 0.f)
     {
         newParticle.position = vertex.position;
-        newParticle.halfWidth = 10.f;
-        newParticle.halfHeight = 10.f;
+        newParticle.halfWidth = vertex.halfWidth;
+        newParticle.halfHeight = vertex.halfHeight;
         newParticle.textureIndex = vertex.textureIndex;
         newParticle.spritable = vertex.spritable;
         newParticle.spriteFrameInRow = vertex.spriteFrameInRow;
         newParticle.spriteFrameInCol = vertex.spriteFrameInCol;
         newParticle.spriteDuration = vertex.spriteDuration;
         newParticle.direction = GenerateRandomDirection(vertexID);
-        newParticle.velocity = GenerateRandomInRange(50.f, 55.f, vertexID);
+        newParticle.velocity = GenerateRandomInRange(5.f, 3.f, vertexID);
         newParticle.totalLifetime = GenerateRandomInRange(2.f, 5.f, vertexID);
         newParticle.lifetime = newParticle.totalLifetime;
         newParticle.type = ParticleType_ember;
@@ -241,27 +241,3 @@ void ParticleSOPassGS(point ParticleSO_GS_IN input[1], inout PointStream<Particl
     if (outPoint.type == ParticleType_emit) EmitParticleUpdate(outPoint, input[0].VertexID, output);
     else if (outPoint.type == ParticleType_ember) EmberParticleUpdate(outPoint, output);
 }
-/*
-struct ParticleVertex
-{
-    float3 position : POSITION;
-    float halfWidth : WIDTH;
-    float halfHeight : HEIGHT;
-    uint textureIndex : TEXTUREINDEX;
-    uint spritable : SPRITABLE;
-    uint spriteFrameInRow : SPRITEFRAMEINROW;
-    uint spriteFrameInCol : SPRITEFRAMEINCOL;
-    float spriteDuration : SPRITEDURATION;
-    
-    float3 direction : DIRECTION;
-    float velocity : VELOCITY;
-    float totalLifetime : TOTALLIFETIME;
-    float lifetime : LIFETIME;
-    
-    uint type : PARTICLETYPE;
-    uint emitType : EMITTYPE;
-    uint remainEmit : REMAINEMIT;
-    uint parentID : PARENTID;
-    float3 offset : PARENTOFFSET;
-};
-*/

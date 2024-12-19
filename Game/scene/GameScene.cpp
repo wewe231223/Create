@@ -53,7 +53,7 @@ void GameScene::LoadTextures()
 
 	mResourceManager->CreateTexture("Grass", "./Resources/textures/Grass01.png");
 	mResourceManager->CreateTexture("Tree", "./Resources/textures/Tree.png");
-	mResourceManager->CreateTexture("Smoke", "./Resources/textures/Smoke.png");
+	mResourceManager->CreateTexture("Smoke", "./Resources/textures/Smoke1.png");
 
 }
 
@@ -346,6 +346,10 @@ void GameScene::Update()
 	mTerrain->UpdateGameObjectAboveTerrain();
 
 	GameScene::UpdateShaderVariables();
+}
+
+void GameScene::ShadowCast(ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
 }
 
 void GameScene::UpdateShaderVariables()
