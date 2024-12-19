@@ -50,7 +50,7 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 			
 			ParticleVertex v{};
 			
-			v.position = { 10.f,100.f,10.f };
+			v.position = mOwner->GetChild(1)->GetTransform().GetPosition();
 			v.halfheight = 10.f;
 			v.halfWidth = 10.f;
 			v.texture = ParticleTexture;
@@ -58,7 +58,7 @@ SCRIPT_Player::SCRIPT_Player(std::shared_ptr<GameObject> owner,std::shared_ptr<R
 			v.spriteFrameInCol = 2;
 			v.spriteFrameInRow = 2;
 			v.spriteDuration = 0.5f;
-			v.direction = mOwner->GetTransform().GetForward();
+			v.direction = mOwner->GetChild(1)->GetTransform().GetForward();
 			v.velocity = 100.f;
 			v.totalLifeTime = 0.01f;
 			v.lifeTime = 0.01f;
